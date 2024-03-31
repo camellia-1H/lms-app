@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import DefaultLayout from "./layouts/DefaultLayout/DefaultLayout";
-import { publicRoutes, privateRoutes } from "./routes";
-import Loader from "./components/Loader";
+import DefaultLayout from './layouts/DefaultLayout/DefaultLayout';
+import { publicRoutes, privateRoutes } from './routes';
+import Loader from './components/Loader';
 // import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./redux/store";
