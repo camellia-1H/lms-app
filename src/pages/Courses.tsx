@@ -1,12 +1,16 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useState } from 'react';
 import { Listbox, Tab, Transition } from '@headlessui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Search from '../components/Search';
 import SearchList from '../components/Courses/SearchList';
+import { RootState } from '../redux/store';
+import { useCreateCourseMutation } from '../redux/coursesApi';
 
 interface levelItem {
   level: string;
@@ -74,7 +78,11 @@ const priceList: priceItem[] = [
   },
 ];
 const priceListIDRadio = `priceList${Math.floor(Math.random() * 10000 + 1)}`;
+
 const CoursesPage: FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
+  const navigate = useNavigate();
   let [categories] = useState({
     Recent: [
       {
@@ -184,6 +192,17 @@ const CoursesPage: FC = () => {
   const [showFilterBarMobile, setshowFilterBarMobile] =
     useState<boolean>(false);
 
+  const [createCourse, { isSuccess, isError, error, isLoading }] =
+    useCreateCourseMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/courses/create');
+    }
+    if (isError) {
+      console.log((error as any).data);
+    }
+  }, [isLoading]);
   const handleClearFilter = () => {
     categoryList.map((category) => {
       category.checked = false;
@@ -205,9 +224,15 @@ const CoursesPage: FC = () => {
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
             Course
           </h1>
-          <Link to={'/courses/create'} className="text-white">
+          <button
+            onClick={() => {
+              createCourse({ userID: user.userID });
+            }}
+            disabled={isLoading}
+            className="text-white"
+          >
             Create
-          </Link>
+          </button>
         </div>
       </div>
       <div className="lg:px-32 md:px-20 sm:px-6">
@@ -291,7 +316,6 @@ const CoursesPage: FC = () => {
                 <button
                   onClick={() => {
                     setshowFilterBarMobile(!showFilterBarMobile);
-                    console.log(showFilterBarMobile);
                   }}
                   className="w-fit flex items-center border-2 border-black px-3 py-3"
                 >

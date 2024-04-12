@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
@@ -6,12 +6,18 @@ import {
   faVideo,
   faWater,
 } from '@fortawesome/free-solid-svg-icons';
+import { RootState } from '../redux/store';
 import { Link } from 'react-router-dom';
-import { TitleForm } from '../components/CourseCreate/TitleForm';
-import { DescriptionForm } from '../components/CourseCreate/DescriptionForm';
+import { useSelector } from 'react-redux';
 import { ChapterUploadVideoForm } from '../components/CourseChapterCreate/ChapterUploadVideoForm';
+import { ChapterTitleForm } from '../components/CourseChapterCreate/ChapterTitleForm';
+import { ChapterDescriptionForm } from '../components/CourseChapterCreate/ChapterDescriptionForm';
 
 const CourseChapterCreate: FC = () => {
+  const chapterID = useSelector(
+    (state: RootState) => state.course.currentCourseChapterID
+  );
+  console.log(chapterID);
   return (
     <div>
       <div className="bg-[#111827] h-32">
@@ -25,7 +31,7 @@ const CourseChapterCreate: FC = () => {
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              // to={`/teacher/courses/${params.courseId}`}
+              // to={`/teacher/courses/${params.chapterID}`}
               to={`/courses/create`}
               className="flex items-center text-sm hover:opacity-75 hover:underline transition"
             >
@@ -44,7 +50,7 @@ const CourseChapterCreate: FC = () => {
               </div>
               {/* <ChapterActions
                 disabled={!isComplete}
-                courseId={params.courseId}
+                chapterID={params.chapterID}
                 chapterId={params.chapterId}
                 isPublished={chapter.isPublished}
               /> */}
@@ -62,19 +68,22 @@ const CourseChapterCreate: FC = () => {
                 <h2 className="text-xl font-bold">Customize your chapter</h2>
               </div>
 
-              <TitleForm initialData={{ title: 'Title hay' }} courseId={'is'} />
-              <DescriptionForm
+              <ChapterTitleForm
+                initialData={{ title: 'Title hay' }}
+                chapterID={'is'}
+              />
+              <ChapterDescriptionForm
                 initialData={{ description: 'Description hay' }}
-                courseId={'is'}
+                chapterID={'is'}
               />
               {/* <ChapterTitleForm
                 initialData={chapter}
-                courseId={params.courseId}
+                chapterID={params.chapterID}
                 chapterId={params.chapterId}
               /> */}
               {/* <ChapterDescriptionForm
                 initialData={chapter}
-                courseId={params.courseId}
+                chapterID={params.chapterID}
                 chapterId={params.chapterId}
               /> */}
             </div>
@@ -88,7 +97,7 @@ const CourseChapterCreate: FC = () => {
               </div>
               {/* <ChapterAccessForm
                 initialData={chapter}
-                courseId={params.courseId}
+                chapterID={params.chapterID}
                 chapterId={params.chapterId}
               /> */}
             </div>
@@ -104,12 +113,12 @@ const CourseChapterCreate: FC = () => {
 
             <ChapterUploadVideoForm
               initialData={{ chapterVideoURL: '' }}
-              courseId={'is'}
+              chapterID={'is'}
             />
             {/* <ChapterVideoForm
               initialData={chapter}
               chapterId={params.chapterId}
-              courseId={params.courseId}
+              chapterID={params.chapterID}
             /> */}
           </div>
         </div>

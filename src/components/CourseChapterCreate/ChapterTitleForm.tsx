@@ -11,7 +11,7 @@ interface TitleFormProps {
   initialData: {
     title: string;
   };
-  courseId: string;
+  chapterID: string;
 }
 
 const formSchema = z.object({
@@ -20,7 +20,10 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+export const ChapterTitleForm = ({
+  initialData,
+  chapterID,
+}: TitleFormProps) => {
   // TODO : call api update value
   const [title, setTitle] = useState<string>(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
@@ -41,7 +44,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
       console.log(values);
       // TODO : call api update value
       setTitle(values.title);
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      //   await axios.patch(`/api/courses/${chapterID}`, values);
       //   toast.success('Course updated');
       toggleEdit();
       //   router.refresh();

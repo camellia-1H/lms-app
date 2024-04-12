@@ -1,24 +1,26 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
 
 interface PriceFormProps {
   initialData: {
     price: number;
   };
-  courseId: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
   price: z.coerce.number(),
 });
 
-export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
+export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
   const [price, setPrice] = useState<number>(initialData?.price);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -26,9 +28,10 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const navigate = useNavigate();
+  const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       price: initialData?.price || undefined,
     },
@@ -40,7 +43,11 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
     try {
       console.log(values);
       setPrice(values.price);
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      updateCourse({
+        courseID,
+        price: values.price,
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
       //   router.refresh();

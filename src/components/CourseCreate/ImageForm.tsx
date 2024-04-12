@@ -1,33 +1,29 @@
-import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
+import { useUploadS3ImageMutation } from '../../redux/utilsApi';
 
 interface ImageFormProps {
   initialData: {
     imageUrl: string;
   };
-  courseId: string;
+  courseID: string;
 }
 
-const formSchema = z.object({
-  imageUrl: z.string().min(1, {
-    message: 'Image is required',
-  }),
-});
-
-export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
+export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [image, setImage] = useState<string>(initialData.imageUrl);
+  const [imageUrl, setImageUrl] = useState<string>(initialData?.imageUrl);
   const [previewImage, setpreviewImage] = useState<string>('');
+  const [fileName, setFileName] = useState<string>('');
+  const [typeImage, setTypeImage] = useState<string>('');
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
     setpreviewImage('');
-    setImage(previewImage); //
+    setImageUrl(previewImage); //
   };
 
   const setFileTobase = (file: File) => {
@@ -42,24 +38,33 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
     const currentFile = e.target.files[0];
     setFileTobase(currentFile);
     console.log(currentFile);
+
+    setFileName(currentFile.name);
+    setTypeImage(currentFile.type);
   };
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
-    defaultValues: initialData,
-  });
+  const [updateCourse, { isLoading }] = useUpdateCourseMutation();
+  const [uploadImageS3] = useUploadS3ImageMutation();
 
-  const { isSubmitting, isValid } = form.formState;
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    console.log(fileName);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(previewImage);
-
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      console.log(imageUrl);
+      const responeUploadImageS3: any = await uploadImageS3({
+        imageUrl: previewImage,
+        fileName: fileName,
+        typeImage: typeImage,
+      });
+      await updateCourse({
+        courseID,
+        imageUrl: responeUploadImageS3.data,
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
-      // window.location.reload();
-      //   router.refresh();
     } catch {
       //   toast.error('Something went wrong');
     }
@@ -71,22 +76,22 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
         Course thumbnail
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing && <>Cancel</>}
-          {!isEditing && !image && (
+          {!isEditing && !imageUrl && (
             <>
               <FontAwesomeIcon icon={faCirclePlus} className="h-4 w-4 mr-2" />
-              Add an image
+              Add an imageUrl
             </>
           )}
-          {!isEditing && image && (
+          {!isEditing && imageUrl && (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit image
+              Edit imageUrl
             </>
           )}
         </button>
       </div>
       {!isEditing &&
-        (!image ? (
+        (!imageUrl ? (
           <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-6">
             <FontAwesomeIcon
               icon={faPencil}
@@ -95,12 +100,16 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
           </div>
         ) : (
           <div className="relative aspect-video mt-2">
-            <img alt="Upload" className="object-cover rounded-md" src={image} />
+            <img
+              alt="Upload"
+              className="object-cover rounded-md"
+              src={imageUrl}
+            />
           </div>
         ))}
 
       {isEditing && (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form onSubmit={onSubmit} className="space-y-4 mt-4">
           {!previewImage && (
             <div className="col-span-full">
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
@@ -134,7 +143,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
             <div className="w-96 h-full">
               <div className="flex items-center">
                 <div className="justify-items-end">
-                  <p className="font-medium text-md py-3">Preview image</p>
+                  <p className="font-medium text-md py-3">Preview imageUrl</p>
                   <div className="flex items-center ">
                     <img
                       src={previewImage}
@@ -151,7 +160,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
           </div>
           <div className="flex items-center gap-x-2">
             <button
-              disabled={!isValid || isSubmitting}
+              disabled={isLoading}
               type="submit"
               className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
             >

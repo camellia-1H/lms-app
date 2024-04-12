@@ -1,17 +1,19 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
 
 interface TitleFormProps {
   initialData: {
     title: string;
   };
-  courseId: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
@@ -20,17 +22,17 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
-  // TODO : call api update value
+export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
   const [title, setTitle] = useState<string>(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const navigate = useNavigate();
+  const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
 
@@ -41,10 +43,13 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
       console.log(values);
       // TODO : call api update value
       setTitle(values.title);
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      updateCourse({
+        courseID,
+        title: values.title,
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
       //   toast.error('Something went wrong');
     }

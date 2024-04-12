@@ -1,73 +1,60 @@
-import * as z from 'zod';
-// import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from 'react-hook-form';
-import { FC } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
+
 import { TitleForm } from '../components/CourseCreate/TitleForm';
 import { DescriptionForm } from '../components/CourseCreate/DescriptionForm';
 import { ImageForm } from '../components/CourseCreate/ImageForm';
 import { CategoryForm } from '../components/CourseCreate/CategoryForm';
 import { PriceForm } from '../components/CourseCreate/PriceForm';
-
-// interface Course {
-//   title: string;
-//   description: string;
-//   imageUrl: string;
-//   price: string;
-//   categoryId: string;
-//   chapter: any;
-// }
-
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: 'Title is required',
-  }),
-});
-
-// const requiredFields: Course[] = [
-//   course.title,
-//   course.description,
-//   course.imageUrl,
-//   course.price,
-//   course.categoryId,
-//   course.chapters.some((chapter) => chapter.isPublished),
-// ];
-
-// const totalFields = requiredFields.length;
-const totalFields = 5;
-//
-// const completedFields = requiredFields.filter(Boolean).length;
-
-// const completionText = `(${completedFields}/${totalFields})`;
-
-// const isComplete = requiredFields.every(Boolean);
+import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
+import { RootState } from '../redux/store';
+import { useGetCourseDetailQuery } from '../redux/coursesApi';
+import Loader from '../components/Loader';
+import { Course } from '../models/Course';
 
 const CourseCreatePage: FC = () => {
   const navigate = useNavigate();
-  const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-    },
-  });
+  const courseID = useSelector(
+    (state: RootState) => state.course.currentCourseID
+  );
+  console.log(courseID);
+  const [requiredFields, setRequiredFields] = useState<
+    (string | boolean | number | string[])[]
+  >([]);
+  const {
+    data: course,
+    isLoading,
+    isSuccess,
+  } = useGetCourseDetailQuery(courseID);
+  console.log(course);
 
-  // const { isSubmitting, isValid } = form.formState;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      // const response = await axios.post("/api/courses", values);
-      navigate('/courses/course_id/create');
-      // router.push(`/teacher/courses/${response.data.id}`);
-      // toast.success("Course created");
-    } catch {
-      // toast.error("Something went wrong");
+  useEffect(() => {
+    if (isSuccess) {
+      setRequiredFields([
+        course.title,
+        course.description,
+        course.imageUrl,
+        course.price,
+        course.category,
+        // course.chapters.some(chapter => chapter.isPublished),
+      ]);
     }
-  };
+  }, [isLoading]);
+
+  const totalFields = requiredFields.length;
+
+  const completedFields = requiredFields.filter(Boolean).length;
+
+  const completionText = `(${completedFields}/${totalFields})`;
+
+  const isComplete = requiredFields.every(Boolean);
 
   return (
     <div className="">
+      {isLoading && <Loader />}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -75,103 +62,97 @@ const CourseCreatePage: FC = () => {
           </h1>
         </div>
       </div>
-      <div className="flex flex-col lg:px-32 md:px-20 sm:px-6 mt-8">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-y-2">
-            <h1 className="text-3xl font-bold">Course setup</h1>
-            <span className="text-base text-slate-700">
-              Complete all fields 1/6
-            </span>
-          </div>
-          {/* <Actions
+      {isSuccess && (
+        <div className="flex flex-col lg:px-32 md:px-20 sm:px-6 mt-8">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-y-2">
+              <h1 className="text-3xl font-bold">Course setup</h1>
+              <span className="text-base text-slate-700">
+                Complete all fields {completionText}
+              </span>
+            </div>
+            <div>
+              {!isComplete && (
+                <div>
+                  <button disabled={!isComplete}>Update</button>
+                  <button disabled={!isComplete}>Publish</button>
+                  <button disabled={!isComplete}>Unpublish</button>
+                </div>
+              )}
+            </div>
+            {/* <Actions
             disabled={!isComplete}
-            courseId={params.courseId}
+            courseID={params.courseID}
             isPublished={course.isPublished}
           /> */}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div>
-            <div className="flex items-center gap-x-2">
-              <FontAwesomeIcon
-                icon={faWater}
-                className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div>
+              <div className="flex items-center gap-x-2">
+                <FontAwesomeIcon
+                  icon={faWater}
+                  className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
+                />
+                <h2 className="text-xl font-bold">Customize your course</h2>
+              </div>
+              <TitleForm
+                initialData={{ title: course?.title as string }}
+                courseID={courseID}
               />
-              <h2 className="text-xl font-bold">Customize your course</h2>
+              <DescriptionForm
+                initialData={{ description: course?.description as string }}
+                courseID={courseID}
+              />
+              <ImageForm
+                initialData={{ imageUrl: course?.imageUrl as string }}
+                courseID={courseID}
+              />
+              <CategoryForm
+                initialData={{ category: course?.category as string[] }}
+                courseID={courseID}
+              />
             </div>
-            <TitleForm initialData={{ title: 'Title hay' }} courseId={'is'} />
-            <DescriptionForm
-              initialData={{ description: 'Description hay' }}
-              courseId={'is'}
-            />
-            <ImageForm initialData={{ imageUrl: '' }} courseId={'id'} />
-            <CategoryForm />
-          </div>
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center gap-x-2">
-                <FontAwesomeIcon icon={faPencil} />
-                <h2 className="text-xl">Course chapters</h2>
-                <div>
-                  TODOOOO
-                  <Link to={'/courses/create/chapter'}>Create Chapter</Link>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <FontAwesomeIcon
+                    icon={faWater}
+                    className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
+                  />
+                  <h2 className="text-xl font-bold">Course chapters</h2>
                 </div>
+
+                {isSuccess && (
+                  <ChaptersForm
+                    initialData={course as Course}
+                    courseID={courseID}
+                  />
+                )}
               </div>
-              {/* <ChaptersForm initialData={course} courseId={course.id} /> */}
-            </div>
-            <div>
-              <div className="flex items-center gap-x-2">
-                <FontAwesomeIcon icon={faPencil} />
-                <h2 className="text-xl font-bold">Sell your course</h2>
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <FontAwesomeIcon
+                    icon={faPencil}
+                    className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
+                  />
+                  <h2 className="text-xl font-bold">Sell your course</h2>
+                </div>
+                <PriceForm
+                  initialData={{ price: course?.price as number }}
+                  courseID={courseID}
+                />
               </div>
-              <PriceForm initialData={{ price: 100 }} courseId={'is'} />
-            </div>
-            <div>
-              <div className="flex items-center gap-x-2">
-                <FontAwesomeIcon icon={faPencil} />
-                <h2 className="text-xl">Resources & Attachments</h2>
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <FontAwesomeIcon icon={faPencil} />
+                  <h2 className="text-xl">Resources & Attachments</h2>
+                </div>
+                {/* <AttachmentForm initialData={course} courseID={course.id} /> */}
               </div>
-              {/* <AttachmentForm initialData={course} courseId={course.id} /> */}
             </div>
           </div>
         </div>
-        {/* <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 mt-8"
-          >
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Course title</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    What will you teach in this course?
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center gap-x-2">
-              <Link href="/">
-                <Button type="button" variant="ghost">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" disabled={!isValid || isSubmitting}>
-                Continue
-              </Button>
-            </div>
-          </form>
-        </Form> */}
-      </div>
+      )}
     </div>
   );
 };

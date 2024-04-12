@@ -1,17 +1,19 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
 
 interface DescriptionFormProps {
   initialData: {
     description: string;
   };
-  courseId: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
@@ -22,7 +24,7 @@ const formSchema = z.object({
 
 export const DescriptionForm = ({
   initialData,
-  courseId,
+  courseID,
 }: DescriptionFormProps) => {
   const [description, setDescription] = useState<string>(
     initialData?.description
@@ -33,9 +35,10 @@ export const DescriptionForm = ({
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const navigate = useNavigate();
+  const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
 
@@ -44,10 +47,13 @@ export const DescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setDescription(values.description);
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      updateCourse({
+        courseID,
+        description: values.description,
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
       //   toast.error('Something went wrong');
     }

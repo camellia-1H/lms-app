@@ -1,12 +1,13 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Fragment, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMarker, faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
-import { Listbox, Transition } from '@headlessui/react';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
 
 interface categoryItem {
   categoryID: string;
@@ -14,12 +15,12 @@ interface categoryItem {
   checked: boolean;
 }
 
-// interface CategoryFormProps {
-//   initialData: {
-//     title: string;
-//   };
-//   courseId: string;
-// }
+interface CategoryFormProps {
+  initialData: {
+    category: string[];
+  };
+  courseID: string;
+}
 
 const formSchema = z.object({
   // title: z.string().min(1, {
@@ -35,24 +36,34 @@ const categoryList = [
   { categoryID: 'categoryID6', categoryName: 'Soft Skill', checked: false },
 ];
 
-export const CategoryForm = () => {
+export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [checkedList, setCheckedList] = useState<categoryItem[]>([]);
 
-  const toggleEdit = () => setIsEditing((current) => !current);
+  const toggleEdit = () => {
+    setIsEditing((current) => !current);
+  };
 
   const navigate = useNavigate();
+  const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
-    defaultValues: '',
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData.category,
   });
 
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      if (!checkedList.length) {
+        return;
+      }
+      updateCourse({
+        courseID,
+        category: checkedList.map((item) => item.categoryName),
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
       //   router.refresh();

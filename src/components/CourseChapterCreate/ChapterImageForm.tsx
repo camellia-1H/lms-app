@@ -10,7 +10,7 @@ interface ChapterImageFormProps {
   initialData: {
     imageUrl: string;
   };
-  courseId: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
@@ -21,7 +21,7 @@ const formSchema = z.object({
 
 export const ChapterImageForm = ({
   initialData,
-  courseId,
+  courseID,
 }: ChapterImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState<string>(initialData.imageUrl);
@@ -58,7 +58,7 @@ export const ChapterImageForm = ({
     try {
       console.log(previewImage);
 
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      //   await axios.patch(`/api/courses/${courseID}`, values);
       //   toast.success('Course updated');
       toggleEdit();
       // window.location.reload();

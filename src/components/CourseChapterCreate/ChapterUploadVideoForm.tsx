@@ -4,17 +4,15 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import MuxUploader from '@mux/mux-uploader-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCirclePlus,
-  faPencil,
-  faWater,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUploadS3VideoMutation } from '../../redux/utilsApi';
+import Loader from '../Loader';
 
 interface ChapterUploadVideoFormProps {
   initialData: {
     chapterVideoURL: string;
   };
-  courseId: string;
+  chapterID: string;
 }
 
 const formSchema = z.object({
@@ -25,15 +23,18 @@ const formSchema = z.object({
 
 export const ChapterUploadVideoForm = ({
   initialData,
-  courseId,
+  chapterID,
 }: ChapterUploadVideoFormProps) => {
   const [previewCoureChapterVideo, setPreviewCoureChapterVideo] =
-    useState<any>('');
+    useState<string>('');
   const [chapterVideoURL, setChapterVideoURL] = useState<string>(
     initialData?.chapterVideoURL
   );
+  const [fileName, setFileName] = useState<string>('');
+  const [typeVideo, setTypeVideo] = useState<string>('');
 
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadVieoS3, { isLoading }] = useUploadS3VideoMutation();
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
@@ -50,7 +51,12 @@ export const ChapterUploadVideoForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      //   await axios.patch(`/api/courses/${courseId}`, values);
+      uploadVieoS3({
+        videoBase64: previewCoureChapterVideo,
+        fileName,
+        typeVideo,
+      });
+      //   await axios.patch(`/api/courses/${chapterID}`, values);
       //   toast.success('Course updated');
       toggleEdit();
       //   router.refresh();
@@ -61,23 +67,27 @@ export const ChapterUploadVideoForm = ({
 
   const handlerUploadVieo = (e: any): any => {
     /// TODO : callapi upload video
-    console.log(e);
-    try {
-      const reader = new FileReader();
-      // const currentFile = e.target.files[0];
-      reader.readAsDataURL(e); // base64
-      reader.onloadend = () => {
-        setPreviewCoureChapterVideo(reader.result as string);
-      };
-    } catch (error) {
-      throw new Error('Function not implemented.');
-    }
+    setFileName(e.name);
+    setTypeVideo(e.type);
+
+    const reader = new FileReader();
+    // const currentFile = e.target.files[0];
+    reader.readAsDataURL(e); // base64
+    reader.onloadend = () => {
+      console.log(reader.result);
+      setPreviewCoureChapterVideo(reader.result as string);
+    };
   };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Course chapterVideoURL
+        {isLoading && (
+          <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
+            <Loader />
+          </div>
+        )}
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing && <>Cancel</>}
           {!isEditing && !chapterVideoURL && (
