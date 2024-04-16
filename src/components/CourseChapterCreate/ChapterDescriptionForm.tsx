@@ -1,31 +1,35 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { generateTime } from '../../utils/string-utils';
+import { useUpdateCourseChapterMutation } from '../../redux/coursesApi';
 
 interface ChapterDescriptionFormProps {
   initialData: {
-    description: string;
+    chapterDescription: string;
   };
   chapterID: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
-  description: z.string().min(1, {
-    message: 'description is required',
+  chapterDescription: z.string().min(1, {
+    message: 'chapterDescription is required',
   }),
 });
 
 export const ChapterDescriptionForm = ({
   initialData,
   chapterID,
+  courseID,
 }: ChapterDescriptionFormProps) => {
-  const [description, setDescription] = useState<string>(
-    initialData?.description
+  const [chapterDescription, setDescription] = useState<string>(
+    initialData?.chapterDescription
   );
 
   const [isEditing, setIsEditing] = useState(false);
@@ -33,9 +37,10 @@ export const ChapterDescriptionForm = ({
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const navigate = useNavigate();
+  const [updateCourseChapter] = useUpdateCourseChapterMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
 
@@ -43,11 +48,15 @@ export const ChapterDescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      setDescription(values.description);
-      //   await axios.patch(`/api/courses/${chapterID}`, values);
+      setDescription(values.chapterDescription);
+      updateCourseChapter({
+        chapterID,
+        courseID,
+        chapterDescription: values.chapterDescription,
+        updatedAt: generateTime(),
+      });
       //   toast.success('Course updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
       //   toast.error('Something went wrong');
     }
@@ -56,27 +65,27 @@ export const ChapterDescriptionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course description
+        Course chapterDescription
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit description
+              Edit chapterDescription
             </>
           )}
         </button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{description}</p>}
+      {!isEditing && <p className="text-sm mt-2">{chapterDescription}</p>}
       {isEditing && (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <input
             type="text"
             disabled={isSubmitting}
-            placeholder="e.g. 'Something about your course'"
+            placeholder="e.g. 'Something about your chapter'"
             className="w-full h-10 outline-none outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
-            {...form.register('description')}
+            {...form.register('chapterDescription')}
           />
 
           <div className="flex items-center gap-x-2">

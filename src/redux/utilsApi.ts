@@ -20,7 +20,17 @@ export const utilsApi = createApi({
         body: data,
       }),
     }),
+    generateAuthenticatedMuxURL: build.mutation({
+      query: () => ({
+        url: '/mux/generate',
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
-export const { useUploadS3VideoMutation, useUploadS3ImageMutation } = utilsApi;
+export const {
+  useUploadS3VideoMutation,
+  useUploadS3ImageMutation,
+  useGenerateAuthenticatedMuxURLMutation,
+} = utilsApi;

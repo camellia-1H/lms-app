@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
@@ -12,12 +12,47 @@ import { useSelector } from 'react-redux';
 import { ChapterUploadVideoForm } from '../components/CourseChapterCreate/ChapterUploadVideoForm';
 import { ChapterTitleForm } from '../components/CourseChapterCreate/ChapterTitleForm';
 import { ChapterDescriptionForm } from '../components/CourseChapterCreate/ChapterDescriptionForm';
+import { useGetCourseChapterDetailQuery } from '../redux/coursesApi';
 
 const CourseChapterCreate: FC = () => {
   const chapterID = useSelector(
     (state: RootState) => state.course.currentCourseChapterID
   );
+  const courseID = useSelector(
+    (state: RootState) => state.course.currentCourseID
+  );
   console.log(chapterID);
+  const [requiredFields, setRequiredFields] = useState<
+    (string | boolean | number | string[])[]
+  >([]);
+  const {
+    data: chapter,
+    isLoading,
+    isSuccess,
+  } = useGetCourseChapterDetailQuery({ courseID, chapterID });
+  console.log(chapter);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setRequiredFields([
+        chapter.chapterTitle,
+        chapter.chapterDescription,
+        chapter.chapterVideoUrl,
+        chapter.isFree,
+        chapter.isPublished,
+        chapter.position,
+        // chapter?.muxData,
+      ]);
+    }
+  }, [isLoading]);
+
+  const totalFields = requiredFields.length;
+
+  const completedFields = requiredFields.filter(Boolean).length;
+
+  const completionText = `(${completedFields}/${totalFields})`;
+
+  const isComplete = requiredFields.every(Boolean);
   return (
     <div>
       <div className="bg-[#111827] h-32">
@@ -45,8 +80,17 @@ const CourseChapterCreate: FC = () => {
               <div className="flex flex-col gap-y-2">
                 <h1 className="text-3xl font-bold">Chapter Creation</h1>
                 <span className="text-base text-slate-700">
-                  Complete all fields 1/6
+                  Complete all fields {completionText}
                 </span>
+              </div>
+              <div>
+                {!isComplete && (
+                  <div>
+                    <button disabled={!isComplete}>Update</button>
+                    <button disabled={!isComplete}>Publish</button>
+                    <button disabled={!isComplete}>Unpublish</button>
+                  </div>
+                )}
               </div>
               {/* <ChapterActions
                 disabled={!isComplete}
@@ -69,12 +113,16 @@ const CourseChapterCreate: FC = () => {
               </div>
 
               <ChapterTitleForm
-                initialData={{ title: 'Title hay' }}
-                chapterID={'is'}
+                initialData={{ chapterTitle: chapter?.chapterTitle as string }}
+                chapterID={chapterID}
+                courseID={courseID}
               />
               <ChapterDescriptionForm
-                initialData={{ description: 'Description hay' }}
-                chapterID={'is'}
+                initialData={{
+                  chapterDescription: chapter?.chapterDescription as string,
+                }}
+                chapterID={chapterID}
+                courseID={courseID}
               />
               {/* <ChapterTitleForm
                 initialData={chapter}
@@ -112,8 +160,11 @@ const CourseChapterCreate: FC = () => {
             </div>
 
             <ChapterUploadVideoForm
-              initialData={{ chapterVideoURL: '' }}
-              chapterID={'is'}
+              initialData={{
+                chapterVideoURL: chapter?.chapterVideoUrl as string,
+              }}
+              chapterID={chapterID}
+              courseID={courseID}
             />
             {/* <ChapterVideoForm
               initialData={chapter}

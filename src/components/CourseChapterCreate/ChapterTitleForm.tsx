@@ -1,39 +1,46 @@
 import * as z from 'zod';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUpdateCourseChapterMutation } from '../../redux/coursesApi';
+import { generateTime } from '../../utils/string-utils';
 
 interface TitleFormProps {
   initialData: {
-    title: string;
+    chapterTitle: string;
   };
   chapterID: string;
+  courseID: string;
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, {
-    message: 'Title is required',
+  chapterTitle: z.string().min(1, {
+    message: 'chapterTitle is required',
   }),
 });
 
 export const ChapterTitleForm = ({
   initialData,
   chapterID,
+  courseID,
 }: TitleFormProps) => {
   // TODO : call api update value
-  const [title, setTitle] = useState<string>(initialData.title);
+  const [chapterTitle, setChapterTitle] = useState<string>(
+    initialData.chapterTitle
+  );
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const navigate = useNavigate();
+  const [updateCourseChapter] = useUpdateCourseChapterMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
 
@@ -41,9 +48,14 @@ export const ChapterTitleForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
       // TODO : call api update value
-      setTitle(values.title);
+      setChapterTitle(values.chapterTitle);
+      updateCourseChapter({
+        chapterID,
+        courseID,
+        chapterTitle: values.chapterTitle,
+        updatedAt: generateTime(),
+      });
       //   await axios.patch(`/api/courses/${chapterID}`, values);
       //   toast.success('Course updated');
       toggleEdit();
@@ -56,19 +68,19 @@ export const ChapterTitleForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course title
+        Course chapterTitle
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit title
+              Edit chapterTitle
             </>
           )}
         </button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{title}</p>}
+      {!isEditing && <p className="text-sm mt-2">{chapterTitle}</p>}
       {isEditing && (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <input
@@ -77,7 +89,7 @@ export const ChapterTitleForm = ({
             placeholder="e.g. 'Advanced web development'"
             className="w-full h-10 outline-none outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black
             "
-            {...form.register('title')}
+            {...form.register('chapterTitle')}
           />
 
           <div className="flex items-center gap-x-2">

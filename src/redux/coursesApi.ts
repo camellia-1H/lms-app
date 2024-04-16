@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { createCourse, createCourseChapter } from './courseReducer';
 import { Course } from '../models/Course';
+import { CourseChapter } from '../models/CourseChapter';
 
 export const coursesApi = createApi({
   reducerPath: 'coursesApi', // ten field trong redux state
@@ -49,6 +50,26 @@ export const coursesApi = createApi({
         } catch (error) {}
       },
     }),
+    getCourseChapterDetail: build.query<CourseChapter, any>({
+      query: ({ courseID, chapterID }) => ({
+        url: `/courses/${courseID}/chapter/${chapterID}`,
+        method: 'GET',
+      }),
+    }),
+    updateCourseChapter: build.mutation({
+      query: ({ courseID, chapterID, ...data }) => ({
+        url: `/courses/${courseID}/chapter/${chapterID}`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    createCourseChapterVideo: build.mutation<string, any>({
+      query: ({ courseID, chapterID, ...data }) => ({
+        url: `/courses/${courseID}/chapter/${chapterID}/video`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -57,4 +78,7 @@ export const {
   useGetCourseDetailQuery,
   useUpdateCourseMutation,
   useCreateCourseChapterMutation,
+  useGetCourseChapterDetailQuery,
+  useUpdateCourseChapterMutation,
+  useCreateCourseChapterVideoMutation,
 } = coursesApi;
