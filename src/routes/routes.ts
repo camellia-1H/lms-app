@@ -10,8 +10,8 @@ const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Courses = lazy(() => import('../pages/Courses'));
-const CourseCreate = lazy(() => import('../pages/CourseCreate'));
-const CourseChapterCreate = lazy(() => import('../pages/CourseChapterCreate'));
+const CourseDraft = lazy(() => import('../pages/CourseDraft'));
+const CourseChapterDraft = lazy(() => import('../pages/CourseChapterDraft'));
 const CourseDetail = lazy(() => import('../pages/CourseDetail'));
 const CourseVideoDetail = lazy(() => import('../pages/CourseVideoDetail'));
 const Members = lazy(() => import('../pages/Members'));
@@ -37,8 +37,10 @@ const publicRoutes = [
 const privateRoutes = [
   { path: config.routes.profile, component: Profile },
   { path: config.routes.courseVideo, component: CourseVideoDetail },
-  { path: config.routes.courseCreate, component: CourseCreate },
-  { path: config.routes.courseChapterCreate, component: CourseChapterCreate },
+  { path: config.routes.courseDraft, component: CourseDraft },
+  { path: config.routes.courseCreate, component: CourseDraft },
+  { path: config.routes.courseChapterCreate, component: CourseChapterDraft },
+  { path: config.routes.courseChapterDraft, component: CourseChapterDraft },
 ];
 
 export { publicRoutes, privateRoutes };

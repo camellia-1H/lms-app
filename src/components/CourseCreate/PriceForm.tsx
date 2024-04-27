@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import toast from 'react-hot-toast';
 
 interface PriceFormProps {
   initialData: {
@@ -19,6 +20,7 @@ interface PriceFormProps {
 const formSchema = z.object({
   price: z.coerce.number(),
 });
+const userID = 'userID1';
 
 export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
   const [price, setPrice] = useState<number>(initialData?.price);
@@ -43,16 +45,17 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
     try {
       console.log(values);
       setPrice(values.price);
-      updateCourse({
+      await updateCourse({
+        userID,
         courseID,
         price: values.price,
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
       //   router.refresh();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -90,7 +93,12 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
             <button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

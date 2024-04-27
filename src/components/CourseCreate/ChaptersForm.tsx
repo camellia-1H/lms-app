@@ -1,22 +1,23 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Course } from '../../models/Course';
 import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import { ChaptersList } from './ChapterList';
 import { useCreateCourseChapterMutation } from '../../redux/coursesApi';
 import { useNavigate } from 'react-router-dom';
+import { CourseChapter } from '../../models/CourseChapter';
 
 interface ChaptersFormProps {
-  initialData: Course;
+  initialData: CourseChapter[];
   courseID: string;
 }
 
 export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  console.log('cousrId', courseID);
 
   const navigate = useNavigate();
 
@@ -24,9 +25,12 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
     useCreateCourseChapterMutation();
 
   useEffect(() => {
-    toast.loading('Create chapter... Please wait');
     if (isSuccess) {
-      navigate('/courses/create/chapter');
+      navigate('/courses/create/chapter', {
+        state: {
+          courseID: courseID,
+        },
+      });
     }
     if (isError) {
       console.log((error as any).data);
@@ -39,7 +43,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
 
   const handleCreateChapterCourse = async () => {
     try {
-      createCourseChapter({ courseID });
+      await createCourseChapter({ courseID }).unwrap();
       toast.success('Chapter created');
       toggleCreating();
       // router.refresh();
@@ -67,14 +71,19 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
   };
 
   const onEdit = (chapterID: string) => {
+    console.log('heheh');
+
+    console.log(courseID);
+    console.log(chapterID);
+
     // chuyển đến nhưng page kia khi vừa vào phải fetch lấy current chapterid từ store
-    navigate('/courses/create/chapter');
+    navigate(`/courses/${courseID}/chapter/${chapterID}/draft`);
     // router.push(`/teacher/courses/${courseID}/chapters/${chapterID}`);
   };
 
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
-      {isUpdating && (
+      {(isUpdating || isLoading) && (
         <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
           <Loader />
         </div>
@@ -106,14 +115,14 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
         <div
           className={[
             'text-sm mt-2',
-            !initialData.chapters.length && 'text-slate-500 italic',
+            !initialData.length && 'text-slate-500 italic',
           ].join()}
         >
-          {!initialData.chapters.length && 'No chapters'}
+          {!initialData.length && 'No chapters'}
           <ChaptersList
             onEdit={onEdit}
             onReorder={onReorder}
-            items={initialData.chapters || []}
+            listChapters={initialData || []}
           />
         </div>
       )}

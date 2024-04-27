@@ -2,12 +2,12 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { generateTime } from '../../utils/string-utils';
 import { useUpdateCourseChapterMutation } from '../../redux/coursesApi';
+import toast from 'react-hot-toast';
 
 interface ChapterDescriptionFormProps {
   initialData: {
@@ -36,7 +36,6 @@ export const ChapterDescriptionForm = ({
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const navigate = useNavigate();
   const [updateCourseChapter] = useUpdateCourseChapterMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,16 +48,16 @@ export const ChapterDescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setDescription(values.chapterDescription);
-      updateCourseChapter({
+      await updateCourseChapter({
         chapterID,
         courseID,
         chapterDescription: values.chapterDescription,
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -92,7 +91,12 @@ export const ChapterDescriptionForm = ({
             <button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

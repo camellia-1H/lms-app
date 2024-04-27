@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
@@ -11,16 +10,20 @@ import { CategoryForm } from '../components/CourseCreate/CategoryForm';
 import { PriceForm } from '../components/CourseCreate/PriceForm';
 import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
 import { RootState } from '../redux/store';
-import { useGetCourseDetailQuery } from '../redux/coursesApi';
+import {
+  useGetCourseDetailQuery,
+  useGetListCourseChaptersQuery,
+} from '../redux/coursesApi';
 import Loader from '../components/Loader';
-import { Course } from '../models/Course';
+import { useParams } from 'react-router-dom';
 
-const CourseCreatePage: FC = () => {
-  const navigate = useNavigate();
+const userID = 'userID1';
+const CourseDraftPage: FC = () => {
   const courseID = useSelector(
     (state: RootState) => state.course.currentCourseID
   );
-  console.log(courseID);
+  const { courseID: courseIDParam } = useParams();
+
   const [requiredFields, setRequiredFields] = useState<
     (string | boolean | number | string[])[]
   >([]);
@@ -28,11 +31,17 @@ const CourseCreatePage: FC = () => {
     data: course,
     isLoading,
     isSuccess,
-  } = useGetCourseDetailQuery(courseID);
+  } = useGetCourseDetailQuery({ courseID: courseIDParam ?? courseID, userID });
   console.log(course);
+
+  const { data, isSuccess: isSuccessGetListChapters } =
+    useGetListCourseChaptersQuery(courseIDParam ?? courseID);
+  console.log(data);
 
   useEffect(() => {
     if (isSuccess) {
+      console.log(course);
+
       setRequiredFields([
         course.title,
         course.description,
@@ -95,22 +104,26 @@ const CourseCreatePage: FC = () => {
                 />
                 <h2 className="text-xl font-bold">Customize your course</h2>
               </div>
-              <TitleForm
-                initialData={{ title: course?.title as string }}
-                courseID={courseID}
-              />
-              <DescriptionForm
-                initialData={{ description: course?.description as string }}
-                courseID={courseID}
-              />
-              <ImageForm
-                initialData={{ imageUrl: course?.imageUrl as string }}
-                courseID={courseID}
-              />
-              <CategoryForm
-                initialData={{ category: course?.category as string[] }}
-                courseID={courseID}
-              />
+              {isSuccess && (
+                <>
+                  <TitleForm
+                    initialData={{ title: course?.title as string }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                  <DescriptionForm
+                    initialData={{ description: course?.description as string }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                  <ImageForm
+                    initialData={{ imageUrl: course?.imageUrl as string }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                  <CategoryForm
+                    initialData={{ category: course?.category as string[] }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                </>
+              )}
             </div>
             <div className="space-y-6">
               <div>
@@ -122,10 +135,10 @@ const CourseCreatePage: FC = () => {
                   <h2 className="text-xl font-bold">Course chapters</h2>
                 </div>
 
-                {isSuccess && (
+                {isSuccessGetListChapters && (
                   <ChaptersForm
-                    initialData={course as Course}
-                    courseID={courseID}
+                    initialData={data}
+                    courseID={courseIDParam ?? courseID}
                   />
                 )}
               </div>
@@ -137,10 +150,12 @@ const CourseCreatePage: FC = () => {
                   />
                   <h2 className="text-xl font-bold">Sell your course</h2>
                 </div>
-                <PriceForm
-                  initialData={{ price: course?.price as number }}
-                  courseID={courseID}
-                />
+                {isSuccess && (
+                  <PriceForm
+                    initialData={{ price: course?.price as number }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                )}
               </div>
               <div>
                 <div className="flex items-center gap-x-2">
@@ -157,4 +172,4 @@ const CourseCreatePage: FC = () => {
   );
 };
 
-export default CourseCreatePage;
+export default CourseDraftPage;

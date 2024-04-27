@@ -2,12 +2,12 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import toast from 'react-hot-toast';
 
 interface categoryItem {
   categoryID: string;
@@ -35,16 +35,18 @@ const categoryList = [
   { categoryID: 'categoryID5', categoryName: 'Education', checked: false },
   { categoryID: 'categoryID6', categoryName: 'Soft Skill', checked: false },
 ];
+const userID = 'userID1';
 
 export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [initList, setList] = useState<string[]>(initialData.category);
+
   const [checkedList, setCheckedList] = useState<categoryItem[]>([]);
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
   };
 
-  const navigate = useNavigate();
   const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,16 +61,17 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
       if (!checkedList.length) {
         return;
       }
-      updateCourse({
+      await updateCourse({
+        userID,
         courseID,
         category: checkedList.map((item) => item.categoryName),
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
       //   router.refresh();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -89,6 +92,12 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
       </div>
       {!isEditing && !checkedList.length ? (
         <p className="text-sm mt-2">Select Category</p>
+      ) : initList.length ? (
+        initList.map((cate) => (
+          <span key={cate} className="text-sm mr-2 font-bold text-red-600">
+            {cate}
+          </span>
+        ))
       ) : (
         <div>
           {checkedList.map((category) => (
@@ -139,7 +148,12 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
             <button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

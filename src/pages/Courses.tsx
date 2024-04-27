@@ -5,12 +5,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Search from '../components/Search';
 import SearchList from '../components/Courses/SearchList';
 import { RootState } from '../redux/store';
 import { useCreateCourseMutation } from '../redux/coursesApi';
+import Loader from '../components/Loader';
 
 interface levelItem {
   level: string;
@@ -219,6 +220,11 @@ const CoursesPage: FC = () => {
   const handleFilter = async () => {};
   return (
     <div>
+      {isLoading && <Loader />}
+
+      <button onClick={() => navigate(`/profile?userId=${priceListIDRadio}`)}>
+        List courses
+      </button>
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">

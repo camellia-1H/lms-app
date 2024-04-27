@@ -8,7 +8,7 @@ import { Mutex } from 'async-mutex';
 // import { logOut, refreshToken } from './userReducer';
 // import { RootState } from './store';
 
-const baseUrl = 'https://4rr76m66ec.execute-api.us-east-1.amazonaws.com/Dev';
+const baseUrl = 'https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev';
 
 // Create a new mutex
 const mutex = new Mutex();

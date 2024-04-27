@@ -4,9 +4,35 @@ import { Route, Routes } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout/DefaultLayout';
 import { publicRoutes, privateRoutes } from './routes';
 import Loader from './components/Loader';
+import { Toaster } from 'react-hot-toast';
 // import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./redux/store";
+
+const toastOptions = {
+  // Define default options
+  className: '',
+  duration: 2000,
+  style: {
+    background: '#363636',
+    color: '#fff',
+  },
+  // Default options for specific types
+  success: {
+    duration: 2000,
+    style: {
+      background: '#363636',
+      color: '#fff',
+    },
+  },
+  error: {
+    duration: 2000,
+    style: {
+      background: '#363636',
+      color: '#fff',
+    },
+  },
+};
 
 function App() {
   // const user = useSelector((state: RootState) => state.user.user);
@@ -50,6 +76,7 @@ function App() {
           })}
         </Routes>
       </Suspense>
+      <Toaster toastOptions={toastOptions} />
     </div>
   );
 }

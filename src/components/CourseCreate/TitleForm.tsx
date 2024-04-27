@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import toast from 'react-hot-toast';
 
 interface TitleFormProps {
   initialData: {
@@ -22,13 +23,14 @@ const formSchema = z.object({
   }),
 });
 
+const userID = 'userID1';
+
 export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
   const [title, setTitle] = useState<string>(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const navigate = useNavigate();
   const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,17 +43,17 @@ export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log(values);
-      // TODO : call api update value
       setTitle(values.title);
-      updateCourse({
+      await updateCourse({
+        userID,
         courseID,
         title: values.title,
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -86,7 +88,12 @@ export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
             <button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

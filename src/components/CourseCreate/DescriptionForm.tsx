@@ -2,12 +2,12 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import toast from 'react-hot-toast';
 
 interface DescriptionFormProps {
   initialData: {
@@ -21,6 +21,7 @@ const formSchema = z.object({
     message: 'description is required',
   }),
 });
+const userID = 'userID1';
 
 export const DescriptionForm = ({
   initialData,
@@ -34,8 +35,7 @@ export const DescriptionForm = ({
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const navigate = useNavigate();
-  const [updateCourse] = useUpdateCourseMutation();
+  const [updateCourse, { isLoading, isSuccess }] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,15 +47,16 @@ export const DescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setDescription(values.description);
-      updateCourse({
+      await updateCourse({
+        userID,
         courseID,
         description: values.description,
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -87,9 +88,14 @@ export const DescriptionForm = ({
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={!isValid || isSubmitting}
+              disabled={!isValid || isSubmitting || isLoading}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

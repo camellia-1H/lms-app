@@ -17,11 +17,16 @@ export const routes = {
   courseCreate: '/courses/create',
   courseChapterCreate: '/courses/create/chapter',
 
-  course: '/courses/:course_id',
-  courseLink: (course_id: string) => `/courses/${course_id}`,
-  courseVideo: '/courses/:course_id/:course_video_id',
-  courseVideoLink: (course_id: string, course_video_id: string) =>
-    `/courses/${course_id}/${course_video_id}`,
+  course: '/courses/:courseID',
+  courseLink: (courseID: string) => `/courses/${courseID}/`,
+  courseDraft: `/courses/:courseID/draft`,
+  courseDraftLink: (courseID: string) => `/courses/${courseID}/draft`,
+  courseVideo: '/courses/:courseID/chapter/:chapterID',
+  courseVideoLink: (courseID: string, chapterID: string) =>
+    `/courses/${courseID}/chapter/${chapterID}`,
+  courseChapterDraft: `/courses/:courseID/chapter/:chapterID/draft`,
+  courseChapterDraftLink: (courseID: string, chapterID: string) =>
+    `/courses/${courseID}/chapter/${chapterID}/draft`,
 
   ///
   about_us: '/about_us',

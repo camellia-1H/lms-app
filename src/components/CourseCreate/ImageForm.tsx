@@ -5,6 +5,7 @@ import { faCirclePlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useUploadS3ImageMutation } from '../../redux/utilsApi';
+import toast from 'react-hot-toast';
 
 interface ImageFormProps {
   initialData: {
@@ -12,6 +13,7 @@ interface ImageFormProps {
   };
   courseID: string;
 }
+const userID = 'userID1';
 
 export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -59,14 +61,15 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
         typeImage: typeImage,
       });
       await updateCourse({
+        userID,
         courseID,
         imageUrl: responeUploadImageS3.data,
         updatedAt: generateTime(),
-      });
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course updated');
       toggleEdit();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -162,7 +165,12 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
             <button
               disabled={isLoading}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                isLoading
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>

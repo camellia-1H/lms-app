@@ -7,8 +7,16 @@ import { CourseChapter } from '../models/CourseChapter';
 export const coursesApi = createApi({
   reducerPath: 'coursesApi', // ten field trong redux state
   baseQuery: customFetchBase,
+  tagTypes: ['updateCourse'],
   endpoints: (build) => ({
     //query<kiểu trả về, tham số truyền vào>
+    getListCourses: build.query<Course[], string>({
+      query: (userID) => ({
+        url: `/courses?userID=${userID}`,
+        method: 'GET',
+      }),
+    }),
+
     createCourse: build.mutation({
       query: (data) => ({
         url: '/courses/create',
@@ -22,18 +30,27 @@ export const coursesApi = createApi({
         } catch (error) {}
       },
     }),
-    getCourseDetail: build.query<Course, string>({
-      query: (courseID: string) => ({
-        url: `/courses/${courseID}`,
+
+    getCourseDetail: build.query<Course, any>({
+      query: ({ courseID, userID }) => ({
+        url: `/courses/${courseID}?userID=${userID}`,
         method: 'GET',
       }),
     }),
 
     updateCourse: build.mutation({
-      query: ({ courseID, ...data }) => ({
-        url: `/courses/${courseID}`,
+      query: ({ userID, courseID, ...data }) => ({
+        url: `/courses/${courseID}?userID=${userID}`,
         method: 'POST',
         body: data,
+      }),
+      invalidatesTags: ['updateCourse'],
+    }),
+
+    getListCourseChapters: build.query({
+      query: (courseID: string) => ({
+        url: `/courses/${courseID}/get-list-chapters`,
+        method: 'GET',
       }),
     }),
 
@@ -50,12 +67,14 @@ export const coursesApi = createApi({
         } catch (error) {}
       },
     }),
+
     getCourseChapterDetail: build.query<CourseChapter, any>({
       query: ({ courseID, chapterID }) => ({
         url: `/courses/${courseID}/chapter/${chapterID}`,
         method: 'GET',
       }),
     }),
+
     updateCourseChapter: build.mutation({
       query: ({ courseID, chapterID, ...data }) => ({
         url: `/courses/${courseID}/chapter/${chapterID}`,
@@ -63,7 +82,8 @@ export const coursesApi = createApi({
         body: data,
       }),
     }),
-    createCourseChapterVideo: build.mutation<string, any>({
+
+    createCourseChapterVideo: build.mutation({
       query: ({ courseID, chapterID, ...data }) => ({
         url: `/courses/${courseID}/chapter/${chapterID}/video`,
         method: 'POST',
@@ -74,9 +94,11 @@ export const coursesApi = createApi({
 });
 
 export const {
+  useGetListCoursesQuery,
   useCreateCourseMutation,
   useGetCourseDetailQuery,
   useUpdateCourseMutation,
+  useGetListCourseChaptersQuery,
   useCreateCourseChapterMutation,
   useGetCourseChapterDetailQuery,
   useUpdateCourseChapterMutation,

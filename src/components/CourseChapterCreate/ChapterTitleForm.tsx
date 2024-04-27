@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseChapterMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import toast from 'react-hot-toast';
 
 interface TitleFormProps {
   initialData: {
@@ -50,18 +51,16 @@ export const ChapterTitleForm = ({
     try {
       // TODO : call api update value
       setChapterTitle(values.chapterTitle);
-      updateCourseChapter({
+      await updateCourseChapter({
         chapterID,
         courseID,
         chapterTitle: values.chapterTitle,
         updatedAt: generateTime(),
-      });
-      //   await axios.patch(`/api/courses/${chapterID}`, values);
-      //   toast.success('Course updated');
+      }).unwrap();
+      toast.success('Course chapter updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -96,7 +95,12 @@ export const ChapterTitleForm = ({
             <button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+              className={[
+                !isValid || isSubmitting
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
             >
               Save
             </button>
