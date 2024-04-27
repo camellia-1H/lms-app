@@ -1,6 +1,3 @@
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,8 +8,7 @@ import toast from 'react-hot-toast';
 
 interface categoryItem {
   categoryID: string;
-  categoryName: string;
-  checked: boolean;
+  checked?: boolean;
 }
 
 interface CategoryFormProps {
@@ -22,54 +18,60 @@ interface CategoryFormProps {
   courseID: string;
 }
 
-const formSchema = z.object({
-  // title: z.string().min(1, {
-  //   message: 'Title is required',
-  // }),
-});
-const categoryList = [
-  { categoryID: 'categoryID1', categoryName: 'Creative', checked: false },
-  { categoryID: 'categoryID2', categoryName: 'Legal', checked: false },
-  { categoryID: 'categoryID3', categoryName: 'Technical', checked: false },
-  { categoryID: 'categoryID4', categoryName: 'Design', checked: false },
-  { categoryID: 'categoryID5', categoryName: 'Education', checked: false },
-  { categoryID: 'categoryID6', categoryName: 'Soft Skill', checked: false },
+// TODO : get categoryList from DB, name must be unique, to lowercase to unique
+const categoryList: categoryItem[] = [
+  { categoryID: 'category#Creative' },
+  { categoryID: 'category#Legal' },
+  { categoryID: 'category#Technical' },
+  { categoryID: 'category#Design' },
+  { categoryID: 'category#Education' },
+  { categoryID: 'category#Soft_Skill' },
 ];
 const userID = 'userID1';
+const obj: any = {};
 
 export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [initList, setList] = useState<string[]>(initialData.category);
+  const initialCategory = initialData.category.map((cate) => {
+    return {
+      categoryID: cate,
+    };
+  });
+  const [checkedList, setCheckedList] =
+    useState<categoryItem[]>(initialCategory);
 
-  const [checkedList, setCheckedList] = useState<categoryItem[]>([]);
+  checkedList.forEach((item) => {
+    obj[item.categoryID] = true;
+  });
+
+  categoryList.forEach((category) => {
+    category['checked'] = false;
+    if (obj[category.categoryID] === true) {
+      category['checked'] = true;
+    }
+  });
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
   };
 
-  const [updateCourse] = useUpdateCourseMutation();
+  const [updateCourse, { isLoading }] = useUpdateCourseMutation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: initialData.category,
-  });
-
-  const { isSubmitting, isValid } = form.formState;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async () => {
     try {
       if (!checkedList.length) {
-        return;
+        toast.error('Must least one Category');
       }
       await updateCourse({
         userID,
         courseID,
-        category: checkedList.map((item) => item.categoryName),
+        category: checkedList.map(
+          (item) => `category#${item.categoryID.split('#')[1]}`
+        ),
         updatedAt: generateTime(),
       }).unwrap();
       toast.success('Course updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
       toast.error('Something went wrong');
     }
@@ -92,12 +94,6 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
       </div>
       {!isEditing && !checkedList.length ? (
         <p className="text-sm mt-2">Select Category</p>
-      ) : initList.length ? (
-        initList.map((cate) => (
-          <span key={cate} className="text-sm mr-2 font-bold text-red-600">
-            {cate}
-          </span>
-        ))
       ) : (
         <div>
           {checkedList.map((category) => (
@@ -105,22 +101,25 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
               key={category.categoryID}
               className="text-sm mr-2 font-bold text-red-600"
             >
-              {category.categoryName}
+              {category.categoryID.split('#')[1]}
             </span>
           ))}
         </div>
       )}
 
       {isEditing && (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <form onSubmit={onSubmit} className="space-y-4 mt-4">
           <div className="mt-6 py-3 border-t-2">
             <div>
               {categoryList.map((category) => (
-                <div key={category.categoryName} className="flex items-center">
+                <div
+                  key={category.categoryID.split('#')[1]}
+                  className="flex items-center"
+                >
                   <input
                     type="checkbox"
                     name=""
-                    id={category.categoryName}
+                    id={category.categoryID.split('#')[1]}
                     className="w-4 h-4 mr-2"
                     checked={category.checked}
                     onChange={(e) => {
@@ -130,14 +129,15 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
                       } else {
                         const newCheckedList = checkedList.filter(
                           (categoryCheck: categoryItem) =>
-                            categoryCheck.categoryName !== category.categoryName
+                            categoryCheck.categoryID !== category.categoryID
                         );
+                        obj[category.categoryID] = false;
                         setCheckedList(newCheckedList);
                       }
                     }}
                   />
-                  <label htmlFor={category.categoryName}>
-                    {category.categoryName}
+                  <label htmlFor={category.categoryID.split('#')[1]}>
+                    {category.categoryID.split('#')[1]}
                   </label>
                 </div>
               ))}
@@ -146,10 +146,10 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={!isValid || isSubmitting}
+              disabled={isLoading}
               type="submit"
               className={[
-                !isValid || isSubmitting
+                isLoading
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',
