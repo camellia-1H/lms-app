@@ -6,7 +6,8 @@ import {
   DropResult,
 } from '@hello-pangea/dnd';
 import { CourseChapter } from '../../models/CourseChapter';
-import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
 
 interface ChaptersListProps {
   listChapters: CourseChapter[];
@@ -94,23 +95,35 @@ export const ChaptersList = ({
                     >
                       <br className="h-5 w-5" />
                     </div>
-                    {chapter.chapterTitle}
-                    <div className="ml-auto pr-2 flex listChapters-center gap-x-2">
-                      {chapter.isFree && <span className="text-red">Free</span>}
-                      <div
-                        className={[
-                          'bg-slate-500 ',
-                          chapter.isPublished && 'bg-sky-700',
-                        ].join('')}
-                      >
-                        {chapter.isPublished ? 'Published' : 'Draft'}
+                    <div className="flex flex-1 justify-between">
+                      <span>{chapter.chapterTitle}</span>
+                      <div className="pr-2 flex gap-x-2">
+                        {/* {chapter.isFree && <span className="text-red">Free</span>} */}
+                        <div>
+                          {chapter.isPublished ? (
+                            'Published'
+                          ) : (
+                            <FontAwesomeIcon
+                              icon={faLock}
+                              className="h-4 w-4 mr-2"
+                            />
+                          )}
+                        </div>
+                        <div className="flex">
+                          <button
+                            onClick={() => onEdit(chapter.chapterID)}
+                            className="text-blue-500 cursor-pointer hover:opacity-75"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            // onClick={() => onEdit(chapter.chapterID)}
+                            className="ml-2 text-red-500 cursor-pointer hover:opacity-75"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => onEdit(chapter.chapterID)}
-                        className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
-                      >
-                        onEdit
-                      </button>
                     </div>
                   </div>
                 )}

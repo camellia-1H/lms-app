@@ -67,7 +67,7 @@ const CourseDraftPage: FC = () => {
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
-            Create Course
+            {courseIDParam ? 'Draft Course' : 'Create Course'}
           </h1>
         </div>
       </div>

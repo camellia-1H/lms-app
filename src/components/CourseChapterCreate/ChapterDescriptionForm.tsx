@@ -2,12 +2,12 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
+
 import { generateTime } from '../../utils/string-utils';
 import { useUpdateCourseChapterMutation } from '../../redux/coursesApi';
-import toast from 'react-hot-toast';
 
 interface ChapterDescriptionFormProps {
   initialData: {
@@ -54,7 +54,7 @@ export const ChapterDescriptionForm = ({
         chapterDescription: values.chapterDescription,
         updatedAt: generateTime(),
       }).unwrap();
-      toast.success('Course updated');
+      toast.success('Course chapter updated');
       toggleEdit();
     } catch {
       toast.error('Something went wrong');
@@ -64,14 +64,14 @@ export const ChapterDescriptionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course chapterDescription
+        Course Chapter Description
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit chapterDescription
+              Edit Chapter Description
             </>
           )}
         </button>

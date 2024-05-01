@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import Loader from '../Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+
+import Loader from '../Loader';
 import { ChaptersList } from './ChapterList';
 import { useCreateCourseChapterMutation } from '../../redux/coursesApi';
 import { useNavigate } from 'react-router-dom';
@@ -46,7 +47,6 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       await createCourseChapter({ courseID }).unwrap();
       toast.success('Chapter created');
       toggleCreating();
-      // router.refresh();
     } catch {
       toast.error('Something went wrong');
     }
@@ -62,7 +62,6 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
         list: updateData,
       });
       toast.success('Chapters reordered');
-      // router.refresh();
     } catch {
       toast.error('Something went wrong');
     } finally {
@@ -71,14 +70,8 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
   };
 
   const onEdit = (chapterID: string) => {
-    console.log('heheh');
-
-    console.log(courseID);
-    console.log(chapterID);
-
     // chuyển đến nhưng page kia khi vừa vào phải fetch lấy current chapterid từ store
     navigate(`/courses/${courseID}/chapter/${chapterID}/draft`);
-    // router.push(`/teacher/courses/${courseID}/chapters/${chapterID}`);
   };
 
   return (
@@ -89,14 +82,14 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Course chapters
+        Course Chapters
         <button onClick={toggleCreating}>
           {isCreating ? (
             <>Cancel</>
           ) : (
             <>
               <FontAwesomeIcon icon={faCirclePlus} className="h-4 w-4 mr-2" />
-              Add an Chapter
+              Add a Chapter
             </>
           )}
         </button>

@@ -2,13 +2,12 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
+
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
-import toast from 'react-hot-toast';
 
 interface PriceFormProps {
   initialData: {
@@ -29,7 +28,6 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const navigate = useNavigate();
   const [updateCourse] = useUpdateCourseMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,7 +51,6 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
       }).unwrap();
       toast.success('Course updated');
       toggleEdit();
-      //   router.refresh();
     } catch {
       toast.error('Something went wrong');
     }

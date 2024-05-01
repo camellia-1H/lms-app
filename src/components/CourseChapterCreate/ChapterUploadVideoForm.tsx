@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCirclePlus,
+  faPencil,
+  faVideo,
+} from '@fortawesome/free-solid-svg-icons';
 
 import UploadVideo from '../UploadCore/UploadVideo';
 
@@ -29,28 +33,28 @@ export const ChapterUploadVideoForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course chapterVideoURL
+        Course Chapter Video
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing && <>Cancel</>}
           {!isEditing && !chapterVideo && (
             <>
               <FontAwesomeIcon icon={faCirclePlus} className="h-4 w-4 mr-2" />
-              Add an chapter Video
+              Add Video
             </>
           )}
           {!isEditing && chapterVideo && (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit chapterVideoURL
+              Edit Video
             </>
           )}
         </button>
       </div>
       {!isEditing &&
         (!chapterVideo ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md mt-6">
+          <div className="flex items-center justify-center h-72 bg-slate-200 rounded-md mt-6">
             <FontAwesomeIcon
-              icon={faPencil}
+              icon={faVideo}
               className="h-10 w-10 text-slate-500"
             />
           </div>

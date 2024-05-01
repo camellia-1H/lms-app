@@ -2,9 +2,9 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import toast from 'react-hot-toast';
@@ -63,14 +63,14 @@ export const DescriptionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course description
+        Course Description
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit description
+              Edit Description
             </>
           )}
         </button>

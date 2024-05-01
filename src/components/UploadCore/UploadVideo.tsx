@@ -82,6 +82,13 @@ const UploadVideo = ({
     updateCourseChapter({
       courseID,
       chapterID,
+      chapterVideoUrl: objectVideoURL,
+      updatedAt: generateTime(),
+    });
+
+    updateCourseChapter({
+      courseID,
+      chapterID,
       muxData: {
         assetId: responseMuxCreate.id,
         playbackId: responseMuxCreate.playback_ids[0].id,

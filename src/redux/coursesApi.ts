@@ -36,6 +36,7 @@ export const coursesApi = createApi({
         url: `/courses/${courseID}?userID=${userID}`,
         method: 'GET',
       }),
+      keepUnusedDataFor: 5,
     }),
 
     updateCourse: build.mutation({
@@ -73,6 +74,7 @@ export const coursesApi = createApi({
         url: `/courses/${courseID}/chapter/${chapterID}`,
         method: 'GET',
       }),
+      keepUnusedDataFor: 5,
     }),
 
     updateCourseChapter: build.mutation({

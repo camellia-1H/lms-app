@@ -1,11 +1,11 @@
 import { FormEvent, useState } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faPencil } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
+
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useUploadS3ImageMutation } from '../../redux/utilsApi';
-import toast from 'react-hot-toast';
 
 interface ImageFormProps {
   initialData: {
@@ -25,7 +25,7 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
   const toggleEdit = () => {
     setIsEditing((current) => !current);
     setpreviewImage('');
-    setImageUrl(previewImage); //
+    setImageUrl(previewImage);
   };
 
   const setFileTobase = (file: File) => {
@@ -76,19 +76,19 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course thumbnail
+        Course Thumbnail
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing && <>Cancel</>}
           {!isEditing && !imageUrl && (
             <>
               <FontAwesomeIcon icon={faCirclePlus} className="h-4 w-4 mr-2" />
-              Add an imageUrl
+              Add Thumbnail
             </>
           )}
           {!isEditing && imageUrl && (
             <>
               <FontAwesomeIcon icon={faPencil} className="h-4 w-4 mr-2" />
-              Edit imageUrl
+              Edit Thumbnail
             </>
           )}
         </button>

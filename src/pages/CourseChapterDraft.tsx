@@ -7,13 +7,15 @@ import {
   faWater,
 } from '@fortawesome/free-solid-svg-icons';
 import { RootState } from '../redux/store';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 import { ChapterUploadVideoForm } from '../components/CourseChapterCreate/ChapterUploadVideoForm';
 import { ChapterTitleForm } from '../components/CourseChapterCreate/ChapterTitleForm';
 import { ChapterDescriptionForm } from '../components/CourseChapterCreate/ChapterDescriptionForm';
 import { useGetCourseChapterDetailQuery } from '../redux/coursesApi';
 import Loader from '../components/Loader';
+import { ChapterAccessForm } from '../components/CourseChapterCreate/ChapterAccessForm';
 
 const CourseChapterDraft: FC = () => {
   const location = useLocation();
@@ -21,6 +23,8 @@ const CourseChapterDraft: FC = () => {
   const chapterID = useSelector(
     (state: RootState) => state.course.currentCourseChapterID
   );
+
+  const navigate = useNavigate();
 
   const { courseID: courseIDParam, chapterID: chapterIDParam } = useParams();
 
@@ -43,7 +47,7 @@ const CourseChapterDraft: FC = () => {
         chapter.chapterTitle,
         chapter.chapterDescription,
         chapter.chapterVideoUrl,
-        chapter.isFree,
+        // chapter.isFree,
         chapter.isPublished,
         chapter.position,
         // chapter?.muxData,
@@ -64,7 +68,7 @@ const CourseChapterDraft: FC = () => {
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
-            Create Chapter Course
+            {courseIDParam ? 'Draft Course Chapter' : 'Create Chapter Course'}
           </h1>
         </div>
       </div>
@@ -72,16 +76,16 @@ const CourseChapterDraft: FC = () => {
         <div className="lg:px-32 md:px-20 sm:px-6 mt-8">
           <div className="flex items-center justify-between">
             <div className="w-full">
-              <Link
-                to={`/courses/create`}
-                className="flex items-center text-sm w-fit hover:opacity-75 hover:underline transition"
+              <button
+                className="flex items-center text-sm w-fit hover:opacity-75 hover:underline"
+                onClick={() => navigate(-1)}
               >
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className=" text-gray-600 text-lg px-2 py-2 rounded-full "
+                  className="text-gray-600 text-lg px-2 py-2 rounded-full"
                 />
-                <span className="text-base"> Back to course setup</span>
-              </Link>
+                <span className="text-base">Back to course</span>
+              </button>
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col gap-y-2">
                   <h1 className="text-3xl font-bold">Chapter Creation</h1>
@@ -134,18 +138,18 @@ const CourseChapterDraft: FC = () => {
                 />
               </div>
               <div>
-                <div className="flex items-center gap-x-2">
+                <div className="flex items-center gap-x-2 mt-[30px]">
                   <FontAwesomeIcon
                     icon={faEye}
                     className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
                   />
                   <h2 className="text-xl">Access Settings</h2>
                 </div>
-                {/* <ChapterAccessForm
-                initialData={chapter}
-                chapterID={params.chapterID}
-                chapterId={params.chapterId}
-              /> */}
+                <ChapterAccessForm
+                  initialData={chapter}
+                  chapterID={chapterIDParam ?? chapterID}
+                  courseID={courseIDParam ?? courseID}
+                />
               </div>
             </div>
             <div>
@@ -154,7 +158,7 @@ const CourseChapterDraft: FC = () => {
                   icon={faVideo}
                   className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
                 />
-                <h2 className="text-xl">Add a video</h2>
+                <h2 className="text-xl font-bold">Add a video</h2>
               </div>
 
               <ChapterUploadVideoForm
