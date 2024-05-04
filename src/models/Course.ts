@@ -5,6 +5,7 @@ export interface Course {
   userID: string;
   title: string;
   description: string;
+  descriptionDetail: string;
   imageUrl: string;
   price: number;
   isPublished: boolean;

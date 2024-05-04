@@ -1,6 +1,11 @@
 import { FC, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faWater } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLock,
+  faLockOpen,
+  faPencil,
+  faWater,
+} from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 
 import { TitleForm } from '../components/CourseCreate/TitleForm';
@@ -11,17 +16,22 @@ import { PriceForm } from '../components/CourseCreate/PriceForm';
 import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
 import { RootState } from '../redux/store';
 import {
+  useDeleteCourseMutation,
   useGetCourseDetailQuery,
   useGetListCourseChaptersQuery,
 } from '../redux/coursesApi';
 import Loader from '../components/Loader';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { DescriptionDetailForm } from '../components/CourseCreate/DescriptionDetailForm';
+import { ActionForm } from '../components/CourseCreate/ActionForm';
+import toast from 'react-hot-toast';
 
 const userID = 'userID1';
 const CourseDraftPage: FC = () => {
   const courseID = useSelector(
     (state: RootState) => state.course.currentCourseID
   );
+  const navigate = useNavigate();
   const { courseID: courseIDParam } = useParams();
 
   const [requiredFields, setRequiredFields] = useState<
@@ -36,12 +46,12 @@ const CourseDraftPage: FC = () => {
 
   const { data, isSuccess: isSuccessGetListChapters } =
     useGetListCourseChaptersQuery(courseIDParam ?? courseID);
-  console.log(data);
+
+  const [deleteCourse, { isLoading: deleteCourseLoading }] =
+    useDeleteCourseMutation();
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(course);
-
       setRequiredFields([
         course.title,
         course.description,
@@ -61,9 +71,18 @@ const CourseDraftPage: FC = () => {
 
   const isComplete = requiredFields.every(Boolean);
 
+  const handleDeleteCourse = async () => {
+    await deleteCourse({
+      userID: userID,
+      courseID: courseIDParam ?? courseID,
+    }).unwrap();
+    toast.success('Delete Course Success');
+    navigate(-1);
+  };
+
   return (
     <div className="">
-      {isLoading && <Loader />}
+      {(isLoading || deleteCourseLoading) && <Loader />}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -80,20 +99,31 @@ const CourseDraftPage: FC = () => {
                 Complete all fields {completionText}
               </span>
             </div>
-            <div>
-              {!isComplete && (
-                <div>
-                  <button disabled={!isComplete}>Update</button>
-                  <button disabled={!isComplete}>Publish</button>
-                  <button disabled={!isComplete}>Unpublish</button>
+
+            <div className="text-center">
+              {course.isPublished ? (
+                <div className="flex items-center">
+                  <FontAwesomeIcon
+                    icon={faLockOpen}
+                    className="text-2xl text-blue-500"
+                  />
+                  <button className="block ml-4 bg-red-500 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                    Unpublish
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className="text-2xl text-red-500"
+                  />
+                  <button className="block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                    Publish
+                  </button>
                 </div>
               )}
+              <ActionForm handleDeleteCourse={handleDeleteCourse} />
             </div>
-            {/* <Actions
-            disabled={!isComplete}
-            courseID={params.courseID}
-            isPublished={course.isPublished}
-          /> */}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
@@ -112,6 +142,12 @@ const CourseDraftPage: FC = () => {
                   />
                   <DescriptionForm
                     initialData={{ description: course?.description as string }}
+                    courseID={courseIDParam ?? courseID}
+                  />
+                  <DescriptionDetailForm
+                    initialData={{
+                      descriptionDetail: course?.descriptionDetail as string,
+                    }}
                     courseID={courseIDParam ?? courseID}
                   />
                   <ImageForm

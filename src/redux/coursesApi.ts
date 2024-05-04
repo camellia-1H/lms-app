@@ -15,6 +15,7 @@ export const coursesApi = createApi({
         url: `/courses?userID=${userID}`,
         method: 'GET',
       }),
+      providesTags: ['updateCourse'],
     }),
 
     createCourse: build.mutation({
@@ -37,6 +38,7 @@ export const coursesApi = createApi({
         method: 'GET',
       }),
       keepUnusedDataFor: 5,
+      providesTags: ['updateCourse'],
     }),
 
     updateCourse: build.mutation({
@@ -46,6 +48,13 @@ export const coursesApi = createApi({
         body: data,
       }),
       invalidatesTags: ['updateCourse'],
+    }),
+
+    deleteCourse: build.mutation({
+      query: ({ userID, courseID }) => ({
+        url: `/courses/${courseID}?userID=${userID}`,
+        method: 'DELETE',
+      }),
     }),
 
     getListCourseChapters: build.query({
@@ -100,6 +109,7 @@ export const {
   useCreateCourseMutation,
   useGetCourseDetailQuery,
   useUpdateCourseMutation,
+  useDeleteCourseMutation,
   useGetListCourseChaptersQuery,
   useCreateCourseChapterMutation,
   useGetCourseChapterDetailQuery,
