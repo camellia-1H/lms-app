@@ -13,7 +13,7 @@ const Courses = lazy(() => import('../pages/Courses'));
 const CourseDraft = lazy(() => import('../pages/CourseDraft'));
 const CourseChapterDraft = lazy(() => import('../pages/CourseChapterDraft'));
 const CourseDetail = lazy(() => import('../pages/CourseDetail'));
-const CourseVideoDetail = lazy(() => import('../pages/CourseVideoDetail'));
+const CourseChapterDetail = lazy(() => import('../pages/CourseChapterDetail'));
 const Members = lazy(() => import('../pages/Members'));
 const MemberDetail = lazy(() => import('../pages/MemberDetail'));
 const RegisterMember = lazy(() => import('../pages/RegisterMember'));
@@ -36,7 +36,11 @@ const publicRoutes = [
 
 const privateRoutes = [
   { path: config.routes.profile, component: Profile },
-  { path: config.routes.courseVideo, component: CourseVideoDetail },
+  {
+    path: config.routes.courseVideo,
+    component: CourseChapterDetail,
+    layoutOnly: true,
+  },
   { path: config.routes.courseDraft, component: CourseDraft },
   { path: config.routes.courseCreate, component: CourseDraft },
   { path: config.routes.courseChapterCreate, component: CourseChapterDraft },

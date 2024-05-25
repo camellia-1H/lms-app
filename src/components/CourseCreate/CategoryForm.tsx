@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
@@ -57,7 +57,8 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
 
   const [updateCourse, { isLoading }] = useUpdateCourseMutation();
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     try {
       if (!checkedList.length) {
         toast.error('Must least one Category');
@@ -108,7 +109,7 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
       )}
 
       {isEditing && (
-        <form onSubmit={onSubmit} className="space-y-4 mt-4">
+        <form onSubmit={(e) => onSubmit(e)} className="space-y-4 mt-4">
           <div className="mt-6 py-3 border-t-2">
             <div>
               {categoryList.map((category) => (

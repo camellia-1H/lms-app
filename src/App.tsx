@@ -5,6 +5,7 @@ import DefaultLayout from './layouts/DefaultLayout/DefaultLayout';
 import { publicRoutes, privateRoutes } from './routes';
 import Loader from './components/Loader';
 import { Toaster } from 'react-hot-toast';
+import MainOnlyLayout from './layouts/MainOnly';
 // import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./redux/store";
@@ -65,11 +66,19 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <DefaultLayout>
-                    {/* <ProtectedRoute user={user}> */}
-                    <Page />
-                    {/* </ProtectedRoute> */}
-                  </DefaultLayout>
+                  route.layoutOnly ? (
+                    <MainOnlyLayout>
+                      {/* <ProtectedRoute user={user}> */}
+                      <Page />
+                      {/* </ProtectedRoute> */}
+                    </MainOnlyLayout>
+                  ) : (
+                    <DefaultLayout>
+                      {/* <ProtectedRoute user={user}> */}
+                      <Page />
+                      {/* </ProtectedRoute> */}
+                    </DefaultLayout>
+                  )
                 }
               ></Route>
             );

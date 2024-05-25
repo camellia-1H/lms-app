@@ -7,15 +7,32 @@ import { CourseChapter } from '../models/CourseChapter';
 export const coursesApi = createApi({
   reducerPath: 'coursesApi', // ten field trong redux state
   baseQuery: customFetchBase,
-  tagTypes: ['updateCourse'],
+  tagTypes: ['updateCourse', 'updateCourseChapter', 'createRating'],
   endpoints: (build) => ({
     //query<kiểu trả về, tham số truyền vào>
-    getListCourses: build.query<Course[], string>({
-      query: (userID) => ({
-        url: `/courses?userID=${userID}`,
-        method: 'GET',
+    getListCourses: build.mutation({
+      query: (data) => ({
+        url: `/courses/get-list-course-user`,
+        method: 'POST',
+        body: data,
       }),
-      providesTags: ['updateCourse'],
+      // keepUnusedDataFor: 0,
+      // providesTags: ['updateCourse'],
+    }),
+
+    scanAllCourses: build.mutation<
+      any,
+      {
+        lastEvaluatedKey: any;
+        limit?: number;
+      }
+    >({
+      query: ({ lastEvaluatedKey, limit }) => ({
+        url: `/courses`,
+        method: 'POST',
+        body: { lastEvaluatedKey, limit },
+      }),
+      invalidatesTags: ['updateCourse'],
     }),
 
     createCourse: build.mutation({
@@ -32,13 +49,21 @@ export const coursesApi = createApi({
       },
     }),
 
-    getCourseDetail: build.query<Course, any>({
+    getCourseDetailAuthor: build.query<Course, any>({
       query: ({ courseID, userID }) => ({
-        url: `/courses/${courseID}?userID=${userID}`,
+        url: `/courses/${courseID}/get-detail?userID=${userID}`,
         method: 'GET',
       }),
-      keepUnusedDataFor: 5,
+      keepUnusedDataFor: 0,
       providesTags: ['updateCourse'],
+    }),
+
+    getCourseDetailPublic: build.query({
+      query: ({ courseID, userID }) => ({
+        url: `/courses/${courseID}/get-detail-public?userID=${userID}`,
+        method: 'GET',
+      }),
+      keepUnusedDataFor: 0,
     }),
 
     updateCourse: build.mutation({
@@ -57,10 +82,37 @@ export const coursesApi = createApi({
       }),
     }),
 
+    searchCourse: build.mutation({
+      query: (searchValue) => ({
+        url: `/courses/search?q=${searchValue}`,
+        method: 'POST',
+      }),
+    }),
+
+    searchCourseFilter: build.mutation({
+      query: (searchValue) => ({
+        url: `/courses/search-filter`,
+        method: 'POST',
+        body: searchValue,
+      }),
+    }),
+
     getListCourseChapters: build.query({
-      query: (courseID: string) => ({
-        url: `/courses/${courseID}/get-list-chapters`,
+      query: ({ courseID, userID }: { courseID: string; userID?: string }) => ({
+        url: userID
+          ? `/courses/${courseID}/get-list-chapters?userID=${userID}`
+          : `/courses/${courseID}/get-list-chapters`,
         method: 'GET',
+      }),
+      providesTags: ['updateCourseChapter'],
+      keepUnusedDataFor: 0,
+    }),
+
+    reorderPositionChapterOfCourse: build.mutation({
+      query: ({ courseID, ...data }) => ({
+        url: `/courses/${courseID}/reorder-chapter`,
+        method: 'POST',
+        body: data,
       }),
     }),
 
@@ -83,7 +135,10 @@ export const coursesApi = createApi({
         url: `/courses/${courseID}/chapter/${chapterID}`,
         method: 'GET',
       }),
-      keepUnusedDataFor: 5,
+      // thêm dòng này thì mỗi khi update nó sẽ call lại api này
+      // có thể xử lý thêm cho cái complete 1/5...
+      providesTags: ['updateCourseChapter'],
+      keepUnusedDataFor: 0,
     }),
 
     updateCourseChapter: build.mutation({
@@ -92,6 +147,7 @@ export const coursesApi = createApi({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['updateCourseChapter'],
     }),
 
     createCourseChapterVideo: build.mutation({
@@ -101,18 +157,121 @@ export const coursesApi = createApi({
         body: data,
       }),
     }),
+
+    deleteCourseChapter: build.mutation({
+      query: ({ courseID, chapterID, userID }) => ({
+        url: `/courses/${courseID}/chapter/${chapterID}`,
+        method: 'DELETE',
+        body: {
+          userID: userID,
+        },
+      }),
+      invalidatesTags: ['updateCourseChapter'],
+    }),
+
+    getListCategoryMaster: build.query({
+      query: () => ({
+        url: `/courses/get-list-category`,
+        method: 'GET',
+        keepUnusedDataFor: 3600,
+      }),
+    }),
+    getListPriceMaster: build.query({
+      query: () => ({
+        url: `/courses/get-list-price`,
+        method: 'GET',
+        keepUnusedDataFor: 3600,
+      }),
+    }),
+    getListLevelMaster: build.query({
+      query: () => ({
+        url: `/courses/get-list-level`,
+        method: 'GET',
+        keepUnusedDataFor: 3600,
+      }),
+    }),
+    buyCourse: build.mutation({
+      query: (data) => ({
+        url: `/courses/buy-course`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    //    body : {userID: string;
+    // courseID: string;
+    // chapter: string[]}
+    updateCourseProgress: build.mutation({
+      query: (data) => ({
+        url: `/courses/update-progress`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    ///REVIEW
+
+    getReviewUserOfCourse: build.query({
+      query: ({ userID, courseID }) => ({
+        url: `/courses/get-review?courseID=${courseID}&userID=${userID}`,
+        method: 'GET',
+        keepUnusedDataFor: 0,
+      }),
+      providesTags: ['createRating'],
+    }),
+
+    getListReviewOfCourse: build.mutation({
+      query: (data) => ({
+        url: `/courses/get-list-review`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['createRating'],
+    }),
+
+    createRatingCourse: build.mutation({
+      query: (data) => ({
+        url: `/courses/create-rating`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['createRating'],
+    }),
+
+    getListCourseRecent: build.query({
+      query: () => ({
+        url: `/courses/get-courses-recent`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
 export const {
-  useGetListCoursesQuery,
+  useGetListCoursesMutation,
+  useScanAllCoursesMutation,
   useCreateCourseMutation,
-  useGetCourseDetailQuery,
+  useGetCourseDetailAuthorQuery,
+  useGetCourseDetailPublicQuery,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
+  useSearchCourseMutation,
+  useSearchCourseFilterMutation,
   useGetListCourseChaptersQuery,
+  useReorderPositionChapterOfCourseMutation,
   useCreateCourseChapterMutation,
   useGetCourseChapterDetailQuery,
   useUpdateCourseChapterMutation,
   useCreateCourseChapterVideoMutation,
+  useDeleteCourseChapterMutation,
+  useGetListCategoryMasterQuery,
+  useGetListPriceMasterQuery,
+  useGetListLevelMasterQuery,
+  useBuyCourseMutation,
+  useUpdateCourseProgressMutation,
+  // rating, review
+  useGetReviewUserOfCourseQuery,
+  useGetListReviewOfCourseMutation,
+  useCreateRatingCourseMutation,
+  // list course recent
+  useGetListCourseRecentQuery,
 } = coursesApi;

@@ -17,14 +17,16 @@ import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
 import { RootState } from '../redux/store';
 import {
   useDeleteCourseMutation,
-  useGetCourseDetailQuery,
+  useGetCourseDetailAuthorQuery,
   useGetListCourseChaptersQuery,
+  useUpdateCourseMutation,
 } from '../redux/coursesApi';
 import Loader from '../components/Loader';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DescriptionDetailForm } from '../components/CourseCreate/DescriptionDetailForm';
 import { ActionForm } from '../components/CourseCreate/ActionForm';
 import toast from 'react-hot-toast';
+import { generateTime } from '../utils/string-utils';
 
 const userID = 'userID1';
 const CourseDraftPage: FC = () => {
@@ -41,14 +43,25 @@ const CourseDraftPage: FC = () => {
     data: course,
     isLoading,
     isSuccess,
-  } = useGetCourseDetailQuery({ courseID: courseIDParam ?? courseID, userID });
+  } = useGetCourseDetailAuthorQuery({
+    courseID: courseIDParam ?? courseID,
+    userID,
+  });
   console.log(course);
 
   const { data, isSuccess: isSuccessGetListChapters } =
-    useGetListCourseChaptersQuery(courseIDParam ?? courseID);
+    useGetListCourseChaptersQuery(
+      { courseID: courseIDParam ?? courseID },
+      {
+        refetchOnFocus: true,
+      }
+    );
 
-  const [deleteCourse, { isLoading: deleteCourseLoading }] =
+  const [deleteCourse, { isLoading: isDeleteCourseLoading }] =
     useDeleteCourseMutation();
+
+  const [updateCourse, { isLoading: isUpdateCourseLoading }] =
+    useUpdateCourseMutation();
 
   useEffect(() => {
     if (isSuccess) {
@@ -77,12 +90,30 @@ const CourseDraftPage: FC = () => {
       courseID: courseIDParam ?? courseID,
     }).unwrap();
     toast.success('Delete Course Success');
-    navigate(-1);
+    if (courseIDParam) {
+      navigate(-2);
+    } else navigate(-1);
+  };
+
+  const handleUpdateAccessCourse = async () => {
+    try {
+      await updateCourse({
+        userID,
+        courseID: courseIDParam ?? courseID,
+        isPublished: !course?.isPublished,
+        updatedAt: generateTime(),
+      }).unwrap();
+      toast.success('Course updated');
+    } catch {
+      toast.error('Something went wrong');
+    }
   };
 
   return (
     <div className="">
-      {(isLoading || deleteCourseLoading) && <Loader />}
+      {(isLoading || isDeleteCourseLoading || isUpdateCourseLoading) && (
+        <Loader />
+      )}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -100,14 +131,17 @@ const CourseDraftPage: FC = () => {
               </span>
             </div>
 
-            <div className="text-center">
+            <div className="flex items-center">
               {course.isPublished ? (
                 <div className="flex items-center">
                   <FontAwesomeIcon
                     icon={faLockOpen}
                     className="text-2xl text-blue-500"
                   />
-                  <button className="block ml-4 bg-red-500 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                  <button
+                    onClick={handleUpdateAccessCourse}
+                    className="text-sm block ml-4 bg-red-500 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
                     Unpublish
                   </button>
                 </div>
@@ -117,7 +151,10 @@ const CourseDraftPage: FC = () => {
                     icon={faLock}
                     className="text-2xl text-red-500"
                   />
-                  <button className="block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                  <button
+                    onClick={handleUpdateAccessCourse}
+                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
                     Publish
                   </button>
                 </div>
@@ -173,7 +210,7 @@ const CourseDraftPage: FC = () => {
 
                 {isSuccessGetListChapters && (
                   <ChaptersForm
-                    initialData={data}
+                    initialData={data.chapters}
                     courseID={courseIDParam ?? courseID}
                   />
                 )}

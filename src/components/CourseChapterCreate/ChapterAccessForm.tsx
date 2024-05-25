@@ -85,7 +85,8 @@ export const ChapterAccessForm = ({
               onChange={(e) => setChapterPublished(e.target.checked)}
             />
             <label htmlFor="checkboxPublish" className="leading-none">
-              Check this box if you want to make this chapter free for preview
+              Check this box if you want to make this chapter publish for
+              preview
             </label>
           </div>
 

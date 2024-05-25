@@ -2,7 +2,7 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 
-export const ActionForm = ({
+export const ActionChapterForm = ({
   handleDeleteCourse,
 }: {
   handleDeleteCourse: () => void;
@@ -44,13 +44,13 @@ export const ActionForm = ({
                       className="text-base font-semibold leading-6 text-gray-900"
                       id="modal-title"
                     >
-                      Delete Course
+                      Delete Course Chapter
                     </h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete your course? All of your
-                        course and data of chapters will be permanently removed.
-                        This action cannot be undone.
+                        Are you sure you want to delete your chapter? All of
+                        your chapter and data of chapter will be permanently
+                        removed. This action cannot be undone.
                       </p>
                     </div>
                   </div>

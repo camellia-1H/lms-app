@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faEye,
+  faLock,
+  faLockOpen,
   faVideo,
   faWater,
 } from '@fortawesome/free-solid-svg-icons';
@@ -13,10 +15,17 @@ import { useSelector } from 'react-redux';
 import { ChapterUploadVideoForm } from '../components/CourseChapterCreate/ChapterUploadVideoForm';
 import { ChapterTitleForm } from '../components/CourseChapterCreate/ChapterTitleForm';
 import { ChapterDescriptionForm } from '../components/CourseChapterCreate/ChapterDescriptionForm';
-import { useGetCourseChapterDetailQuery } from '../redux/coursesApi';
+import {
+  useDeleteCourseChapterMutation,
+  useGetCourseChapterDetailQuery,
+} from '../redux/coursesApi';
 import Loader from '../components/Loader';
 import { ChapterAccessForm } from '../components/CourseChapterCreate/ChapterAccessForm';
+import { ActionChapterForm } from '../components/CourseChapterCreate/ActionChapterForm';
+import toast from 'react-hot-toast';
 
+// get user is logined = author
+const userID = 'userID1';
 const CourseChapterDraft: FC = () => {
   const location = useLocation();
   const courseID = location.state?.courseID;
@@ -41,6 +50,9 @@ const CourseChapterDraft: FC = () => {
   });
   console.log(chapter);
 
+  const [deleteCourseChapter, { isLoading: isDeleteChapterLoading }] =
+    useDeleteCourseChapterMutation();
+
   useEffect(() => {
     if (isSuccess) {
       setRequiredFields([
@@ -62,9 +74,23 @@ const CourseChapterDraft: FC = () => {
   const completionText = `(${completedFields}/${totalFields})`;
 
   const isComplete = requiredFields.every(Boolean);
+
+  const handleDeleteCourse = async () => {
+    try {
+      await deleteCourseChapter({
+        courseID: courseIDParam ?? courseID,
+        chapterID: chapterIDParam ?? chapterID,
+        userID: userID,
+      }).unwrap();
+      toast.success('Chapter deleted');
+      navigate(-1);
+    } catch {
+      toast.error('Something went wrong');
+    }
+  };
   return (
     <div>
-      {isLoading && <Loader />}
+      {(isLoading || isDeleteChapterLoading) && <Loader />}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -93,21 +119,20 @@ const CourseChapterDraft: FC = () => {
                     Complete all fields {completionText}
                   </span>
                 </div>
-                <div>
-                  {!isComplete && (
-                    <div>
-                      <button disabled={!isComplete}>Update</button>
-                      <button disabled={!isComplete}>Publish</button>
-                      <button disabled={!isComplete}>Unpublish</button>
-                    </div>
+                <div className="flex items-center">
+                  {chapter.isPublished ? (
+                    <FontAwesomeIcon
+                      icon={faLockOpen}
+                      className="text-2xl text-blue-500"
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faLock}
+                      className="text-2xl text-red-500"
+                    />
                   )}
+                  <ActionChapterForm handleDeleteCourse={handleDeleteCourse} />
                 </div>
-                {/* <ChapterActions
-                disabled={!isComplete}
-                chapterID={params.chapterID}
-                chapterId={params.chapterId}
-                isPublished={chapter.isPublished}
-              /> */}
               </div>
             </div>
           </div>

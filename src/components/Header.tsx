@@ -1,27 +1,27 @@
-import { useState, Fragment } from "react";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBell } from "@fortawesome/free-solid-svg-icons";
-import { config } from "../config";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { useState, Fragment } from 'react';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faBell } from '@fortawesome/free-solid-svg-icons';
+import { config } from '../config';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
 
 const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
+  name: 'Tom Cook',
+  email: 'tom@example.com',
   imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 };
 const navigation = [
-  { name: "Home", href: "/", current: true, notInM: true },
-  { name: "Why team ?", href: "/about_us", current: false },
-  { name: "Course", href: "/courses", current: false },
-  { name: "Our instructor", href: "/members", current: false },
-  { name: "Pricing", href: "/register-member", current: false },
+  { name: 'Home', href: '/', current: true, notInM: true },
+  { name: 'Why team ?', href: '/about_us', current: false },
+  { name: 'Course', href: '/courses', current: false },
+  { name: 'Our instructor', href: '/members', current: false },
+  { name: 'Pricing', href: '/register-member', current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: 'Your Profile', href: '#' },
+  { name: 'Settings', href: '#' },
+  { name: 'Sign out', href: '#' },
 ];
 
 const active = (item: any) => {
@@ -37,7 +37,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="fixed lg:px-32 md:px-20 sm:px-6 py-4 top-0 right-0 left-0 bg-white border-b-2 border-blue-400/10 z-50">
+      <header className="fixed lg:px-32 md:px-20 sm:px-6 py-4 top-0 right-0 left-0 bg-white border-b-2 border-blue-400/10 z-50 shadow-md">
         <Disclosure as="nav" className="bg-white">
           {({ open }) => (
             <>
@@ -51,10 +51,10 @@ const Header: React.FC = () => {
                             key={item.name}
                             to={item.href}
                             className={[
-                              item.current ? "text-blue-500" : " ",
-                              "px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200",
-                            ].join(" ")}
-                            aria-current={item.current ? "page" : undefined}
+                              item.current ? 'text-blue-500' : ' ',
+                              'px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200',
+                            ].join(' ')}
+                            aria-current={item.current ? 'page' : undefined}
                             onClick={() => active(item)}
                           >
                             {item.name}
@@ -103,9 +103,9 @@ const Header: React.FC = () => {
                                     <a
                                       href={item.href}
                                       className={[
-                                        active ? "bg-gray-100" : "",
-                                        "block px-4 py-2 text-sm text-gray-700",
-                                      ].join(" ")}
+                                        active ? 'bg-gray-100' : '',
+                                        'block px-4 py-2 text-sm text-gray-700',
+                                      ].join(' ')}
                                     >
                                       {item.name}
                                     </a>
@@ -137,7 +137,7 @@ const Header: React.FC = () => {
                   {/* Mobile menu button */}
                   <div className="w-full flex justify-between md:hidden">
                     <Link
-                      to={"/"}
+                      to={'/'}
                       className="py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                     >
                       Home
@@ -182,9 +182,9 @@ const Header: React.FC = () => {
                                       <a
                                         href={item.href}
                                         className={[
-                                          active ? "bg-gray-100" : "",
-                                          "block px-4 py-2 text-sm text-gray-700",
-                                        ].join(" ")}
+                                          active ? 'bg-gray-100' : '',
+                                          'block px-4 py-2 text-sm text-gray-700',
+                                        ].join(' ')}
                                       >
                                         {item.name}
                                       </a>
@@ -216,11 +216,11 @@ const Header: React.FC = () => {
                       key={item.name}
                       to={item.href}
                       className={[
-                        item.current ? "text-blue-500" : " ",
-                        item.notInM ? "hidden" : "block",
-                        "px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 duration-200",
-                      ].join(" ")}
-                      aria-current={item.current ? "page" : undefined}
+                        item.current ? 'text-blue-500' : ' ',
+                        item.notInM ? 'hidden' : 'block',
+                        'px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 duration-200',
+                      ].join(' ')}
+                      aria-current={item.current ? 'page' : undefined}
                       onClick={() => {
                         active(item);
                       }}

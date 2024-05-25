@@ -1,10 +1,11 @@
-import { faMarker } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { faMarker } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
+import { Course } from '../models/Course';
 
-const CartCourse: React.FC = () => {
+const CartCourse = ({ course }: { course: Course }) => {
   return (
-    <Link to={"/courses"} className="block w-full ">
+    <Link to={`/courses/1}`} className="block w-full ">
       <div className="w-full">
         <div>
           <img

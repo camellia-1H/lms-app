@@ -10,6 +10,14 @@ export interface Course {
   price: number;
   isPublished: boolean;
 
+  level: string;
+  totalChapters: number;
+  // 0 : create, 1 : pending request publish , 2: course published
+  courseStatus: number;
+  totalStudents: number;
+  totalReviews: number;
+  totalRate: number;
+
   category: string[];
   chapters: CourseChapter[];
   createdAt: string;

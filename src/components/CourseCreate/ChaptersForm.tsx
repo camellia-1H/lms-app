@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +5,11 @@ import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 import Loader from '../Loader';
 import { ChaptersList } from './ChapterList';
-import { useCreateCourseChapterMutation } from '../../redux/coursesApi';
+import {
+  useCreateCourseChapterMutation,
+  useDeleteCourseChapterMutation,
+  useReorderPositionChapterOfCourseMutation,
+} from '../../redux/coursesApi';
 import { useNavigate } from 'react-router-dom';
 import { CourseChapter } from '../../models/CourseChapter';
 
@@ -18,12 +21,21 @@ interface ChaptersFormProps {
 export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  console.log(initialData);
+
+  const userID = 'userID1';
   console.log('cousrId', courseID);
 
   const navigate = useNavigate();
 
   const [createCourseChapter, { isSuccess, isError, error, isLoading }] =
     useCreateCourseChapterMutation();
+
+  const [reorderPositionChapterOfCourse] =
+    useReorderPositionChapterOfCourseMutation();
+
+  const [deleteCourseChapter, { isLoading: isDeleteChapterLoading }] =
+    useDeleteCourseChapterMutation();
 
   useEffect(() => {
     if (isSuccess) {
@@ -44,7 +56,11 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
 
   const handleCreateChapterCourse = async () => {
     try {
-      await createCourseChapter({ courseID }).unwrap();
+      await createCourseChapter({
+        courseID: courseID,
+        position: initialData.length ? initialData.length : 0,
+        userID: userID,
+      }).unwrap();
       toast.success('Chapter created');
       toggleCreating();
     } catch {
@@ -58,8 +74,9 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
     try {
       setIsUpdating(true);
 
-      await axios.put(`/api/courses/${courseID}/chapters/reorder`, {
-        list: updateData,
+      await reorderPositionChapterOfCourse({
+        courseID: courseID,
+        bulkUpdateData: updateData,
       });
       toast.success('Chapters reordered');
     } catch {
@@ -74,9 +91,22 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
     navigate(`/courses/${courseID}/chapter/${chapterID}/draft`);
   };
 
+  const onDeleteChapter = async (chapterID: string) => {
+    try {
+      await deleteCourseChapter({
+        courseID: courseID,
+        chapterID: chapterID,
+        userID: userID,
+      }).unwrap();
+      toast.success('Chapter deleted');
+    } catch {
+      toast.error('Something went wrong');
+    }
+  };
+
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4">
-      {(isUpdating || isLoading) && (
+      {(isUpdating || isLoading || isDeleteChapterLoading) && (
         <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
           <Loader />
         </div>
@@ -115,7 +145,8 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
           <ChaptersList
             onEdit={onEdit}
             onReorder={onReorder}
-            listChapters={initialData || []}
+            onDeleteChapter={onDeleteChapter}
+            listChapters={initialData}
           />
         </div>
       )}

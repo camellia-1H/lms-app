@@ -1,12 +1,18 @@
+import { Course } from '../../models/Course';
 import SearchItem from './SearchItem';
 
-const SearchList: React.FC = () => {
+const SearchList = ({
+  listCourseQuery,
+}: {
+  listCourseQuery: Partial<Course>[];
+}) => {
+  // console.log('listCourseQuery', listCourseQuery);
+
   return (
     <div>
-      <SearchItem />
-      <SearchItem />
-      <SearchItem />
-      <SearchItem />
+      {listCourseQuery.map((course) => (
+        <SearchItem courseData={course} />
+      ))}
     </div>
   );
 };

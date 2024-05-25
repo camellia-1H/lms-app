@@ -7,18 +7,20 @@ import {
 } from '@hello-pangea/dnd';
 import { CourseChapter } from '../../models/CourseChapter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 
 interface ChaptersListProps {
   listChapters: CourseChapter[];
   onReorder: (updateData: { chapterID: string; position: number }[]) => void;
   onEdit: (chapterID: string) => void;
+  onDeleteChapter: (chapterID: string) => void;
 }
 
 export const ChaptersList = ({
   listChapters,
   onReorder,
   onEdit,
+  onDeleteChapter,
 }: ChaptersListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(listChapters);
@@ -51,6 +53,7 @@ export const ChaptersList = ({
         (item) => item.chapterID === chapter.chapterID
       ),
     }));
+    console.log(bulkUpdateData);
 
     onReorder(bulkUpdateData);
   };
@@ -87,9 +90,10 @@ export const ChaptersList = ({
                   >
                     <div
                       className={[
-                        'px-2 py-3 border-r-4 border-r-red-300 bg-red-200 hover:bg-red-300 rounded-l-md transition ',
-                        chapter.isPublished &&
-                          'border-r-sky-200 hover:bg-sky-200',
+                        'px-2 py-3 border-r-4 rounded-l-md transition ',
+                        chapter.isPublished
+                          ? 'bg-sky-300 border-r-sky-500 hover:bg-sky-500'
+                          : 'bg-red-200 border-r-red-300 hover:bg-red-300',
                       ].join('')}
                       {...provided.dragHandleProps}
                     >
@@ -101,7 +105,10 @@ export const ChaptersList = ({
                         {/* {chapter.isFree && <span className="text-red">Free</span>} */}
                         <div>
                           {chapter.isPublished ? (
-                            'Published'
+                            <FontAwesomeIcon
+                              icon={faLockOpen}
+                              className="h-4 w-4 mr-2"
+                            />
                           ) : (
                             <FontAwesomeIcon
                               icon={faLock}
@@ -117,7 +124,7 @@ export const ChaptersList = ({
                             Edit
                           </button>
                           <button
-                            // onClick={() => onEdit(chapter.chapterID)}
+                            onClick={() => onDeleteChapter(chapter.chapterID)}
                             className="ml-2 text-red-500 cursor-pointer hover:opacity-75"
                           >
                             Delete
