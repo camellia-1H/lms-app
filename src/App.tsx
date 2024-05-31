@@ -6,6 +6,7 @@ import { publicRoutes, privateRoutes } from './routes';
 import Loader from './components/Loader';
 import { Toaster } from 'react-hot-toast';
 import MainOnlyLayout from './layouts/MainOnly';
+import Sidebar from './pages/Sidebar';
 // import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./redux/store";
@@ -69,6 +70,7 @@ function App() {
                   route.layoutOnly ? (
                     <MainOnlyLayout>
                       {/* <ProtectedRoute user={user}> */}
+                      {/* <Sidebar /> */}
                       <Page />
                       {/* </ProtectedRoute> */}
                     </MainOnlyLayout>

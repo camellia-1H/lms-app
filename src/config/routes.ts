@@ -30,4 +30,8 @@ export const routes = {
 
   ///
   about_us: '/about_us',
+  /// Sidebar Student
+  student_dashboard2: '/dashboard/student',
+  student_course: '/dashboard/student/course',
+  teacher_dashboard: '/dashboard/teacher',
 };
