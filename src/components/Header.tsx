@@ -1,27 +1,27 @@
-import { useState, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Fragment } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faBell } from '@fortawesome/free-solid-svg-icons';
 import { config } from '../config';
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import {
+  Disclosure,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+  MenuSeparator,
+} from '@headlessui/react';
+import { RootState } from '../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { logOut } from '../redux/userReducer';
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-};
 const navigation = [
   { name: 'Home', href: '/', current: true, notInM: true },
   { name: 'Why team ?', href: '/about_us', current: false },
   { name: 'Course', href: '/courses', current: false },
   { name: 'Our instructor', href: '/members', current: false },
   { name: 'Pricing', href: '/register-member', current: false },
-];
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
 ];
 
 const active = (item: any) => {
@@ -32,8 +32,15 @@ const active = (item: any) => {
 };
 
 const Header: React.FC = () => {
-  // const user = useSelector((state: RootState) => state.user.user);
-  const [isLogin, setLogin] = useState<boolean>(false);
+  const user = useSelector((state: RootState) => state.user.user);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout: any = () => {
+    dispatch(logOut());
+    navigate('/');
+  };
 
   return (
     <>
@@ -65,8 +72,8 @@ const Header: React.FC = () => {
                   </div>
                   <div className="hidden md:block">
                     {/* Profile dropdown */}
-                    {isLogin ? (
-                      <div className="flex items-center">
+                    {user.userID ? (
+                      <div className="flex items-center gap-x-2">
                         <button
                           type="button"
                           className="relative rounded-full p-1 text-gray-400 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -75,44 +82,46 @@ const Header: React.FC = () => {
                           <span className="sr-only">View notifications</span>
                           <FontAwesomeIcon icon={faBell} />
                         </button>
-                        <Menu as="div" className="relative mx-3">
-                          <div>
-                            <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                              <span className="absolute -inset-1.5" />
-                              <span className="sr-only">Open user menu</span>
-                              <img
-                                className="h-10 w-10 rounded-full"
-                                src={user.imageUrl}
-                                alt=""
-                              />
-                            </Menu.Button>
-                          </div>
+                        <Menu as={'div'} className={'ml-3'}>
+                          <MenuButton className="inline-flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+                            <img
+                              className="h-10 w-10"
+                              src={user.avatar}
+                              alt="khong cos avaldad"
+                            />
+                          </MenuButton>
                           <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
+                            enter="transition ease-out duration-75"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="transition ease-in duration-100"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
                           >
-                            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              {userNavigation.map((item) => (
-                                <Menu.Item key={item.name}>
-                                  {({ active }) => (
-                                    <a
-                                      href={item.href}
-                                      className={[
-                                        active ? 'bg-gray-100' : '',
-                                        'block px-4 py-2 text-sm text-gray-700',
-                                      ].join(' ')}
-                                    >
-                                      {item.name}
-                                    </a>
-                                  )}
-                                </Menu.Item>
-                              ))}
-                            </Menu.Items>
+                            <MenuItems
+                              anchor="bottom end"
+                              className="z-50 w-52 bg-gray-800 mt-2 origin-top-right rounded-xl border border-white/5 p-1 text-sm/6 text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
+                            >
+                              <MenuItem>
+                                <button
+                                  onClick={() =>
+                                    navigate(`/user/${user.userID}`)
+                                  }
+                                  className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+                                >
+                                  Your profile
+                                </button>
+                              </MenuItem>
+                              <MenuSeparator className="my-1 h-px bg-gray-300" />
+                              <MenuItem>
+                                <button
+                                  onClick={handleLogout}
+                                  className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+                                >
+                                  Logout
+                                </button>
+                              </MenuItem>
+                            </MenuItems>
                           </Transition>
                         </Menu>
                       </div>
@@ -144,7 +153,7 @@ const Header: React.FC = () => {
                     </Link>
 
                     <div className="flex">
-                      {isLogin && (
+                      {user.userID && (
                         <div className="flex items-center mr-4">
                           <button
                             type="button"
@@ -154,44 +163,47 @@ const Header: React.FC = () => {
                             <span className="sr-only">View notifications</span>
                             <FontAwesomeIcon icon={faBell} />
                           </button>
-                          <Menu as="div" className="relative ml-3">
-                            <div>
-                              <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                <span className="absolute -inset-1.5" />
-                                <span className="sr-only">Open user menu</span>
-                                <img
-                                  className="h-10 w-10 rounded-full"
-                                  src={user.imageUrl}
-                                  alt=""
-                                />
-                              </Menu.Button>
-                            </div>
+
+                          <Menu as={'div'} className={'ml-3'}>
+                            <MenuButton className="flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+                              <img
+                                className="h-10 w-10"
+                                src={user.avatar}
+                                alt="khong cos avaldad"
+                              />
+                            </MenuButton>
                             <Transition
-                              as={Fragment}
-                              enter="transition ease-out duration-100"
-                              enterFrom="transform opacity-0 scale-95"
-                              enterTo="transform opacity-100 scale-100"
-                              leave="transition ease-in duration-75"
-                              leaveFrom="transform opacity-100 scale-100"
-                              leaveTo="transform opacity-0 scale-95"
+                              enter="transition ease-out duration-75"
+                              enterFrom="opacity-0 scale-95"
+                              enterTo="opacity-100 scale-100"
+                              leave="transition ease-in duration-100"
+                              leaveFrom="opacity-100 scale-100"
+                              leaveTo="opacity-0 scale-95"
                             >
-                              <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                {userNavigation.map((item) => (
-                                  <Menu.Item key={item.name}>
-                                    {({ active }) => (
-                                      <a
-                                        href={item.href}
-                                        className={[
-                                          active ? 'bg-gray-100' : '',
-                                          'block px-4 py-2 text-sm text-gray-700',
-                                        ].join(' ')}
-                                      >
-                                        {item.name}
-                                      </a>
-                                    )}
-                                  </Menu.Item>
-                                ))}
-                              </Menu.Items>
+                              <MenuItems
+                                anchor="bottom end"
+                                className="z-50 w-52 bg-gray-800 mt-2 origin-top-right rounded-xl border border-white/5 p-1 text-sm/6 text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
+                              >
+                                <MenuItem>
+                                  <button
+                                    onClick={() =>
+                                      navigate(`/user/${user.userID}`)
+                                    }
+                                    className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+                                  >
+                                    Your profile
+                                  </button>
+                                </MenuItem>
+                                <MenuSeparator className="my-1 h-px bg-gray-300" />
+                                <MenuItem>
+                                  <button
+                                    onClick={handleLogout}
+                                    className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+                                  >
+                                    Logout
+                                  </button>
+                                </MenuItem>
+                              </MenuItems>
                             </Transition>
                           </Menu>
                         </div>
@@ -230,7 +242,7 @@ const Header: React.FC = () => {
                   ))}
                 </div>
 
-                {!isLogin && (
+                {!user.userID && (
                   <div className="h-full flex-col text-center mx-5">
                     <Link
                       to={config.routes.login}
@@ -251,43 +263,6 @@ const Header: React.FC = () => {
             </>
           )}
         </Disclosure>
-
-        {/* {user.id ? (
-            <div className="flex items-center">
-              <Link
-                to={config.routes.upload}
-                className="flex-1 bg-transparent font-medium rounded-md px-3 py-2 ring-1 ring-gray-900/5"
-              >
-                <FontAwesomeIcon icon={faUpload} className="mr-2" />
-                Upload
-              </Link>
-              <Link to={config.routes.profileLink(user.id)} className="ml-3">
-                <img
-                  src={user.avatar}
-                  alt=""
-                  width={30}
-                  height={30}
-                  className="rounded-full"
-                />
-              </Link>
-            </div>
-          ) : (
-            <div>
-              <Link
-                to={config.routes.login}
-                className="flex-1 bg-transparent font-medium rounded-md px-3 py-2 ring-1 ring-gray-900/5"
-              >
-                Login
-              </Link>
-  
-              <Link
-                to={config.routes.register}
-                className="ml-4 flex-1 bg-blue-500 hover:bg-blue-500/90 font-medium text-white rounded-md px-3 py-2"
-              >
-                Register
-              </Link>
-            </div>
-          )} */}
       </header>
     </>
   );

@@ -6,6 +6,8 @@ import {
   useUpdateCourseChapterMutation,
 } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 const UploadVideo = ({
   courseID,
@@ -18,6 +20,8 @@ const UploadVideo = ({
   toggleEdit: () => void;
   setChapterVideo: (objectVideoURL: string) => void;
 }) => {
+  const token = useSelector((state: RootState) => state.user.token);
+
   const [file, setFile] = useState<any>();
   const [objectVideoURL, setObjectVideoURL] = useState<string>('');
   const [uploader, setUploader] = useState<Uploader>();
@@ -34,7 +38,9 @@ const UploadVideo = ({
       const videoUploaderOptions = {
         fileName: file.name,
         file: file,
+        accessToken: token.accessToken,
       };
+      console.log(file);
 
       let percentage = 0;
 

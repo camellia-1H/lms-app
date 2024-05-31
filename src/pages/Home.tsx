@@ -1,12 +1,13 @@
-import { FC } from "react";
-import Search from "../components/Search";
-import CartCategoryList from "../components/CartCategoryList";
-import { Link } from "react-router-dom";
-import CartCourseList from "../components/CartCourseList";
+import { FC } from 'react';
+import Search from '../components/Search';
+import CartCategoryList from '../components/CartCategoryList';
+import { Link } from 'react-router-dom';
+import CartCourseList from '../components/CartCourseList';
 
 const Home: FC = () => {
   return (
     <div>
+      <Link to={'/order'}>Ordersdbfaksdbfsabdsadbi</Link>
       <div className="bg-[#111827] h-[550px]">
         <div className="w-full h-auto py-32">
           <div className="flex flex-col items-center text-center text-white">
@@ -36,7 +37,7 @@ const Home: FC = () => {
             </p>
             <div className="min-w-fit mt-6">
               <Link
-                to={"/upload"}
+                to={'/upload'}
                 className="text-white font-semibold px-3 py-2 bg-blue-700 rounded-lg hover:bg-black"
               >
                 Learn More
@@ -106,9 +107,8 @@ const Home: FC = () => {
                 Choose from 100+ courses from experienced teachers
               </p>
             </div>
-            <div>
-              <CartCourseList />
-            </div>
+
+            <CartCourseList />
 
             <section className="mt-20">
               <div className="flex items-center mx-auto lg:flex-row sm:flex-col">
@@ -130,7 +130,7 @@ const Home: FC = () => {
                   </p>
                   <div className="min-w-fit mt-6">
                     <Link
-                      to={"/register-member"}
+                      to={'/register-member'}
                       className="text-white font-bold px-4 py-3 bg-blue-700 rounded-lg hover:bg-black"
                     >
                       Start teaching today

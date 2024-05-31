@@ -1,9 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-
 import { User } from '../models/User';
 
 const initialState = {
-  user: { userID: 'userID1' } as User,
+  user: {} as User,
+  token: {
+    accessToken: '',
+    accessTokenExpiresAt: 0,
+  },
 };
 
 const userSlice = createSlice({
@@ -11,14 +14,17 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     logOut: () => initialState,
-    userLogin: (state, action) => {
+    setUser: (state, action) => {
       state.user = action.payload;
     },
-    refreshToken: (state, action) => {
-      state.user.accessToken = action.payload;
+    setAccessToken: (state, action) => {
+      state.token = action.payload;
     },
+    // refreshToken: (state, action) => {
+    //   state.user.accessToken = action.payload;
+    // },
   },
 });
 
-export const { logOut, userLogin, refreshToken } = userSlice.actions;
+export const { logOut, setUser, setAccessToken } = userSlice.actions;
 export default userSlice.reducer;

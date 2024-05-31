@@ -8,6 +8,8 @@ import { config } from '../config';
 const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
+const VerifyEmail = lazy(() => import('../pages/VerifyEmail'));
+const ForgotPass = lazy(() => import('../pages/ForgotPass'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Courses = lazy(() => import('../pages/Courses'));
 const CourseDraft = lazy(() => import('../pages/CourseDraft'));
@@ -18,6 +20,9 @@ const Members = lazy(() => import('../pages/Members'));
 const MemberDetail = lazy(() => import('../pages/MemberDetail'));
 const RegisterMember = lazy(() => import('../pages/RegisterMember'));
 const About = lazy(() => import('../pages/About'));
+const Order = lazy(() => import('../pages/Order'));
+const Payment = lazy(() => import('../pages/Payment'));
+const Result = lazy(() => import('../pages/Result'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Public routes
@@ -25,6 +30,8 @@ const publicRoutes = [
   { path: config.routes.home, component: Home },
   { path: config.routes.login, component: Login },
   { path: config.routes.register, component: Register },
+  { path: config.routes.verify, component: VerifyEmail },
+  { path: config.routes.forgot, component: ForgotPass },
   { path: config.routes.courses, component: Courses },
   { path: config.routes.course, component: CourseDetail },
   { path: config.routes.members, component: Members },
@@ -32,6 +39,9 @@ const publicRoutes = [
   { path: config.routes.registerMember, component: RegisterMember },
   { path: config.routes.about_us, component: About },
   { path: '*', component: NotFound },
+  { path: config.routes.payment, component: Payment },
+  { path: config.routes.order, component: Order },
+  { path: config.routes.result, component: Result },
 ];
 
 const privateRoutes = [

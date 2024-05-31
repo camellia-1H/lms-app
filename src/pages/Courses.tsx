@@ -3,19 +3,14 @@ import { useState } from 'react';
 import {
   Combobox,
   Listbox,
-  TabGroup,
   ComboboxButton,
   ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
   Transition,
-  Tab,
-  TabList,
-  TabPanels,
-  TabPanel,
 } from '@headlessui/react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronDown,
@@ -31,7 +26,6 @@ import { RootState } from '../redux/store';
 import {
   useCreateCourseMutation,
   useGetListCategoryMasterQuery,
-  useGetListCourseRecentQuery,
   useGetListLevelMasterQuery,
   useGetListPriceMasterQuery,
   useSearchCourseFilterMutation,
@@ -40,6 +34,7 @@ import Loader from '../components/Loader';
 import { LIMIT_DATA_QUERY } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 import TabCourse from '../components/Courses/TabCourse';
+import { useGetUserInfoMutation, useGetUserInfoQuery } from '../redux/userApi';
 
 interface levelItem {
   levelID: string;
@@ -119,8 +114,6 @@ const CoursesPage: FC = () => {
     isLoading: isLoading3,
     isSuccess: getListLevelMasterSuccess,
   } = useGetListLevelMasterQuery();
-
-  const { data: listCourseRecent } = useGetListCourseRecentQuery();
 
   const [searchCourseFilter] = useSearchCourseFilterMutation();
 
@@ -211,9 +204,9 @@ const CoursesPage: FC = () => {
     <div>
       {isLoading && <Loader />}
 
-      <button onClick={() => navigate(`/profile?&userId=1`)}>
+      {/* <button onClick={() => navigate(`/user/?&userId=1`)}>
         List courses
-      </button>
+      </button> */}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -221,7 +214,7 @@ const CoursesPage: FC = () => {
           </h1>
           <button
             onClick={() => {
-              createCourse({ userID: user.userID });
+              createCourse({ userID: user.userID, authorName: user.name });
             }}
             disabled={isLoading}
             className="text-white"

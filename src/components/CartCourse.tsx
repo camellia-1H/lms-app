@@ -1,35 +1,41 @@
-import { faMarker } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+
 import { Course } from '../models/Course';
 
 const CartCourse = ({ course }: { course: Course }) => {
   return (
-    <Link to={`/courses/1}`} className="block w-full ">
-      <div className="w-full">
-        <div>
-          <img
-            src="https://demos.wplms.io/main/wp-content/uploads/2023/06/c2.jpg"
-            alt=""
-            className="rounded-xl"
-          />
+    <Link to={`/courses/${course.courseID}`} className="rounded-md">
+      <div className="">
+        <img
+          src={course.imageUrl}
+          alt=""
+          className="block rounded-lg w-full lg:h-60 sm:h-44"
+        />
+      </div>
+      <h3 className="text-lg font-bold leading-5 mt-3 lg:w-56 sm:w-44 line-clamp-2">
+        {course.title}
+      </h3>
+
+      <div className="flex flex-1 flex-col gap-y-3 font-normal leading-4  w-full">
+        <h4 className="text-md font-thin text-gray-400 mt-1">
+          {course.authorName}
+        </h4>
+        <div className="flex">
+          <span className="font-bold">
+            {Math.round((course.totalRate / course.totalReviews) * 10) / 10}
+          </span>
+          <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-md" />
+          <span className="ml-1 text-gray-600">({course.totalReviews})</span>
         </div>
-        <div>
-          <div>
-            <h1 className="font-semibold">Learn Bard</h1>
-            <h2 className="text-gray-500">Category</h2>
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faMarker} />
-              <h3 className="">10 chapters</h3>
-            </div>
-            <div className="flex">
-              <p>
-                <s>123$</s>
-              </p>
-              <p className="ml-3">100$</p>
-            </div>
-          </div>
-        </div>
+      </div>
+
+      <div className="flex mt-1 items-center">
+        <p>
+          <s>123$</s>
+        </p>
+        <p className="ml-3 font-bold text-lg">{course.price}</p>
       </div>
     </Link>
   );

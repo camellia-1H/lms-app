@@ -1,13 +1,17 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { createCourse, createCourseChapter } from './courseReducer';
-import { Course } from '../models/Course';
 import { CourseChapter } from '../models/CourseChapter';
 
 export const coursesApi = createApi({
   reducerPath: 'coursesApi', // ten field trong redux state
   baseQuery: customFetchBase,
-  tagTypes: ['updateCourse', 'updateCourseChapter', 'createRating'],
+  tagTypes: [
+    'updateCourse',
+    'buyCourse',
+    'updateCourseChapter',
+    'createRating',
+  ],
   endpoints: (build) => ({
     //query<kiểu trả về, tham số truyền vào>
     getListCourses: build.mutation({
@@ -49,21 +53,22 @@ export const coursesApi = createApi({
       },
     }),
 
-    getCourseDetailAuthor: build.query<Course, any>({
+    getCourseDetailAuth: build.query({
       query: ({ courseID, userID }) => ({
         url: `/courses/${courseID}/get-detail?userID=${userID}`,
         method: 'GET',
       }),
       keepUnusedDataFor: 0,
-      providesTags: ['updateCourse'],
+      providesTags: ['buyCourse'],
     }),
 
     getCourseDetailPublic: build.query({
-      query: ({ courseID, userID }) => ({
-        url: `/courses/${courseID}/get-detail-public?userID=${userID}`,
+      query: ({ courseID }) => ({
+        url: `/courses/${courseID}/get-detail-public`,
         method: 'GET',
       }),
       keepUnusedDataFor: 0,
+      providesTags: ['updateCourse'],
     }),
 
     updateCourse: build.mutation({
@@ -104,8 +109,8 @@ export const coursesApi = createApi({
           : `/courses/${courseID}/get-list-chapters`,
         method: 'GET',
       }),
-      providesTags: ['updateCourseChapter'],
       keepUnusedDataFor: 0,
+      providesTags: ['updateCourseChapter', 'buyCourse'],
     }),
 
     reorderPositionChapterOfCourse: build.mutation({
@@ -196,6 +201,7 @@ export const coursesApi = createApi({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['buyCourse'],
     }),
     //    body : {userID: string;
     // courseID: string;
@@ -243,6 +249,13 @@ export const coursesApi = createApi({
         method: 'GET',
       }),
     }),
+
+    getListCoursePopular: build.query({
+      query: () => ({
+        url: `/courses/get-courses-popular`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -250,7 +263,7 @@ export const {
   useGetListCoursesMutation,
   useScanAllCoursesMutation,
   useCreateCourseMutation,
-  useGetCourseDetailAuthorQuery,
+  useGetCourseDetailAuthQuery,
   useGetCourseDetailPublicQuery,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
@@ -274,4 +287,5 @@ export const {
   useCreateRatingCourseMutation,
   // list course recent
   useGetListCourseRecentQuery,
+  useGetListCoursePopularQuery,
 } = coursesApi;

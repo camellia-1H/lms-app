@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface PriceFormProps {
   initialData: {
@@ -19,9 +21,10 @@ interface PriceFormProps {
 const formSchema = z.object({
   price: z.coerce.number(),
 });
-const userID = 'userID1';
 
 export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [price, setPrice] = useState<number>(initialData?.price);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +47,7 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
       console.log(values);
       setPrice(values.price);
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID,
         price: values.price,
         updatedAt: generateTime(),

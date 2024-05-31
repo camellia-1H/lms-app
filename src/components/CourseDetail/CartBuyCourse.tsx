@@ -9,33 +9,68 @@ import { useBuyCourseMutation } from '../../redux/coursesApi';
 import Loader from '../Loader';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
-const userID = 'userID1';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { Course } from '../../models/Course';
 
 const CartBuyCourse = ({
   scrollShow,
   courseID,
-  isPaid,
-  refetch,
+  courseData,
+  courseDataAuth,
   isStartLearn,
   nextChapter,
   courseTitle,
 }: {
   scrollShow: number;
   courseID: string;
-  isPaid: boolean;
-  refetch: () => void;
+  courseData: Course;
+  courseDataAuth: { isPaid?: boolean; isAuthor?: boolean };
   isStartLearn: boolean;
   nextChapter: string;
   courseTitle: string;
 }) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
+  // const isUserAuthor = user.userID === courseData.userID;
+
+  // const [courseDataAuth, setCourseDataAuth] = useState<any>();
+  // const [isLoadingAuth, setLoadingAuth] = useState<boolean>(false);
+  // const [isSuccessAuth, setSuccessAuth] = useState<boolean>(false);
+
+  // if (user.userID) {
+  //   const {
+  //     data: courseDataAuthValue,
+  //     isLoading: isLoadingAuthValue,
+  //     isSuccess: isSuccessAuthValue,
+  //   } = useGetCourseDetailAuthQuery({
+  //     userID: isUserAuthor ? courseData.userID : user.userID,
+  //     courseID: courseID,
+  //   });
+  //   useEffect(() => {
+  //     setLoadingAuth(true);
+  //     if (isSuccessAuthValue) {
+  //       setCourseDataAuth(courseDataAuthValue);
+  //       setSuccessAuth(true);
+  //       setLoadingAuth(false);
+  //     }
+  //   }, [isLoadingAuthValue]);
+  //   if (!isUserAuthor) {
+  //   }
+  // }
+
   const navigate = useNavigate();
   const [buyCourse, { isLoading }] = useBuyCourseMutation();
 
   const handleBuy = async () => {
-    await buyCourse({ userID: userID, courseID: courseID }).unwrap();
+    // if (!isUserAuthor) {
+    await buyCourse({
+      authorID: courseData.userID,
+      userID: user.userID,
+      courseID: courseID,
+    }).unwrap();
     toast.success('Buy course successfully');
-    refetch();
+    // }
   };
   const handleStartCourse = () => {
     navigate(`/courses/${courseID}/chapter/${nextChapter}`, {
@@ -61,39 +96,95 @@ const CartBuyCourse = ({
           scrollShow === 1
             ? 'lg:w-3/12 sm:w-full lg:fixed lg:top-[120px] lg:right-[128px] ring-1 ring-gray-300 shadow bg-white opacity-0 animate-cart_course_fade_in'
             : scrollShow === 2
-            ? `lg:absolute lg:top-[1900px] sm:w-full ring-1 ring-gray-300 `
+            ? `lg:absolute lg:top-[1500px] sm:w-full ring-1 ring-gray-300 `
             : ''
         }
       >
         <div className="lg:px-8 md:px-20 sm:px-6 py-8">
           <div className="flex flex-col gap-y-4">
-            {isPaid ? (
+            {user.userID && user.userID !== courseData.userID ? (
               <>
-                {isStartLearn ? (
-                  <button
-                    onClick={handleStartCourse}
-                    className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Start learn
-                  </button>
+                {user.userID ? (
+                  <>
+                    {courseDataAuth?.isPaid ? (
+                      <>
+                        {isStartLearn ? (
+                          <button
+                            onClick={handleStartCourse}
+                            className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                          >
+                            Start learn
+                          </button>
+                        ) : (
+                          <button
+                            onClick={handleStartCourse}
+                            className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                          >
+                            Continue learn
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
+                        <h3 className="text-3xl font-bold">₫2,199,000</h3>
+                        <div className="flex flex-col gap-y-4">
+                          <button className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                            Add to cart
+                          </button>
+                          <button
+                            onClick={handleBuy}
+                            className="mt-3 w-full justify-center rounded-md bg-white font-bold px-3 py-3 text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                          >
+                            Buy now
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <button
-                    onClick={handleStartCourse}
-                    className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Continue learn
-                  </button>
+                  <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
+                    <h3 className="text-3xl font-bold">₫2,199,000</h3>
+                    <div className="flex flex-col gap-y-4">
+                      <button
+                        onClick={() => navigate('/user/login')}
+                        className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Add to cart
+                      </button>
+                      <button
+                        onClick={() => navigate('/user/login')}
+                        className="mt-3 w-full justify-center rounded-md bg-white font-bold px-3 py-3 text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Buy now
+                      </button>
+                    </div>
+                  </div>
                 )}
               </>
             ) : (
+              user.userID &&
+              user.userID === courseData.userID && (
+                <button
+                  onClick={() => navigate(`/courses/${courseID}/draft`)}
+                  className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                >
+                  Draft
+                </button>
+              )
+            )}
+
+            {!user.userID && (
               <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
                 <h3 className="text-3xl font-bold">₫2,199,000</h3>
                 <div className="flex flex-col gap-y-4">
-                  <button className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
+                  <button
+                    onClick={() => navigate('/user/login')}
+                    className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
                     Add to cart
                   </button>
                   <button
-                    onClick={handleBuy}
+                    onClick={() => navigate('/user/login')}
                     className="mt-3 w-full justify-center rounded-md bg-white font-bold px-3 py-3 text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                   >
                     Buy now

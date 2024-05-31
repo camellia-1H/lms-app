@@ -17,7 +17,8 @@ import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
 import { RootState } from '../redux/store';
 import {
   useDeleteCourseMutation,
-  useGetCourseDetailAuthorQuery,
+  useGetCourseDetailAuthQuery,
+  useGetCourseDetailPublicQuery,
   useGetListCourseChaptersQuery,
   useUpdateCourseMutation,
 } from '../redux/coursesApi';
@@ -27,9 +28,10 @@ import { DescriptionDetailForm } from '../components/CourseCreate/DescriptionDet
 import { ActionForm } from '../components/CourseCreate/ActionForm';
 import toast from 'react-hot-toast';
 import { generateTime } from '../utils/string-utils';
+import { COURSE_STATUS } from '../constants/common';
 
-const userID = 'userID1';
 const CourseDraftPage: FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
   const courseID = useSelector(
     (state: RootState) => state.course.currentCourseID
   );
@@ -40,14 +42,14 @@ const CourseDraftPage: FC = () => {
     (string | boolean | number | string[])[]
   >([]);
   const {
-    data: course,
+    data: courseData,
     isLoading,
     isSuccess,
-  } = useGetCourseDetailAuthorQuery({
+    refetch,
+  } = useGetCourseDetailPublicQuery({
     courseID: courseIDParam ?? courseID,
-    userID,
   });
-  console.log(course);
+  console.log(courseData);
 
   const { data, isSuccess: isSuccessGetListChapters } =
     useGetListCourseChaptersQuery(
@@ -66,11 +68,11 @@ const CourseDraftPage: FC = () => {
   useEffect(() => {
     if (isSuccess) {
       setRequiredFields([
-        course.title,
-        course.description,
-        course.imageUrl,
-        course.price,
-        course.category,
+        courseData.course.title,
+        courseData.course.description,
+        courseData.course.imageUrl,
+        courseData.course.price,
+        courseData.course.category,
         // course.chapters.some(chapter => chapter.isPublished),
       ]);
     }
@@ -86,7 +88,7 @@ const CourseDraftPage: FC = () => {
 
   const handleDeleteCourse = async () => {
     await deleteCourse({
-      userID: userID,
+      userID: user.userID,
       courseID: courseIDParam ?? courseID,
     }).unwrap();
     toast.success('Delete Course Success');
@@ -95,14 +97,30 @@ const CourseDraftPage: FC = () => {
     } else navigate(-1);
   };
 
-  const handleUpdateAccessCourse = async () => {
+  const handleRequestPublicCourse = async () => {
     try {
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID: courseIDParam ?? courseID,
-        isPublished: !course?.isPublished,
+        courseStatus: COURSE_STATUS.PENDING,
         updatedAt: generateTime(),
       }).unwrap();
+      refetch();
+      toast.success('Course updated');
+    } catch {
+      toast.error('Something went wrong');
+    }
+  };
+
+  const handleRequestUnpublicCourse = async () => {
+    try {
+      await updateCourse({
+        userID: user.userID,
+        courseID: courseIDParam ?? courseID,
+        courseStatus: COURSE_STATUS.DEFAULT,
+        updatedAt: generateTime(),
+      }).unwrap();
+      refetch();
       toast.success('Course updated');
     } catch {
       toast.error('Something went wrong');
@@ -132,30 +150,73 @@ const CourseDraftPage: FC = () => {
             </div>
 
             <div className="flex items-center">
-              {course.isPublished ? (
-                <div className="flex items-center">
-                  <FontAwesomeIcon
-                    icon={faLockOpen}
-                    className="text-2xl text-blue-500"
-                  />
-                  <button
-                    onClick={handleUpdateAccessCourse}
-                    className="text-sm block ml-4 bg-red-500 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Unpublish
-                  </button>
-                </div>
-              ) : (
+              {courseData.course?.courseStatus === COURSE_STATUS.DEFAULT ? (
                 <div className="flex items-center">
                   <FontAwesomeIcon
                     icon={faLock}
                     className="text-2xl text-red-500"
                   />
                   <button
-                    onClick={handleUpdateAccessCourse}
+                    onClick={handleRequestPublicCourse}
                     className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                   >
                     Publish
+                  </button>
+                </div>
+              ) : courseData.course?.courseStatus === COURSE_STATUS.PENDING ? (
+                <div>
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faLock}
+                      className="text-2xl text-red-500"
+                    />
+                    <button
+                      disabled={true}
+                      className="text-sm block ml-4 bg-yellow-500 font-medium text-white rounded-md px-3 py-2"
+                    >
+                      Pending
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={handleRequestUnpublicCourse}
+                    className="text-sm block ml-4 bg-sky-900 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
+                    Unpublish Request
+                  </button>
+                </div>
+              ) : courseData.course?.courseStatus === COURSE_STATUS.REJECT ? (
+                <div className="flex items-center">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faLock}
+                      className="text-2xl text-red-500"
+                    />
+                    <button
+                      disabled={true}
+                      className="text-sm block ml-4 bg-gray-500 font-medium text-white rounded-md px-3 py-2"
+                    >
+                      Rejected
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleRequestPublicCourse}
+                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
+                    Publish request
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <FontAwesomeIcon
+                    icon={faLockOpen}
+                    className="text-2xl text-red-500"
+                  />
+                  <button
+                    onClick={handleRequestUnpublicCourse}
+                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
+                    UnPublish
                   </button>
                 </div>
               )}
@@ -174,25 +235,32 @@ const CourseDraftPage: FC = () => {
               {isSuccess && (
                 <>
                   <TitleForm
-                    initialData={{ title: course?.title as string }}
+                    initialData={{ title: courseData.course?.title as string }}
                     courseID={courseIDParam ?? courseID}
                   />
                   <DescriptionForm
-                    initialData={{ description: course?.description as string }}
+                    initialData={{
+                      description: courseData.course?.description as string,
+                    }}
                     courseID={courseIDParam ?? courseID}
                   />
                   <DescriptionDetailForm
                     initialData={{
-                      descriptionDetail: course?.descriptionDetail as string,
+                      descriptionDetail: courseData.course
+                        ?.descriptionDetail as string,
                     }}
                     courseID={courseIDParam ?? courseID}
                   />
                   <ImageForm
-                    initialData={{ imageUrl: course?.imageUrl as string }}
+                    initialData={{
+                      imageUrl: courseData.course?.imageUrl as string,
+                    }}
                     courseID={courseIDParam ?? courseID}
                   />
                   <CategoryForm
-                    initialData={{ category: course?.category as string[] }}
+                    initialData={{
+                      category: courseData.course?.category as string[],
+                    }}
                     courseID={courseIDParam ?? courseID}
                   />
                 </>
@@ -225,7 +293,7 @@ const CourseDraftPage: FC = () => {
                 </div>
                 {isSuccess && (
                   <PriceForm
-                    initialData={{ price: course?.price as number }}
+                    initialData={{ price: courseData.course?.price as number }}
                     courseID={courseIDParam ?? courseID}
                   />
                 )}

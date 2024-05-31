@@ -1,41 +1,51 @@
 import {
   faChevronDown,
   faChevronLeft,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Combobox, Transition } from "@headlessui/react";
-import React from "react";
-import { FC, useState } from "react";
-import { useForm } from "react-hook-form";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Combobox, Transition } from '@headlessui/react';
+import React from 'react';
+import { FC, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useRegisterMutation } from '../redux/userApi';
 const people = [
-  { id: 1, name: "Wade Cooper" },
-  { id: 2, name: "Arlene Mccoy" },
-  { id: 3, name: "Devon Webb" },
-  { id: 4, name: "Tom Cook" },
-  { id: 5, name: "Tanya Fox" },
-  { id: 6, name: "Hellen Schmidt" },
+  { id: 1, name: 'Wade Cooper' },
+  { id: 2, name: 'Arlene Mccoy' },
+  { id: 3, name: 'Devon Webb' },
+  { id: 4, name: 'Tom Cook' },
+  { id: 5, name: 'Tanya Fox' },
+  { id: 6, name: 'Hellen Schmidt' },
 ];
 const RegisterPage: FC = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, isValid },
   } = useForm();
 
-  const submitForm = (data: any) => {
+  const [registerAccount] = useRegisterMutation();
+  const submitForm = async (data: any) => {
     console.log(data);
+    await registerAccount({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    }).unwrap();
+    navigate('/user/verify-email');
   };
 
   const [selected, setSelected] = useState(people[0]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const filteredPeople =
-    query === ""
+    query === ''
       ? people
       : people.filter((person) =>
           person.name
             .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, ""))
+            .replace(/\s+/g, '')
+            .includes(query.toLowerCase().replace(/\s+/g, ''))
         );
 
   return (
@@ -65,6 +75,7 @@ const RegisterPage: FC = () => {
                         id="email"
                         v-model="email"
                         placeholder="Email"
+                        {...register('email')}
                         className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                       />
                     </div>
@@ -87,7 +98,7 @@ const RegisterPage: FC = () => {
                       v-model="name"
                       required
                       placeholder="Name"
-                      {...register("name")}
+                      {...register('name')}
                       className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -106,7 +117,7 @@ const RegisterPage: FC = () => {
                       id="address"
                       v-model="address"
                       placeholder="Ha Noi"
-                      {...register("address")}
+                      {...register('address')}
                       className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -144,10 +155,10 @@ const RegisterPage: FC = () => {
                           leave="transition duration-75 ease-out"
                           leaveFrom="transform scale-100 opacity-100"
                           leaveTo="transform scale-95 opacity-0"
-                          afterLeave={() => setQuery("")}
+                          afterLeave={() => setQuery('')}
                         >
                           <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                            {filteredPeople.length === 0 && query !== "" ? (
+                            {filteredPeople.length === 0 && query !== '' ? (
                               <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
                                 Nothing found.
                               </div>
@@ -158,8 +169,8 @@ const RegisterPage: FC = () => {
                                   className={({ active }) =>
                                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                                       active
-                                        ? "bg-gray-600 text-white"
-                                        : "text-gray-900"
+                                        ? 'bg-gray-600 text-white'
+                                        : 'text-gray-900'
                                     }`
                                   }
                                   value={person}
@@ -169,8 +180,8 @@ const RegisterPage: FC = () => {
                                       <span
                                         className={`block truncate ${
                                           selected
-                                            ? "font-medium"
-                                            : "font-normal"
+                                            ? 'font-medium'
+                                            : 'font-normal'
                                         }`}
                                       >
                                         {person.name}
@@ -179,8 +190,8 @@ const RegisterPage: FC = () => {
                                         <span
                                           className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
                                             active
-                                              ? "text-white"
-                                              : "text-teal-600"
+                                              ? 'text-white'
+                                              : 'text-teal-600'
                                           }`}
                                         >
                                           <FontAwesomeIcon
@@ -212,7 +223,7 @@ const RegisterPage: FC = () => {
                       id="phoneNumber"
                       type="text"
                       v-model="phoneNumber"
-                      {...register("phoneNumber")}
+                      {...register('phoneNumber')}
                       className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -235,7 +246,7 @@ const RegisterPage: FC = () => {
                       v-model="password"
                       required
                       className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      {...register("password")}
+                      {...register('password')}
                     />
                   </div>
                 </div>

@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit/query';
 import { Mutex } from 'async-mutex';
 // import { logOut, refreshToken } from './userReducer';
-// import { RootState } from './store';
+import { RootState } from './store';
 
 const baseUrl = 'https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev';
 
@@ -16,10 +16,11 @@ const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl,
   prepareHeaders: async (headers, { getState }) => {
-    // const accessToken = (getState() as RootState).user.user.accessToken;
-    // if (accessToken) {
-    headers.set('authorization', `Bearer 1`);
-    // }
+    const accessToken = (getState() as RootState).user.token.accessToken;
+    console.log('accessToken', accessToken);
+    if (accessToken) {
+      headers.set('authorization', `Bearer ${accessToken}`);
+    }
     return headers;
   },
 });

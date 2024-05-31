@@ -17,8 +17,12 @@ import {
 } from '../redux/coursesApi';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 const CourseChapterDetailPage: FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const navigate = useNavigate();
   const { courseID, chapterID } = useParams();
 
@@ -37,7 +41,7 @@ const CourseChapterDetailPage: FC = () => {
   const { data, isSuccess, isLoading, refetch, isFetching } =
     useGetListCourseChaptersQuery({
       courseID: courseID as string,
-      userID: 'userID1',
+      userID: user.userID,
     });
 
   useEffect(() => {
@@ -80,7 +84,7 @@ const CourseChapterDetailPage: FC = () => {
         }
       }
     }
-  }, [isLoading, chapterID, isFetching]);
+  }, [isLoading, chapterID, isFetching, isNext]);
 
   const {
     data: chapterDetail,
@@ -117,6 +121,7 @@ const CourseChapterDetailPage: FC = () => {
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [totalTime, setTotalTime] = useState<number>(0);
   console.log('currentTime', currentTime);
+  console.log('setTotalTime', totalTime);
 
   useEffect(() => {
     const setTime = () => {
@@ -133,15 +138,15 @@ const CourseChapterDetailPage: FC = () => {
       setCurrentTime(videoRef.current.currentTime);
     }
     if (currentTime > totalTime * 0.75 && !isNext) {
-      handleUpdateProgress();
       setNext(true);
+      handleUpdateProgress();
     }
   };
 
   const handleUpdateProgress = async () => {
     await updateCourseProgress({
       courseID: courseID as string,
-      userID: 'userID1',
+      userID: user.userID,
       chapter: chapterID as string,
     }).unwrap();
     refetch();
@@ -169,7 +174,10 @@ const CourseChapterDetailPage: FC = () => {
                 <video
                   ref={videoRef}
                   onTimeUpdate={updateTime}
-                  src="https://sam-app-temporarybucket-u31kktlyktoq.s3.amazonaws.com/videos/2022-10-02+17-55-08.mkv"
+                  src={
+                    chapterDetail?.chapterVideoUrl ??
+                    'https://sam-app-temporarybucket-u31kktlyktoq.s3.amazonaws.com/videos/2022-10-02+17-55-08.mkv'
+                  }
                   controls
                   className={isPlaying ? 'block' : 'hidden'}
                 ></video>

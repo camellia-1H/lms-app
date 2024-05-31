@@ -3,29 +3,43 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import CartCourse from './CartCourse';
 import { Autoplay } from 'swiper/modules';
-import { useScanAllCoursesMutation } from '../redux/coursesApi';
+import {
+  useGetListCoursesMutation,
+  useScanAllCoursesMutation,
+} from '../redux/coursesApi';
 import { useEffect, useState } from 'react';
-import { LIMIT_DATA_QUERY } from '../constants/common';
 
-export default function CartCourseList() {
+export default function CartCourseList({ authorID }: { authorID?: string }) {
   const [listCourses, setListCourses] = useState<any[]>([]);
-  const [scanCourses, { isSuccess }] = useScanAllCoursesMutation();
+  const [getListCourses, { isSuccess: isSuccessGetListCourses }] =
+    useGetListCoursesMutation();
+  // const [listCourseOfUser, setCourses] = useState<Course[]>([]);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
+  const [scanCourses, { isSuccess }] = useScanAllCoursesMutation();
+  const fetchCourses = async () => {
+    if (authorID) {
+      const data = await getListCourses({
+        userID: authorID,
+        lastEvaluatedKey: undefined,
+        limit: 3,
+      }).unwrap();
+      setListCourses(data.courses);
+    } else {
       const data = await scanCourses({
         lastEvaluatedKey: undefined,
         limit: 4,
       }).unwrap();
       setListCourses([...listCourses, ...data.courses]);
       // setLastEvaluatedKey(data.lastEvaluatedKey);
-    };
+    }
+  };
+  useEffect(() => {
     fetchCourses();
   }, []);
 
   return (
-    <div className="w-full mt-28">
-      {isSuccess && (
+    <div>
+      {(isSuccess || isSuccessGetListCourses) && (
         <Swiper
           slidesPerView={4}
           autoplay={{
@@ -36,7 +50,7 @@ export default function CartCourseList() {
           modules={[Autoplay]}
           breakpoints={{
             640: {
-              slidesPerView: 1,
+              slidesPerView: 2,
               spaceBetween: 20,
             },
             768: {

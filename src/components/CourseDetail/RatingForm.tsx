@@ -6,24 +6,32 @@ import { Radio, RadioGroup } from '@headlessui/react';
 import toast from 'react-hot-toast';
 
 import { useCreateRatingCourseMutation } from '../../redux/coursesApi';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface RatingFormProps {
   reviewDetail: {
     review: string;
     rate: number;
   };
-  courseID: string;
+  courseData: any;
+  fetchGetListReview?: any;
 }
 
 const formSchema = z.object({
   review: z.string({ required_error: 'Review is required' }).min(10),
   rate: z.number({ required_error: 'Rate is required' }),
 });
-const userID = 'userID1';
 
 const stars = [1, 2, 3, 4, 5];
 
-export const RatingForm = ({ reviewDetail, courseID }: RatingFormProps) => {
+export const RatingForm = ({
+  reviewDetail,
+  courseData,
+  fetchGetListReview,
+}: RatingFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [review, setReview] = useState<string>(reviewDetail?.review);
   const [rate, setRate] = useState<number>(reviewDetail?.rate || stars[0]);
 
@@ -47,12 +55,15 @@ export const RatingForm = ({ reviewDetail, courseID }: RatingFormProps) => {
       console.log(validatedData);
 
       await createRating({
-        userID,
-        courseID,
+        authorID: courseData.userID,
+        userID: user.userID,
+        name: user.name,
+        courseID: courseData.courseID,
         ...validatedData,
       }).unwrap();
       // updatedAt: generateTime(),
       toast.success('Create Rating Success');
+      await fetchGetListReview();
       toggleEdit();
     } catch (error: any) {
       console.log(error.errors);

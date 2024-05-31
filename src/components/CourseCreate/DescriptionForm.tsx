@@ -4,10 +4,12 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
 
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
-import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface DescriptionFormProps {
   initialData: {
@@ -21,12 +23,13 @@ const formSchema = z.object({
     message: 'description is required',
   }),
 });
-const userID = 'userID1';
 
 export const DescriptionForm = ({
   initialData,
   courseID,
 }: DescriptionFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [description, setDescription] = useState<string>(
     initialData?.description
   );
@@ -48,7 +51,7 @@ export const DescriptionForm = ({
     try {
       setDescription(values.description);
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID,
         description: values.description,
         updatedAt: generateTime(),

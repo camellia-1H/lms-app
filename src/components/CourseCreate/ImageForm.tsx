@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useUploadS3ImageMutation } from '../../redux/utilsApi';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface ImageFormProps {
   initialData: {
@@ -13,9 +15,10 @@ interface ImageFormProps {
   };
   courseID: string;
 }
-const userID = 'userID1';
 
 export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [isEditing, setIsEditing] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>(initialData?.imageUrl);
   const [previewImage, setpreviewImage] = useState<string>('');
@@ -61,7 +64,7 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
         typeImage: typeImage,
       });
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID,
         imageUrl: responeUploadImageS3.data,
         updatedAt: generateTime(),

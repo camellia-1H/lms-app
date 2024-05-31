@@ -6,9 +6,9 @@ import { publicRoutes, privateRoutes } from './routes';
 import Loader from './components/Loader';
 import { Toaster } from 'react-hot-toast';
 import MainOnlyLayout from './layouts/MainOnly';
-// import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
-// import { useSelector } from "react-redux";
-// import { RootState } from "./redux/store";
+import ProtectedRoute from './components/ProtectRouter';
+import { useSelector } from 'react-redux';
+import { RootState } from './redux/store';
 
 const toastOptions = {
   // Define default options
@@ -36,7 +36,9 @@ const toastOptions = {
 };
 
 function App() {
-  // const user = useSelector((state: RootState) => state.user.user);
+  const accessToken = useSelector(
+    (state: RootState) => state.user.token.accessToken
+  );
   return (
     <div className="bg-white ">
       <Suspense fallback={<Loader />}>
@@ -68,15 +70,15 @@ function App() {
                 element={
                   route.layoutOnly ? (
                     <MainOnlyLayout>
-                      {/* <ProtectedRoute user={user}> */}
-                      <Page />
-                      {/* </ProtectedRoute> */}
+                      <ProtectedRoute accessToken={accessToken}>
+                        <Page />
+                      </ProtectedRoute>
                     </MainOnlyLayout>
                   ) : (
                     <DefaultLayout>
-                      {/* <ProtectedRoute user={user}> */}
-                      <Page />
-                      {/* </ProtectedRoute> */}
+                      <ProtectedRoute accessToken={accessToken}>
+                        <Page />
+                      </ProtectedRoute>
                     </DefaultLayout>
                   )
                 }

@@ -10,6 +10,8 @@ import Parser from 'html-react-parser';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { QuillEditor } from '../Editor/QuillEditor';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface DescriptionDetailFormProps {
   initialData: {
@@ -23,12 +25,13 @@ const formSchema = z.object({
     message: 'descriptionDetail is required',
   }),
 });
-const userID = 'userID1';
 
 export const DescriptionDetailForm = ({
   initialData,
   courseID,
 }: DescriptionDetailFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [descriptionDetail, setDescriptionDetail] = useState<string>(
     initialData?.descriptionDetail
   );
@@ -51,7 +54,7 @@ export const DescriptionDetailForm = ({
   const onSubmit = async () => {
     try {
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID,
         descriptionDetail: descriptionDetail,
         updatedAt: generateTime(),

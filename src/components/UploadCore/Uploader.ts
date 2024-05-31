@@ -3,9 +3,6 @@ import axios from 'axios';
 // initializing axios
 const api = axios.create({
   baseURL: 'https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev/s3',
-  headers: {
-    Authorization: 'Bearer 1',
-  },
 });
 
 interface UploaderParam {
@@ -26,6 +23,7 @@ interface UploaderParam {
   onProgressFn: () => {};
   onErrorFn: () => {};
   onSuccessFn: () => {};
+  accessToken: string;
 }
 
 // original source: https://github.com/pilovm/multithreaded-uploader/blob/master/frontend/uploader.js
@@ -46,6 +44,7 @@ export class Uploader {
   onProgressFn: (param: any) => void;
   onErrorFn: (error: any) => void;
   onSuccessFn: (param: any) => void;
+  accessToken: string;
   constructor(options: Partial<UploaderParam>) {
     // this must be bigger than or equal to 5MB,
     // otherwise AWS will respond with:
@@ -67,6 +66,7 @@ export class Uploader {
     this.onProgressFn = () => {};
     this.onErrorFn = () => {};
     this.onSuccessFn = () => {};
+    this.accessToken = options.accessToken as string;
   }
 
   start() {
@@ -85,6 +85,9 @@ export class Uploader {
         url: '/uploads/initializeMultipartUpload',
         method: 'POST',
         data: videoInitializationUploadInput,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
       });
 
       const AWSFileDataOutput = initializeReponse.data;
@@ -105,6 +108,9 @@ export class Uploader {
         url: '/uploads/getMultipartPreSignedUrls',
         method: 'POST',
         data: AWSMultipartFileDataInput,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
       });
 
       const newParts = urlsResponse.data.parts;
@@ -182,6 +188,9 @@ export class Uploader {
         url: '/uploads/finalizeMultipartUpload',
         method: 'POST',
         data: videoFinalizationMultiPartInput,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
       });
 
       this.objectVideoURL = response.data;

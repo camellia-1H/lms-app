@@ -8,6 +8,8 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface TitleFormProps {
   initialData: {
@@ -22,9 +24,8 @@ const formSchema = z.object({
   }),
 });
 
-const userID = 'userID1';
-
 export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
   const [title, setTitle] = useState<string>(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -44,7 +45,7 @@ export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
       console.log(values);
       setTitle(values.title);
       await updateCourse({
-        userID,
+        userID: user.userID, // author
         courseID,
         title: values.title,
         updatedAt: generateTime(),

@@ -17,6 +17,7 @@ export interface Course {
   totalStudents: number;
   totalReviews: number;
   totalRate: number;
+  authorName: string;
 
   category: string[];
   chapters: CourseChapter[];

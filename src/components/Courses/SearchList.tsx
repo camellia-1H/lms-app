@@ -11,7 +11,7 @@ const SearchList = ({
   return (
     <div>
       {listCourseQuery.map((course) => (
-        <SearchItem courseData={course} />
+        <SearchItem courseData={course} key={course.courseID} />
       ))}
     </div>
   );

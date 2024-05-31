@@ -1,6 +1,7 @@
 export const authApi = {
-  login: "auth/login",
-  register: "auth/register",
-  logout: "auth/logout",
-  me: "auth/me",
+  login: '/user/login',
+  register: '/user/register',
+  logout: '/user/logout',
+  me: '/user/me',
+  verify: '/user/verify-email',
 };

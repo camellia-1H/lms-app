@@ -1,10 +1,12 @@
 import { FormEvent, useState } from 'react';
-
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+
 import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
-import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface categoryItem {
   categoryID: string;
@@ -27,10 +29,12 @@ const categoryList: categoryItem[] = [
   { categoryID: 'category#Education' },
   { categoryID: 'category#Soft_Skill' },
 ];
-const userID = 'userID1';
+// const userID = 'userID1';
 const obj: any = {};
 
 export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [isEditing, setIsEditing] = useState(false);
   const initialCategory = initialData.category.map((cate) => {
     return {
@@ -64,7 +68,7 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
         toast.error('Must least one Category');
       }
       await updateCourse({
-        userID,
+        userID: user.userID,
         courseID,
         category: checkedList.map(
           (item) => `category#${item.categoryID.split('#')[1]}`

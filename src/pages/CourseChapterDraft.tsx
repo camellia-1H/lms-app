@@ -24,14 +24,14 @@ import { ChapterAccessForm } from '../components/CourseChapterCreate/ChapterAcce
 import { ActionChapterForm } from '../components/CourseChapterCreate/ActionChapterForm';
 import toast from 'react-hot-toast';
 
-// get user is logined = author
-const userID = 'userID1';
 const CourseChapterDraft: FC = () => {
   const location = useLocation();
   const courseID = location.state?.courseID;
   const chapterID = useSelector(
     (state: RootState) => state.course.currentCourseChapterID
   );
+
+  const user = useSelector((state: RootState) => state.user.user);
 
   const navigate = useNavigate();
 
@@ -80,7 +80,7 @@ const CourseChapterDraft: FC = () => {
       await deleteCourseChapter({
         courseID: courseIDParam ?? courseID,
         chapterID: chapterIDParam ?? chapterID,
-        userID: userID,
+        userID: user.userID,
       }).unwrap();
       toast.success('Chapter deleted');
       navigate(-1);

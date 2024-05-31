@@ -1,20 +1,19 @@
-import { useNavigate } from "react-router-dom";
-import { User } from "../models/User";
-import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 type Props = {
-  user: User;
+  accessToken: string;
   children: React.ReactNode;
 };
 
-const ProtectedRoute = ({ user, children }: Props) => {
+const ProtectedRoute = ({ accessToken, children }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user.accessToken) {
-      navigate("/login");
+    if (!accessToken) {
+      navigate('/user/login');
     }
-  }, [user, user.accessToken]);
+  }, [accessToken]);
 
   return children;
 };

@@ -12,6 +12,8 @@ import {
 } from '../../redux/coursesApi';
 import { useNavigate } from 'react-router-dom';
 import { CourseChapter } from '../../models/CourseChapter';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface ChaptersFormProps {
   initialData: CourseChapter[];
@@ -19,12 +21,10 @@ interface ChaptersFormProps {
 }
 
 export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  console.log(initialData);
-
-  const userID = 'userID1';
-  console.log('cousrId', courseID);
 
   const navigate = useNavigate();
 
@@ -59,7 +59,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       await createCourseChapter({
         courseID: courseID,
         position: initialData.length ? initialData.length : 0,
-        userID: userID,
+        userID: user.userID,
       }).unwrap();
       toast.success('Chapter created');
       toggleCreating();
@@ -96,7 +96,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       await deleteCourseChapter({
         courseID: courseID,
         chapterID: chapterID,
-        userID: userID,
+        userID: user.userID,
       }).unwrap();
       toast.success('Chapter deleted');
     } catch {

@@ -1,13 +1,15 @@
 export const routes = {
   home: '/',
-  profile: '/:userid',
-  profileLink: (userid: string) => `/@${userid}`,
+  profile: '/user/:userID',
+  profileLink: (userID: string) => `/user/${userID}`,
   upload: '/upload',
   search: '/search',
-  login: '/login',
-  register: '/register',
-  post: '/:userid/post/:postid',
-  postLink: (userid: string, postid: string) => `/@${userid}/post/${postid}`,
+  login: '/user/login',
+  register: '/user/register',
+  verify: '/user/verify-email',
+  forgot: '/user/forgot-password',
+  post: '/:userID/post/:postid',
+  postLink: (userID: string, postid: string) => `/@${userID}/post/${postid}`,
   ///
   members: '/members',
   member: '/members/:member_id', // role giao vien
@@ -30,4 +32,7 @@ export const routes = {
 
   ///
   about_us: '/about_us',
+  order: '/order',
+  payment: '/payment',
+  result: '/result',
 };

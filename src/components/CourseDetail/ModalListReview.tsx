@@ -6,25 +6,28 @@ import {
   Transition,
   TransitionChild,
 } from '@headlessui/react';
-import { useState } from 'react';
 
 const ModalListReview = ({
+  isModalListReviewOpen,
+  setModalListReviewOpen,
   listReview,
+  courseData,
   hasMore,
   handleLoadMore,
 }: {
+  isModalListReviewOpen: boolean;
+  setModalListReviewOpen: any;
   listReview: any;
+  courseData: any;
   hasMore: boolean;
   handleLoadMore: () => void;
 }) => {
-  let [isOpen, setIsOpen] = useState<boolean>(false);
-
   function open() {
-    setIsOpen(true);
+    setModalListReviewOpen(true);
   }
 
   function close() {
-    setIsOpen(false);
+    setModalListReviewOpen(false);
   }
 
   return (
@@ -36,7 +39,7 @@ const ModalListReview = ({
         More reviews
       </button>
 
-      <Transition appear show={isOpen}>
+      <Transition appear show={isModalListReviewOpen}>
         <Dialog
           as="div"
           className="relative z-50 focus:outline-none"
@@ -55,19 +58,26 @@ const ModalListReview = ({
               >
                 <DialogPanel className="w-full lg:max-w-screen-lg sm:max-w-2xl rounded-xl bg-white p-6 backdrop-blur-2xl overflow-auto ring-1 ring-gray-500/20">
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-x-2">
+                    <div className="flex items-center">
                       <FontAwesomeIcon
                         icon={faStar}
                         className="text-yellow-400 text-xl"
                       />
                       <h2 className="text-2xl font-bold">
-                        <span>4.7</span> course rating
+                        <span className="mr-1">
+                          {Math.round(
+                            (courseData.course?.totalRate /
+                              courseData.course?.totalReviews) *
+                              10
+                          ) / 10}
+                        </span>
+                        course rating
                       </h2>
                       <span className="text-2xl font-extrabold px-2 text-gray-500">
                         .
                       </span>
                       <h2 className="text-2xl font-bold">
-                        <span>293K</span> ratings
+                        <span>{courseData.course?.totalReviews}</span> ratings
                       </h2>
                     </div>
                     <button
@@ -81,7 +91,10 @@ const ModalListReview = ({
                   <div className="flex flex-col justify-center gap-y-5">
                     <div className="flex flex-wrap gap-y-3">
                       {listReview.map((review: any) => (
-                        <div className="w-6/12 px-4 flex flex-col gap-y-4 mt-4">
+                        <div
+                          key={review.courseID.concat(review.userID)}
+                          className="w-6/12 px-4 flex flex-col gap-y-4 mt-4"
+                        >
                           <div className="flex border-t border-gray-300 pt-4 gap-x-4">
                             <img
                               src="https://img-c.udemycdn.com/user/50x50/221068940_34ad.jpg"

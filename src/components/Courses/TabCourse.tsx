@@ -1,24 +1,37 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useGetListCourseRecentQuery } from '../../redux/coursesApi';
+import {
+  useGetListCoursePopularQuery,
+  useGetListCourseRecentQuery,
+} from '../../redux/coursesApi';
 import { Course } from '../../models/Course';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import CartCourse from '../CartCourse';
 
 const TabCourse = () => {
-  // console.log('listCourseQuery', listCourseQuery);
   const [tabCourse, setTabCourseValue] = useState<any>({});
   const {
     data: listCourseRecent,
     isSuccess,
     isLoading,
   } = useGetListCourseRecentQuery();
+
+  const {
+    data: listCoursePopular,
+    isSuccess: isSuccess1,
+    isLoading: isLoading1,
+  } = useGetListCoursePopularQuery();
   useEffect(() => {
     if (isSuccess) {
       setTabCourseValue({ ...tabCourse, Recent: listCourseRecent.courses });
     }
   }, [isLoading]);
+  useEffect(() => {
+    if (isSuccess1) {
+      setTabCourseValue({ ...tabCourse, Popular: listCoursePopular.courses });
+    }
+  }, [isLoading1]);
+  console.log('tabCourse', tabCourse);
+
   return (
     <div className="w-full px-2 py-16 sm:px-0">
       <TabGroup>
@@ -52,41 +65,13 @@ const TabCourse = () => {
             >
               <div className="flex lg:gap-x-4 sm:gap-x-7">
                 {courses.map((course: Course) => (
-                  <div key={course.courseID} className="lg:w-3/12 sm:w-4/12">
-                    <Link
-                      to={`/courses/${course.courseID}`}
-                      className="rounded-md"
-                    >
-                      <div className="">
-                        <img
-                          src={course.imageUrl}
-                          alt=""
-                          className="block rounded-lg w-full lg:h-60 sm:h-32"
-                        />
-                      </div>
-                      <h3 className="text-lg font-bold leading-5 mt-3 lg:w-56 sm:w-44 line-clamp-2">
-                        {course.title}
-                      </h3>
-
-                      <div className="flex flex-1 flex-col gap-y-2 font-normal leading-4 text-gray-500 w-full">
-                        <h4 className="text-md">{course.userID}</h4>
-                        <div>
-                          {course.totalRate / course.totalReviews}
-                          <FontAwesomeIcon
-                            icon={faStar}
-                            className="text-yellow-400 text-md"
-                          />
-                          <span>({course.totalReviews})</span>
-                        </div>
-                      </div>
-
-                      <div className="flex mt-1">
-                        <p>
-                          <s>123$</s>
-                        </p>
-                        <p className="ml-3 font-bold text-lg">{course.price}</p>
-                      </div>
-                    </Link>
+                  <div
+                    key={course.courseID.concat(
+                      Math.floor(Math.random() * 100).toString()
+                    )}
+                    className="lg:w-3/12 sm:w-4/12"
+                  >
+                    <CartCourse course={course} />
                   </div>
                 ))}
               </div>
