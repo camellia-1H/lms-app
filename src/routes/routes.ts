@@ -24,10 +24,13 @@ const Order = lazy(() => import('../pages/Order'));
 const Payment = lazy(() => import('../pages/Payment'));
 const Result = lazy(() => import('../pages/Result'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+const StudentDashboard = lazy(() => import('../pages/StudentDashboard'));
+const StudentCourse = lazy(() => import('../pages/StudentCourse'));
+const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
 
 // Public routes
 const publicRoutes = [
-  { path: config.routes.home, component: Home },
+  // { path: config.routes.home, component: Home },
   { path: config.routes.login, component: Login },
   { path: config.routes.register, component: Register },
   { path: config.routes.verify, component: VerifyEmail },
@@ -51,10 +54,15 @@ const privateRoutes = [
     component: CourseChapterDetail,
     layoutOnly: true,
   },
+  { path: config.routes.home, component: Home, layoutOnly: true },
   { path: config.routes.courseDraft, component: CourseDraft },
   { path: config.routes.courseCreate, component: CourseDraft },
   { path: config.routes.courseChapterCreate, component: CourseChapterDraft },
   { path: config.routes.courseChapterDraft, component: CourseChapterDraft },
+  // { path: config.routes.student_dashboard, component: Sidebar, layoutOnly: true},
+  { path: config.routes.student_dashboard2, component: StudentDashboard, layoutOnly: true},
+  { path: config.routes.student_course, component: StudentCourse, layoutOnly: true},
+  { path: config.routes.teacher_dashboard, component: TeacherDashboard, layoutOnly: true},
 ];
 
 export { publicRoutes, privateRoutes };

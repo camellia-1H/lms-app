@@ -1,13 +1,14 @@
 import { FC, ReactNode } from 'react';
-
+import Sidebar from '../pages/Sidebar';
 type Props = {
   children: ReactNode;
 };
 
 const MainOnlyLayout: FC<Props> = (props) => {
   return (
-    <div className="w-full">
-      <main className="flex-1">{props.children}</main>
+    <div className="w-full max-h-full flex bg-blue-50">
+      <Sidebar />
+      <main className="flex-1 justify-center">{props.children}</main>
     </div>
   );
 };
