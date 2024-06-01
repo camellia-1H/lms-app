@@ -20,12 +20,16 @@ import { toJpeg } from 'html-to-image';
 import toast from 'react-hot-toast';
 
 const BankPayment = ({ props }) => {
+  console.log(props);
+
   const [open, setOpen] = useState(false);
   const [openQR, setOpenQR] = useState(false);
   const [isCheckout, setIsCheckout] = useState(false);
   const [bank, setBank] = useState(null);
 
-  const socket = io('http://localhost:5173');
+  const socket = io(
+    'https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev'
+  );
 
   const navigate = useNavigate();
   const handleCopyText = (textToCopy) => {
@@ -77,10 +81,12 @@ const BankPayment = ({ props }) => {
         })
         .catch((err) => console.log(err));
     })();
+  }, []);
+  useEffect(() => {
     socket.on('paymentUpdated', (data) => {
       console.log(data);
 
-      if (data.orderID === props.orderCode) {
+      if (data.orderId === props.orderCode) {
         setIsCheckout(true);
         socket.emit('leaveOrderRoom', props.orderCode);
 
@@ -98,7 +104,7 @@ const BankPayment = ({ props }) => {
 
     socket.emit('joinOrderRoom', props.orderCode);
 
-    // Gửi yêu cầu rời khỏi phòng orderID khi component bị hủy
+    // Gửi yêu cầu rời khỏi phòng orderId khi component bị hủy
     return () => {
       socket.emit('leaveOrderRoom', props.orderCode);
     };

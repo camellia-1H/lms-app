@@ -90,19 +90,19 @@ const CourseDetailPage: FC = () => {
   // get userInfo author
   const [getAuthorInfo] = useGetUserInfoMutation();
 
-  const fetchAuthorInfo = async () => {
-    const data = await getAuthorInfo({
-      userID: courseData.userID,
-    }).unwrap();
-    setAuthInfo(data.userInfo);
-  };
-
   useEffect(() => {
+    const fetchAuthorInfo = async () => {
+      const data = await getAuthorInfo({
+        userID: courseData.course.userID,
+      }).unwrap();
+      setAuthInfo(data.userInfo);
+    };
+
     fetchGetListReview();
     if (isSuccess) {
       fetchAuthorInfo();
     }
-  }, []);
+  }, [isLoading]);
 
   /// load more review
   const handleLoadMore = async () => {
@@ -276,8 +276,7 @@ const CourseDetailPage: FC = () => {
                 {courseData.course?.title}
               </h1>
               <h2 className="text-white lg:text-4l sm:text-md">
-                Become a Full-Stack Web Developer with just ONE course. HTML,
-                CSS, Javascript, Node, React, PostgreSQL, Web3 and DApps
+                {courseData.course?.description}
               </h2>
               <div className="flex gap-x-2">
                 <span className="text-sky-300 text-sm px-2 py-1 bg-gray-600 rounded-lg">

@@ -98,41 +98,41 @@ export default function Order() {
     }
   };
 
-  // const openPaymentDialog = async (checkoutResponse: any) => {
-  //   if (checkoutResponse) {
-  //     let url = checkoutResponse.checkoutUrl;
-  //     if (checkoutResponse.checkoutUrl.startsWith('https://dev.pay.payos.vn')) {
-  //       url = checkoutResponse.checkoutUrl.replace(
-  //         'https://dev.pay.payos.vn',
-  //         'https://dev.pay.payos.vn'
-  //       );
-  //     }
-  //     if (checkoutResponse.checkoutUrl.startsWith('https://pay.payos.vn')) {
-  //       url = checkoutResponse.checkoutUrl.replace(
-  //         'https://pay.payos.vn',
-  //         'https://pay.payos.vn'
-  //       );
-  //     }
-  //     // console.log(url);
-  //     let { open } = (window as any).PayOSCheckout.usePayOS({
-  //       RETURN_URL: RETURN_URL,
-  //       ELEMENT_ID: 'config_root',
-  //       CHECKOUT_URL: url,
-  //       onExit: (eventData: any) => {
-  //         console.log(eventData);
-  //       },
-  //       onSuccess: (eventData: any) => {
-  //         console.log(eventData);
-  //         window.location.href = `${RETURN_URL}?orderCode=${eventData.orderCode}`;
-  //       },
-  //       onCancel: (eventData: any) => {
-  //         console.log(eventData);
-  //         window.location.href = `${CANCEL_URL}?orderCode=${eventData.orderCode}`;
-  //       },
-  //     });
-  //     open();
-  //   }
-  // };
+  const openPaymentDialog = async (checkoutResponse: any) => {
+    if (checkoutResponse) {
+      let url = checkoutResponse.checkoutUrl;
+      if (checkoutResponse.checkoutUrl.startsWith('https://dev.pay.payos.vn')) {
+        url = checkoutResponse.checkoutUrl.replace(
+          'https://dev.pay.payos.vn',
+          'https://dev.pay.payos.vn'
+        );
+      }
+      if (checkoutResponse.checkoutUrl.startsWith('https://pay.payos.vn')) {
+        url = checkoutResponse.checkoutUrl.replace(
+          'https://pay.payos.vn',
+          'https://pay.payos.vn'
+        );
+      }
+      // console.log(url);
+      let { open } = window.PayOSCheckout.usePayOS({
+        RETURN_URL: RETURN_URL,
+        ELEMENT_ID: 'config_root',
+        CHECKOUT_URL: url,
+        onExit: (eventData: any) => {
+          console.log(eventData);
+        },
+        onSuccess: (eventData: any) => {
+          console.log(eventData);
+          window.location.href = `${RETURN_URL}?orderCode=${eventData.orderCode}`;
+        },
+        onCancel: (eventData: any) => {
+          console.log(eventData);
+          window.location.href = `${CANCEL_URL}?orderCode=${eventData.orderCode}`;
+        },
+      });
+      open();
+    }
+  };
   return (
     <Box
       component={'div'}
@@ -206,7 +206,7 @@ export default function Order() {
             )}
           </Button>
           <Typography>Hoặc</Typography>
-          {/* <Button
+          <Button
             variant="contained"
             onClick={() =>
               createPaymentLinkHandle(openPaymentDialog, setOpenDialogLoading)
@@ -223,7 +223,7 @@ export default function Order() {
             ) : (
               ''
             )}
-          </Button> */}
+          </Button>
           <Typography>Hoặc</Typography>
           <Button
             variant="contained"

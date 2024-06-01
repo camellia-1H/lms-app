@@ -21,37 +21,28 @@ export async function getListBank() {
     const res = await axios({
       method: 'GET',
       url: `https://api.vietqr.io/v2/banks`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
     return res.data;
   } catch (error: any) {
     return error.response.data;
   }
 }
-export async function getOrder(orderID: any) {
+export async function getOrder(orderId: any) {
   try {
     const res = await axios({
       method: 'GET',
-      url: `https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev/order/${orderID}`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      url: `https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev/order/${orderId}`,
     });
     return res.data;
   } catch (error: any) {
     return error.response.data;
   }
 }
-export async function cancelOrder(orderID: any) {
+export async function cancelOrder(orderId: any) {
   try {
     const res = await axios({
       method: 'POST',
-      url: `https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev/order/${orderID}`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      url: `https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev/order/${orderId}`,
     });
     return res.data;
   } catch (error: any) {

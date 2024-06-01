@@ -23,7 +23,7 @@ const Payment = () => {
   }
 
   const handleListItemClick = (event, index) => {
-    // setSelectedIndex(index);
+    setSelectedIndex(index);
   };
   const rows = [{ id: 1, name: 'Mì tôm hảo hảo ly', quantity: 1, price: 1000 }];
 

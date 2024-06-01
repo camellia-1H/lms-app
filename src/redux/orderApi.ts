@@ -20,14 +20,14 @@ export const orderApi = createApi({
     //   }),
     // }),
     getOrder: build.query({
-      query: (orderID) => ({
-        url: `/order/${orderID}`,
+      query: (orderId) => ({
+        url: `/order/${orderId}`,
         method: 'GET',
       }),
     }),
     cancelOrder: build.mutation({
-      query: ({ cancellationReason, orderID }) => ({
-        url: `/order/${orderID}`,
+      query: ({ cancellationReason, orderId }) => ({
+        url: `/order/${orderId}`,
         method: 'POST',
         body: { cancellationReason },
       }),

@@ -301,7 +301,9 @@ const CourseChapterDetailPage: FC = () => {
             className="hover:underline cursor-pointer"
           >
             <FontAwesomeIcon icon={faChevronLeft} />
-            <span className="font-bold pl-3 text-xl">{state.title}</span>
+            <span className="font-bold pl-3 text-xl">
+              {state?.title ?? 'Title'}
+            </span>
           </button>
         </div>
         {isSuccess && (

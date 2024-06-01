@@ -144,9 +144,9 @@ const CourseDraftPage: FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-y-2">
               <h1 className="text-3xl font-bold">Course setup</h1>
-              <span className="text-base text-slate-700">
+              {/* <span className="text-base text-slate-700">
                 Complete all fields {completionText}
-              </span>
+              </span> */}
             </div>
 
             <div className="flex items-center">
