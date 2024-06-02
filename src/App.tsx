@@ -6,13 +6,13 @@ import { publicRoutes, privateRoutes } from './routes';
 import Loader from './components/Loader';
 import { Toaster } from 'react-hot-toast';
 import MainOnlyLayout from './layouts/MainOnly';
-import Sidebar from './pages/Sidebar';
 // import ProtectedRoute from "./components/ProtectRoute/ProtectRouter";
 // import { useSelector } from "react-redux";
 // import { RootState } from "./redux/store";
 import ProtectedRoute from './components/ProtectRouter';
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store';
+import MainSidebarLayout from './layouts/MainSidebarOnly';
 
 const toastOptions = {
   // Define default options
@@ -57,9 +57,15 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <DefaultLayout>
-                    <Page />
-                  </DefaultLayout>
+                  route.mainOnly ? (
+                    <MainOnlyLayout>
+                      <Page />
+                    </MainOnlyLayout>
+                  ) : (
+                    <DefaultLayout>
+                      <Page />
+                    </DefaultLayout>
+                  )
                 }
               ></Route>
             );
@@ -72,12 +78,18 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  route.layoutOnly ? (
+                  route.mainOnly ? (
                     <MainOnlyLayout>
                       <ProtectedRoute accessToken={accessToken}>
                         <Page />
                       </ProtectedRoute>
                     </MainOnlyLayout>
+                  ) : route.mainSidebarOnly ? (
+                    <MainSidebarLayout>
+                      <ProtectedRoute accessToken={accessToken}>
+                        <Page />
+                      </ProtectedRoute>
+                    </MainSidebarLayout>
                   ) : (
                     <DefaultLayout>
                       <ProtectedRoute accessToken={accessToken}>

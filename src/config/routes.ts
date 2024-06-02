@@ -33,9 +33,13 @@ export const routes = {
   ///
   about_us: '/about_us',
   /// Sidebar Student
-  student_dashboard2: '/dashboard/student',
-  student_course: '/dashboard/student/course',
-  teacher_dashboard: '/dashboard/teacher',
+  dashStudent: '/student/dashboard',
+  // student_course: '/student/dashboard/course',
+  dashTeacher: '/teacher/dashboard',
+  profileDashStudent: '/student/profile',
+  coursesDashStudent: '/student/courses',
+
+  // payment
   order: '/order',
   payment: '/payment',
   result: '/result',

@@ -34,7 +34,6 @@ import Loader from '../components/Loader';
 import { LIMIT_DATA_QUERY } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 import TabCourse from '../components/Courses/TabCourse';
-import { useGetUserInfoMutation, useGetUserInfoQuery } from '../redux/userApi';
 
 interface levelItem {
   levelID: string;

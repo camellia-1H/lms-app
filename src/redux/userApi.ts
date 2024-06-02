@@ -1,6 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import customFetchBase from './customFetchBase';
 import { setUser } from './userReducer';
+import { RootState } from './store';
 
 export const userApi = createApi({
   reducerPath: 'userApi', // ten field trong redux state
@@ -52,6 +53,19 @@ export const userApi = createApi({
         method: 'POST',
         body: data,
       }),
+      async onQueryStarted(args, { dispatch, queryFulfilled, getState }) {
+        const user = (getState() as unknown as RootState).user.user;
+        console.log('user', user);
+
+        const { data } = await queryFulfilled;
+        console.log(data);
+        if (
+          user.role === data.userInfo.role &&
+          user.userID === data.userInfo.userID
+        ) {
+          dispatch(setUser(data.userInfo));
+        }
+      },
     }),
 
     manageRequestTeacher: build.mutation({
@@ -59,6 +73,13 @@ export const userApi = createApi({
         url: `/user/request-teacher`,
         method: 'POST',
         body: data,
+      }),
+    }),
+
+    getListCoursesProgress: build.query({
+      query: (userID) => ({
+        url: `/user/${userID}/get-list-progress`,
+        method: 'GET',
       }),
     }),
   }),
@@ -71,4 +92,6 @@ export const {
   useResendConfirmCodeMutation,
   useGetUserInfoMutation,
   useManageRequestTeacherMutation,
+  //GET
+  useGetListCoursesProgressQuery,
 } = userApi;

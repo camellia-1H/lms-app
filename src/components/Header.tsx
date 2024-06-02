@@ -15,6 +15,7 @@ import {
 import { RootState } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { logOut } from '../redux/userReducer';
+import { ROLE_USER } from '../constants/common';
 
 const navigation = [
   { name: 'Home', href: '/', current: true, notInM: true },
@@ -33,6 +34,7 @@ const active = (item: any) => {
 
 const Header: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
+  console.log('user', user);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ const Header: React.FC = () => {
         <Disclosure as="nav" className="bg-white">
           {({ open }) => (
             <>
-              <div className="mx-auto max-w-7xl">
+              <div className="mx-auto">
                 <div className="flex h-16 items-center justify-between">
                   <div className="flex items-center">
                     <div className="hidden md:block">
@@ -83,12 +85,13 @@ const Header: React.FC = () => {
                           <FontAwesomeIcon icon={faBell} />
                         </button>
                         <Menu as={'div'} className={'ml-3'}>
-                          <MenuButton className="inline-flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
-                            <img
-                              className="h-10 w-10"
-                              src={user.avatar}
-                              alt="khong cos avaldad"
-                            />
+                          <MenuButton className="inline-flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
+                            <div>
+                              <img
+                                className="h-10 lg:w-10 md:w-11 rounded-full ring-1 hover:bg-black block"
+                                src={user.avatar}
+                              />
+                            </div>
                           </MenuButton>
                           <Transition
                             enter="transition ease-out duration-75"
@@ -105,11 +108,15 @@ const Header: React.FC = () => {
                               <MenuItem>
                                 <button
                                   onClick={() =>
-                                    navigate(`/user/${user.userID}`)
+                                    navigate(
+                                      user.role === ROLE_USER.RHV
+                                        ? `/student/dashboard`
+                                        : `/teacher/dashboard`
+                                    )
                                   }
                                   className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
                                 >
-                                  Your profile
+                                  Dashboard
                                 </button>
                               </MenuItem>
                               <MenuSeparator className="my-1 h-px bg-gray-300" />
@@ -165,12 +172,14 @@ const Header: React.FC = () => {
                           </button>
 
                           <Menu as={'div'} className={'ml-3'}>
-                            <MenuButton className="flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
-                              <img
-                                className="h-10 w-10"
-                                src={user.avatar}
-                                alt="khong cos avaldad"
-                              />
+                            <MenuButton className="flex items-center gap-2 rounded-md font-semibold text-white shadow-inner shadow-white/10 data-[focus]:outline-1 data-[focus]:outline-white">
+                              <div>
+                                <img
+                                  className="h-10 w-10 rounded-full ring-1 hover:bg-black"
+                                  src={user.avatar}
+                                  alt="khong cos avaldad"
+                                />
+                              </div>
                             </MenuButton>
                             <Transition
                               enter="transition ease-out duration-75"
@@ -187,11 +196,15 @@ const Header: React.FC = () => {
                                 <MenuItem>
                                   <button
                                     onClick={() =>
-                                      navigate(`/user/${user.userID}`)
+                                      navigate(
+                                        user.role === ROLE_USER.RHV
+                                          ? `/student/dashboard`
+                                          : `/teacher/dashboard`
+                                      )
                                     }
                                     className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
                                   >
-                                    Your profile
+                                    Dashboard
                                   </button>
                                 </MenuItem>
                                 <MenuSeparator className="my-1 h-px bg-gray-300" />

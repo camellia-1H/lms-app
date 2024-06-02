@@ -652,7 +652,7 @@ const CourseDetailPage: FC = () => {
                 </p>
                 <div className="flex items-center">
                   <div className="mr-4">
-                    <Link to={'/profile'}>
+                    <Link to={`/user/${courseData.course?.userID}`}>
                       <img
                         src="https://img-c.udemycdn.com/user/200_H/13922584_4ff5_3.jpg"
                         alt=""
