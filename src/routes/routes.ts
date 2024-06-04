@@ -63,7 +63,6 @@ const publicRoutes = [
   { path: '*', component: NotFound, mainOnly: true },
   { path: config.routes.payment, component: Payment },
   { path: config.routes.order, component: Order },
-  { path: config.routes.result, component: Result },
   { path: config.routes.home, component: Home },
   { path: config.routes.profile, component: ProfileFrontPage },
 ];
@@ -131,6 +130,9 @@ const privateRoutes = [
     component: StatsReviewsDashPage,
     mainSidebarOnly: true,
   },
+
+  /// payment
+  { path: config.routes.result, component: Result, mainOnly: true },
 ];
 
 export { publicRoutes, privateRoutes };

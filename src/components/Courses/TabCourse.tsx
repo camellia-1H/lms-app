@@ -30,7 +30,6 @@ const TabCourse = () => {
       setTabCourseValue({ ...tabCourse, Popular: listCoursePopular.courses });
     }
   }, [isLoading1]);
-  console.log('tabCourse', tabCourse);
 
   return (
     <div className="w-full px-2 py-16 sm:px-0">

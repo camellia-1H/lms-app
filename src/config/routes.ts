@@ -48,5 +48,5 @@ export const routes = {
   // payment
   order: '/order',
   payment: '/payment',
-  result: '/result',
+  result: '/orderresult',
 };

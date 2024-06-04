@@ -20,7 +20,7 @@ import { ROLE_USER } from '../constants/common';
 const navigation = [
   { name: 'Home', href: '/', current: true, notInM: true },
   { name: 'Why team ?', href: '/about_us', current: false },
-  { name: 'Course', href: '/courses', current: false },
+  { name: 'Courses', href: '/courses', current: false },
   { name: 'Our instructor', href: '/members', current: false },
   { name: 'Pricing', href: '/register-member', current: false },
 ];

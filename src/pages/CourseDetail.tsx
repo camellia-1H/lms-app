@@ -45,6 +45,8 @@ const CourseDetailPage: FC = () => {
 
   // user(student)
   const [listChaptersCompleted, setListChapterCompleted] = useState<any[]>([]);
+
+  const [listChaptersOfCourses, setListChapterOfCourses] = useState<any[]>([]);
   const [nextChapter, setNextChapter] = useState<string>('');
 
   // LIST REVIEW
@@ -128,6 +130,7 @@ const CourseDetailPage: FC = () => {
     });
     useEffect(() => {
       if (isSuccess) {
+        setListChapterOfCourses(data.chapters);
         if (data.progress) {
           setListChapterCompleted(data?.progress?.completed);
           for (const a of data.chapters) {
@@ -168,8 +171,10 @@ const CourseDetailPage: FC = () => {
       if (window.scrollY > 370) {
         setScrollShow(1);
       } else setScrollShow(0);
-      // console.log('window.scrollY', window.scrollY);
-      if (window.scrollY > window.innerHeight * 2 + 100) {
+      console.log('window.scrollY', window.scrollY);
+      console.log(window.innerHeight);
+
+      if (window.scrollY > window.innerHeight * 1.5) {
         setScrollShow(2);
       }
     };
@@ -272,9 +277,22 @@ const CourseDetailPage: FC = () => {
           </div>
         </div>
       )}
-      <div className="lg:hidden sm:block lg:px-32 md:px-20 sm:px-6 py-10 ">
-        <div className="bg-[url('https://img-c.udemycdn.com/course/240x135/2196488_8fc7_10.jpg')] bg-cover bg-no-repeat min-h-[300px]"></div>
-      </div>
+      {isSuccess && (
+        <div className="lg:hidden sm:block lg:px-32 md:px-20 sm:px-6 py-10 ">
+          <div
+            className={[
+              'bg-cover bg-no-repeat min-h-[300px] ',
+              `bg-[url(${courseData.course?.imageUrl})]`,
+            ].join('')}
+          >
+            <img
+              src={courseData.course?.imageUrl}
+              alt="courseData.course?.imageUrl"
+              className="w-full max-h-[300px] "
+            />
+          </div>
+        </div>
+      )}
       {/* {(isLoading || isDeleteChapterLoading) && <Loader />} */}
       {isSuccess && (
         <div className="bg-[#111827]">
@@ -386,7 +404,55 @@ const CourseDetailPage: FC = () => {
 
                 <div className="border border-gray-200 shadow-sm">
                   <div className="flex flex-col gap-x-4 px-6">
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
+                    {listChaptersOfCourses.map((chapter) => (
+                      <div
+                        key={chapter.chapterID}
+                        className="flex justify-between border-b border-gray-200/90 py-5"
+                      >
+                        <div className="flex gap-x-3">
+                          <Disclosure>
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-x-3">
+                                <FontAwesomeIcon
+                                  icon={faVideo}
+                                  className="text-sky-500"
+                                />
+
+                                <div className="flex">
+                                  <p>
+                                    <span>{chapter.position + 1}. </span>{' '}
+                                    {chapter.chapterTitle}
+                                  </p>
+                                  <Disclosure.Button className="pl-2">
+                                    <FontAwesomeIcon icon={faChevronDown} />
+                                  </Disclosure.Button>
+                                </div>
+                              </div>
+                              <>
+                                <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
+                                  Yes! You can purchase a license that you can
+                                  share with your entire team.
+                                </Disclosure.Panel>
+                              </>
+                            </div>
+                          </Disclosure>
+                        </div>
+                        {chapter.isPublished && (
+                          <div className="flex gap-x-2 items-start">
+                            <button className="text-sky-400 underline">
+                              Preview(ifpublish)
+                            </button>
+                            <video
+                              src={chapter.chapterVideoUrl}
+                              controls
+                            ></video>
+                            <span className="text-gray-500">05:59</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* <div className="flex justify-between border-b border-gray-200/90 py-5">
                       <div className="flex gap-x-3">
                         <Disclosure>
                           <div className="flex flex-col">
@@ -565,46 +631,11 @@ const CourseDetailPage: FC = () => {
                         </button>
                         <span className="text-gray-500">05:59</span>
                       </div>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
+
               {/* COURSE DESCRIPTION */}
               <div>
                 <h2 className="text-2xl font-bold mb-2">Course Description</h2>

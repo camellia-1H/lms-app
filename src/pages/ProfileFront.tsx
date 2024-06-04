@@ -62,7 +62,7 @@ const ProfileFrontPage: FC = () => {
   return (
     <>
       {isLoading && <Loader />}
-      {isSuccess && (
+      {isSuccess && authInfo && (
         <div className="lg:px-64 md:px-20 sm:px-6">
           <div className="mt-36 flex justify-between">
             <div>

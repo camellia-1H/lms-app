@@ -97,6 +97,17 @@ const TeacherDashboard: React.FC = () => {
       ></Tag>
     );
   };
+  const categoryBodyTemplate = (course: any) => {
+    let category = '';
+    if (course.category.length) {
+      (course.category as any[]).forEach((item) => {
+        category += `${(item.split('#')[1] as string).replace('_', ' ')}, `;
+      });
+    }
+    console.log(category);
+
+    return category;
+  };
 
   return (
     <>
@@ -209,13 +220,15 @@ const TeacherDashboard: React.FC = () => {
                       field="category"
                       header="Category"
                       sortable
-                      style={{ fontSize: '18px', minWidth: '12rem' }}
+                      style={{ fontSize: '18px', maxWidth: '8rem' }}
                       className="text-lg"
+                      body={categoryBodyTemplate}
                     />
                     <Column
                       field="courseStatus"
                       header="Status"
                       sortable
+                      style={{ fontSize: '18px', maxWidth: '4.5rem' }}
                       body={statusBodyTemplate}
                       className="text-lg"
                     />

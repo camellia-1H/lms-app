@@ -24,10 +24,12 @@ const CartCourse = ({ course }: { course: Course }) => {
         </h4>
         <div className="flex">
           <span className="font-bold">
-            {Math.round((course.totalRate / course.totalReviews) * 10) / 10}
+            {Math.ceil((course.totalRate / course.totalReviews) * 10) / 10 || 0}
           </span>
           <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-md" />
-          <span className="ml-1 text-gray-600">({course.totalReviews})</span>
+          <span className="ml-1 text-gray-600">
+            ({course.totalReviews || 0})
+          </span>
         </div>
       </div>
 

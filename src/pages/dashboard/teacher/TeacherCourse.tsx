@@ -11,7 +11,10 @@ import { useGetListCoursesProgressQuery } from '../../../redux/userApi';
 import Loader from '../../../components/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import ProgressBar from '@ramonak/react-progress-bar';
-import { useGetListCoursesMutation } from '../../../redux/coursesApi';
+import {
+  useCreateCourseMutation,
+  useGetListCoursesMutation,
+} from '../../../redux/coursesApi';
 import { COURSE_STATUS } from '../../../constants/common';
 import { Tag } from 'primereact/tag';
 
@@ -27,6 +30,9 @@ const TeacherCoursesDashPage: FC = () => {
   // const [hasMore, setMore] = useState<boolean>();
   const [getListCourses, { isLoading, isSuccess: isSuccessGetListCourses }] =
     useGetListCoursesMutation();
+
+  const [createCourse, { isSuccess, isLoading: createCourseLoading }] =
+    useCreateCourseMutation();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -44,6 +50,12 @@ const TeacherCoursesDashPage: FC = () => {
   useEffect(() => {
     initFilters();
   }, []);
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate('/courses/create');
+    }
+  }, [createCourseLoading]);
 
   const clearFilter = () => {
     initFilters();
@@ -143,7 +155,7 @@ const TeacherCoursesDashPage: FC = () => {
     let category = '';
     if (course.category.length) {
       (course.category as any[]).forEach((item) => {
-        category += `${item.split('#')[1]} `;
+        category += `${(item.split('#')[1] as string).replace('_', ' ')}, `;
       });
     }
     console.log(category);
@@ -154,7 +166,7 @@ const TeacherCoursesDashPage: FC = () => {
 
   return (
     <div className="">
-      {isLoading && <Loader />}
+      {(isLoading || createCourseLoading) && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className="self-end">
           <Link to={'/'} className="flex items-center">
@@ -168,8 +180,22 @@ const TeacherCoursesDashPage: FC = () => {
         </div>
 
         <div className="flex flex-col gap-y-4">
-          <div>
+          <div className="flex justify-between">
             <h2 className="text-3xl font-bold">My Course</h2>
+            <button
+              onClick={() => {
+                createCourse({ userID: user.userID, authorName: user.name });
+              }}
+              disabled={createCourseLoading}
+              className={[
+                createCourseLoading
+                  ? 'bg-gray-500/70 '
+                  : 'cursor-pointer hover:bg-black bg-blue-500 ',
+                'px-3 py-2 rounded-lg text-white font-bold',
+              ].join('')}
+            >
+              Create
+            </button>
           </div>
         </div>
       </div>

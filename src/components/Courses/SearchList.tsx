@@ -11,7 +11,10 @@ const SearchList = ({
   return (
     <div>
       {listCourseQuery.map((course) => (
-        <SearchItem courseData={course} key={course.courseID} />
+        <SearchItem
+          courseData={course}
+          key={course.courseID?.concat(course.updatedAt as string)}
+        />
       ))}
     </div>
   );

@@ -26,7 +26,7 @@ export default function Order() {
   // const [createPaymentLink] = useCreatePaymentLinkMutation();
 
   const [loading, error] = useScript({
-    src: "https://cdn.payos.vn/payos-checkout/v1/stable/payos-initialize.js",
+    src: 'https://cdn.payos.vn/payos-checkout/v1/stable/payos-initialize.js',
     checkForExisting: true,
   });
   const RETURN_URL = `${window.location.href}result/`;
@@ -47,8 +47,8 @@ export default function Order() {
       });
       let response = await createPaymentLink(body);
       console.log(response);
-      if (response.data.error != 0) throw new Error('Call Api failed: ');
-      callbackFunction(response.data.data);
+      if (response.error != 0) throw new Error('Call Api failed: ');
+      callbackFunction(response.data);
       setLoading(false);
     } catch (error) {
       console.log(error);

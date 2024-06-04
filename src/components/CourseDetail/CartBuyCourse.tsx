@@ -86,7 +86,7 @@ const CartBuyCourse = ({
         }
       >
         <img
-          src="https://img-c.udemycdn.com/course/240x135/2196488_8fc7_10.jpg"
+          src={courseData.imageUrl}
           alt=""
           className="lg:block sm:hidden w-full"
         />

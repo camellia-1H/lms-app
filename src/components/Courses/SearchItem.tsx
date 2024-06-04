@@ -12,7 +12,7 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
       <div className="w-full flex">
         <div className="lg:w-4/12 sm:w-6/12">
           <img
-            src="https://demos.wplms.io/main/wp-content/uploads/2023/06/c2.jpg"
+            src={courseData.imageUrl}
             alt=""
             className="rounded-xl block w-full"
           />

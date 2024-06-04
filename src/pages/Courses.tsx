@@ -20,35 +20,22 @@ import {
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import Search from '../components/Search';
 import SearchList from '../components/Courses/SearchList';
 import { RootState } from '../redux/store';
 import {
   useCreateCourseMutation,
-  useGetListCategoryMasterQuery,
-  useGetListLevelMasterQuery,
-  useGetListPriceMasterQuery,
   useSearchCourseFilterMutation,
 } from '../redux/coursesApi';
 import Loader from '../components/Loader';
 import { LIMIT_DATA_QUERY } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 import TabCourse from '../components/Courses/TabCourse';
+import SearchFilter from '../components/Courses/SearchFilter';
+import { categoryList, priceList, levelList } from '../constants/data-master';
 
 interface levelItem {
   levelID: string;
   levelType: string;
-}
-
-interface categoryItem {
-  categoryID: string;
-}
-
-interface priceItem {
-  priceID: string;
-  priceMin: number;
-  priceMax: number;
-  checked: boolean;
 }
 
 const CoursesPage: FC = () => {
@@ -56,11 +43,11 @@ const CoursesPage: FC = () => {
 
   const navigate = useNavigate();
 
-  const [categoryList, setCategoryList] = useState<categoryItem[]>([]);
-  const [levelExp, setLevelExp] = useState<levelItem[]>([]);
-  const [priceList, setPriceList] = useState<Partial<priceItem>[]>([]);
-
-  const [filteredCategoryList, setFilteredCategoryList] = useState<any[]>([]);
+  const [levelExp, setLevelExp] = useState<levelItem[]>(levelList);
+  const [priceListMaster, setPriceList] = useState<any[]>(priceList);
+  const [filteredCategoryList, setFilteredCategoryList] =
+    useState<any[]>(categoryList);
+  console.log(filteredCategoryList);
 
   const [selected, setSelected] = useState({ levelID: '' });
   const [checkedList, setCheckedList] = useState<any[]>([]);
@@ -98,22 +85,6 @@ const CoursesPage: FC = () => {
   const [createCourse, { isSuccess, isError, error, isLoading }] =
     useCreateCourseMutation();
 
-  const {
-    data: listCategoryMaster,
-    isLoading: isLoading1,
-    isSuccess: getListCategoryMasterSuccess,
-  } = useGetListCategoryMasterQuery();
-  const {
-    data: listPriceMaster,
-    isLoading: isLoading2,
-    isSuccess: getListPriceMasterSuccess,
-  } = useGetListPriceMasterQuery();
-  const {
-    data: listLevelMaster,
-    isLoading: isLoading3,
-    isSuccess: getListLevelMasterSuccess,
-  } = useGetListLevelMasterQuery();
-
   const [searchCourseFilter] = useSearchCourseFilterMutation();
 
   useEffect(() => {
@@ -126,25 +97,14 @@ const CoursesPage: FC = () => {
   }, [isLoading]);
 
   useEffect(() => {
-    if (getListCategoryMasterSuccess) {
-      setCategoryList(listCategoryMaster.categories);
-      setFilteredCategoryList(listCategoryMaster.categories);
-    }
-    if (getListPriceMasterSuccess) {
-      const prices: any[] = [];
-      listPriceMaster.prices.map((item: priceItem) => {
-        prices.push({ ...item, checked: false });
-      });
-      setPriceList(prices);
-    }
-    if (getListLevelMasterSuccess) {
-      setLevelExp(listLevelMaster.levels);
-
-      setCheckedList([listLevelMaster.levels[3]]);
-
-      setSelected(listLevelMaster.levels[3]);
-    }
-  }, [isLoading1, isLoading2, isLoading3]);
+    const prices: any[] = [];
+    priceList.map((item: any) => {
+      prices.push({ ...item, checked: false });
+    });
+    setPriceList(prices);
+    setCheckedList([levelExp[3]]);
+    setSelected(levelExp[3]);
+  }, []);
 
   useEffect(() => {
     console.log('newest checkedList', checkedList);
@@ -152,7 +112,9 @@ const CoursesPage: FC = () => {
   }, [checkedList, checkedList.length]);
 
   const handleClearFilter = () => {
-    priceList.map((price) => {
+    console.log(priceList);
+
+    priceListMaster.map((price) => {
       price.checked = false;
     });
     setCategorySelected([]);
@@ -166,13 +128,13 @@ const CoursesPage: FC = () => {
     setLoadingFilter(true);
     const level = checkedList.filter((item) => item.levelID);
     const price = checkedList.filter((item) => item.priceID);
+
     const categories = checkedList.filter((item) => item.categoryID);
 
     let routerLink = [
       level.length ? `?level=${level[0].levelType}` : '',
       price.length ? `&price=${price[0].priceID}` : '',
     ].join('');
-    console.log('categories', categories);
 
     if (categories.length) {
       categories.forEach((item) => {
@@ -193,10 +155,8 @@ const CoursesPage: FC = () => {
     }).unwrap();
     // setListCourseQuery([...listCourseQuery, ...listCourseQueryRel.courses]);
     setListCourseQuery(listCourseQueryRel.courses);
-    setMoreCourse(listCourseQueryRel.hasMore);
+    // setMoreCourse(listCourseQueryRel.hasMore);
     setLoadingFilter(false);
-
-    console.log('Query result ', listCourseQueryRel);
   };
 
   return (
@@ -251,7 +211,10 @@ const CoursesPage: FC = () => {
                 </button>
               </div>
 
-              <Search />
+              <SearchFilter
+                listCourses={listCourseQuery}
+                setListCourseQuery={setListCourseQuery}
+              />
             </div>
             <div className="flex justify-between">
               <div
@@ -263,199 +226,193 @@ const CoursesPage: FC = () => {
                 <div className="mt-6">
                   <div className="mt-6 py-3 border-t-2">
                     <h1 className="font-bold text-2xl mb-4">Level</h1>
-                    {getListLevelMasterSuccess && (
-                      <Listbox
-                        value={selected}
-                        onChange={(select) => {
-                          setSelected(select);
-                          const newCheckedList = checkedList.filter(
-                            (level: levelItem) => !level.levelID
-                          );
-                          setCheckedList([...newCheckedList, select]);
-                        }}
-                      >
-                        <div className="relative mt-1">
-                          <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-                            <span className="block truncate">
-                              {selected?.levelID.split('#')[1]}
-                            </span>
-                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                              <FontAwesomeIcon icon={faFilter} />
-                            </span>
-                          </Listbox.Button>
-                          <Transition
-                            as={React.Fragment}
-                            leave="transition ease-in duration-100"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                          >
-                            <Listbox.Options className="absolute mt-1 max-h-60 z-10 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                              {levelExp.map((level, levelIndex) => (
-                                <Listbox.Option
-                                  key={levelIndex}
-                                  className={({ active }) =>
-                                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                      active
-                                        ? 'bg-amber-100 text-amber-900'
-                                        : 'text-gray-900'
-                                    }`
-                                  }
-                                  value={level}
-                                >
-                                  {({ selected }) => (
-                                    <>
-                                      <span
-                                        className={`block truncate ${
-                                          selected ? 'font-bold' : 'font-normal'
-                                        }`}
-                                      >
-                                        {level.levelID.split('#')[1]}
-                                      </span>
-                                      {selected ? (
-                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                          <FontAwesomeIcon icon={faFilter} />
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </Listbox.Option>
-                              ))}
-                            </Listbox.Options>
-                          </Transition>
-                        </div>
-                      </Listbox>
-                    )}
-                  </div>
-                  <div className="mt-6 py-3 border-t-2">
-                    <h1 className="font-bold text-2xl mb-4">Category</h1>
-                    {getListCategoryMasterSuccess && (
-                      <Combobox
-                        multiple
-                        value={categorySelected}
-                        onChange={(value: any) => {
-                          console.log('value', value);
-
-                          if (value.length > categorySelected.length) {
-                            console.log('ínert');
-                            setCategorySelected(value);
-                            const newCheckedList = removeDuplicateCheckedList(
-                              checkedList,
-                              value
-                            );
-                            setCheckedList(newCheckedList);
-                          } else if (value.length < categorySelected.length) {
-                            console.log('deletekeken');
-                            setCategorySelected(value);
-                            const newCheckedList = removeCategoryItemOfArrays(
-                              checkedList,
-                              value
-                            );
-                            setCheckedList(newCheckedList);
-                          } else {
-                            console.log('===================');
-                          }
-                        }}
-                      >
-                        <div className="relative mt-1">
-                          <ComboboxInput
-                            className="w-full border-none text-sm/6 rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md outline-gray-300 "
-                            // displayValue={(category: categoryItem) =>
-                            //   // category.categoryID.split('#')[1]
-                            //   console.log(category)
-                            // }
-                            onChange={(event: any) =>
-                              setQueryCategory(event.target.value)
-                            }
-                            placeholder="Search Category"
-                          />
-                          <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
-                            <FontAwesomeIcon
-                              icon={faChevronDown}
-                              className="size-4 fill-white/60 group-data-[hover]:fill-white"
-                            />
-                          </ComboboxButton>
-                        </div>
+                    <Listbox
+                      value={selected}
+                      onChange={(select) => {
+                        setSelected(select);
+                        const newCheckedList = checkedList.filter(
+                          (level: levelItem) => !level.levelID
+                        );
+                        setCheckedList([...newCheckedList, select]);
+                      }}
+                    >
+                      <div className="relative mt-1">
+                        <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                          <span className="block truncate">
+                            {selected?.levelID.split('#')[1]}
+                          </span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <FontAwesomeIcon icon={faFilter} />
+                          </span>
+                        </Listbox.Button>
                         <Transition
+                          as={React.Fragment}
                           leave="transition ease-in duration-100"
                           leaveFrom="opacity-100"
                           leaveTo="opacity-0"
-                          afterLeave={() => setQueryCategory('')}
                         >
-                          <ComboboxOptions
-                            anchor="bottom"
-                            className="mt-2 max-h-60 lg:w-[calc(25%-4rem)] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm [--anchor-gap:var(--spacing-1)] empty:hidden"
-                          >
-                            {filteredCategoryList.map((category) => (
-                              <ComboboxOption
-                                key={category.categoryID}
-                                value={category}
-                                className="group cursor-pointer items-center -px-2 rounded-lg select-none data-[focus]:bg-white/10"
+                          <Listbox.Options className="absolute mt-1 max-h-60 z-10 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+                            {levelExp.map((level, levelIndex) => (
+                              <Listbox.Option
+                                key={levelIndex}
+                                className={({ active }) =>
+                                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                    active
+                                      ? 'bg-amber-100 text-amber-900'
+                                      : 'text-gray-900'
+                                  }`
+                                }
+                                value={level}
                               >
-                                <div className="w-full gap-2 flex items-center group-data-[selected]:bg-amber-100 group-data-[selected]:text-amber-700 group-data-[selected]:font-bold py-1.5 px-3 ">
-                                  <FontAwesomeIcon
-                                    icon={faFilter}
-                                    className="invisible size-4 fill-white group-data-[selected]:visible"
-                                  />
-                                  <div className="text-sm/6">
-                                    {category.categoryID.split('#')[1]}
-                                  </div>
-                                </div>
-                              </ComboboxOption>
+                                {({ selected }) => (
+                                  <>
+                                    <span
+                                      className={`block truncate ${
+                                        selected ? 'font-bold' : 'font-normal'
+                                      }`}
+                                    >
+                                      {level.levelID.split('#')[1]}
+                                    </span>
+                                    {selected ? (
+                                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                        <FontAwesomeIcon icon={faFilter} />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
                             ))}
-                          </ComboboxOptions>
+                          </Listbox.Options>
                         </Transition>
-                        {categorySelected.length > 0 && (
-                          <ul className="mt-3 flex gap-2 flex-wrap">
-                            {categorySelected.map((categoryItemSelected) => (
-                              <li
-                                key={categoryItemSelected.categoryID}
-                                className="flex bg-sky-400 text-gray-600 w-fit px-1 rounded"
-                              >
-                                {categoryItemSelected?.categoryID.split('#')[1]}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </Combobox>
-                    )}
+                      </div>
+                    </Listbox>
+                  </div>
+                  <div className="mt-6 py-3 border-t-2">
+                    <h1 className="font-bold text-2xl mb-4">Category</h1>
+
+                    <Combobox
+                      multiple
+                      value={categorySelected}
+                      onChange={(value: any) => {
+                        console.log('value', value);
+
+                        if (value.length > categorySelected.length) {
+                          console.log('ínert');
+                          setCategorySelected(value);
+                          const newCheckedList = removeDuplicateCheckedList(
+                            checkedList,
+                            value
+                          );
+                          setCheckedList(newCheckedList);
+                        } else if (value.length < categorySelected.length) {
+                          console.log('deletekeken');
+                          setCategorySelected(value);
+                          const newCheckedList = removeCategoryItemOfArrays(
+                            checkedList,
+                            value
+                          );
+                          setCheckedList(newCheckedList);
+                        } else {
+                          console.log('===================');
+                        }
+                      }}
+                    >
+                      <div className="relative mt-1">
+                        <ComboboxInput
+                          className="w-full border-none text-sm/6 rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md outline-gray-300 "
+                          // displayValue={(category: categoryItem) =>
+                          //   // category.categoryID.split('#')[1]
+                          //   console.log(category)
+                          // }
+                          onChange={(event: any) =>
+                            setQueryCategory(event.target.value)
+                          }
+                          placeholder="Search Category"
+                        />
+                        <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
+                          <FontAwesomeIcon
+                            icon={faChevronDown}
+                            className="size-4 fill-white/60 group-data-[hover]:fill-white"
+                          />
+                        </ComboboxButton>
+                      </div>
+                      <Transition
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                        afterLeave={() => setQueryCategory('')}
+                      >
+                        <ComboboxOptions
+                          anchor="bottom"
+                          className="mt-2 max-h-60 lg:w-[calc(25%-4rem)] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm [--anchor-gap:var(--spacing-1)] empty:hidden"
+                        >
+                          {filteredCategoryList.map((category) => (
+                            <ComboboxOption
+                              key={category.categoryID}
+                              value={category}
+                              className="group cursor-pointer items-center -px-2 rounded-lg select-none data-[focus]:bg-white/10"
+                            >
+                              <div className="w-full gap-2 flex items-center group-data-[selected]:bg-amber-100 group-data-[selected]:text-amber-700 group-data-[selected]:font-bold py-1.5 px-3 ">
+                                <FontAwesomeIcon
+                                  icon={faFilter}
+                                  className="invisible size-4 fill-white group-data-[selected]:visible"
+                                />
+                                <div className="text-sm/6">
+                                  {category.categoryID.split('#')[1]}
+                                </div>
+                              </div>
+                            </ComboboxOption>
+                          ))}
+                        </ComboboxOptions>
+                      </Transition>
+                      {categorySelected.length > 0 && (
+                        <ul className="mt-3 flex gap-2 flex-wrap">
+                          {categorySelected.map((categoryItemSelected) => (
+                            <li
+                              key={categoryItemSelected.categoryID}
+                              className="flex bg-sky-400 text-gray-600 w-fit px-1 rounded"
+                            >
+                              {categoryItemSelected?.categoryID.split('#')[1]}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </Combobox>
                   </div>
 
                   <div className="mt-6 py-3 border-t-2">
                     <h1 className="font-bold text-2xl mb-4">Price</h1>
-                    {getListPriceMasterSuccess && (
-                      <div>
-                        {priceList.map((price) => (
-                          <div
-                            key={price.priceID}
-                            className="flex items-center"
-                          >
-                            <input
-                              type="radio"
-                              id={price.priceID}
-                              name={price.priceID}
-                              checked={price.checked}
-                              className="w-4 h-4 mr-2"
-                              onChange={(e) => {
-                                priceList.map(
-                                  (price) => (price.checked = false)
-                                );
-                                price.checked = e.target.checked;
-                                const newCheckedList = checkedList.filter(
-                                  (priceCheck: priceItem) => !priceCheck.priceID
-                                );
-                                setCheckedList([...newCheckedList, price]);
-                              }}
-                            />
-                            <label htmlFor={price.priceID}>
-                              <span>
-                                {numberWithCommas(price.priceMin as number)} ~
-                                {numberWithCommas(price.priceMax as number)}
-                              </span>
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {/* {getListPriceMasterSuccess && ( */}
+                    <div>
+                      {priceListMaster.map((price) => (
+                        <div key={price.priceID} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={price.priceID}
+                            name={price.priceID}
+                            checked={price.checked}
+                            className="w-4 h-4 mr-2"
+                            onChange={(e) => {
+                              priceListMaster.map(
+                                (price) => (price.checked = false)
+                              );
+                              price.checked = e.target.checked;
+                              const newCheckedList = checkedList.filter(
+                                (priceCheck: any) => !priceCheck.priceID
+                              );
+                              setCheckedList([...newCheckedList, price]);
+                            }}
+                          />
+                          <label htmlFor={price.priceID}>
+                            <span>
+                              {numberWithCommas(price.priceMin as number)} ~
+                              {numberWithCommas(price.priceMax as number)}
+                            </span>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    {/* )} */}
                   </div>
                 </div>
               </div>

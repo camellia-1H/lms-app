@@ -89,8 +89,11 @@ export const coursesApi = createApi({
 
     searchCourse: build.mutation({
       query: (searchValue) => ({
-        url: `/courses/search?q=${searchValue}`,
+        url: `/courses/search`,
         method: 'POST',
+        body: {
+          querySearch: searchValue,
+        },
       }),
     }),
 
@@ -174,27 +177,6 @@ export const coursesApi = createApi({
       invalidatesTags: ['updateCourseChapter'],
     }),
 
-    getListCategoryMaster: build.query({
-      query: () => ({
-        url: `/courses/get-list-category`,
-        method: 'GET',
-        keepUnusedDataFor: 3600,
-      }),
-    }),
-    getListPriceMaster: build.query({
-      query: () => ({
-        url: `/courses/get-list-price`,
-        method: 'GET',
-        keepUnusedDataFor: 3600,
-      }),
-    }),
-    getListLevelMaster: build.query({
-      query: () => ({
-        url: `/courses/get-list-level`,
-        method: 'GET',
-        keepUnusedDataFor: 3600,
-      }),
-    }),
     buyCourse: build.mutation({
       query: (data) => ({
         url: `/courses/buy-course`,
@@ -276,9 +258,6 @@ export const {
   useUpdateCourseChapterMutation,
   useCreateCourseChapterVideoMutation,
   useDeleteCourseChapterMutation,
-  useGetListCategoryMasterQuery,
-  useGetListPriceMasterQuery,
-  useGetListLevelMasterQuery,
   useBuyCourseMutation,
   useUpdateCourseProgressMutation,
   // rating, review

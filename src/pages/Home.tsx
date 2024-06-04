@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import Search from '../components/Search';
+import SearchFront from '../components/SearchFront';
 import CartCategoryList from '../components/CartCategoryList';
 import { Link } from 'react-router-dom';
 import CartCourseList from '../components/CartCourseList';
@@ -18,7 +18,7 @@ const Home: FC = () => {
             <h2 className="text-lg pb-2">
               Choose among 1000+ programs for the kids
             </h2>
-            <Search />
+            <SearchFront />
             <p className="opacity-60 pt-6">
               300,000+ Students, 180 Instructors , 56 Subjects, 1million hours
               of Teaching
@@ -101,7 +101,7 @@ const Home: FC = () => {
         </div>
         <div className="mt-20">
           <div className="">
-            <div className="flex flex-col text-center">
+            <div className="flex flex-col text-center mb-8">
               <h1 className="text-3xl font-bold">Popular Courses</h1>
               <p className="text-xl mt-6">
                 Choose from 100+ courses from experienced teachers

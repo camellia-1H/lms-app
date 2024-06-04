@@ -7,6 +7,7 @@ import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { categoryList } from '../../constants/data-master';
 
 interface categoryItem {
   categoryID: string;
@@ -20,15 +21,6 @@ interface CategoryFormProps {
   courseID: string;
 }
 
-// TODO : get categoryList from DB, name must be unique, to lowercase to unique
-const categoryList: categoryItem[] = [
-  { categoryID: 'category#Creative' },
-  { categoryID: 'category#Legal' },
-  { categoryID: 'category#Technical' },
-  { categoryID: 'category#Design' },
-  { categoryID: 'category#Education' },
-  { categoryID: 'category#Soft_Skill' },
-];
 // const userID = 'userID1';
 const obj: any = {};
 
@@ -70,9 +62,7 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
       await updateCourse({
         userID: user.userID,
         courseID,
-        category: checkedList.map(
-          (item) => `category#${item.categoryID.split('#')[1]}`
-        ),
+        category: checkedList.map((item) => `${item.categoryID}`),
         updatedAt: generateTime(),
       }).unwrap();
       toast.success('Course updated');

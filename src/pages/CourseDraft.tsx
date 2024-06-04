@@ -164,7 +164,7 @@ const CourseDraftPage: FC = () => {
                   </button>
                 </div>
               ) : courseData.course?.courseStatus === COURSE_STATUS.PENDING ? (
-                <div>
+                <div className="flex items-center">
                   <div className="flex items-center">
                     <FontAwesomeIcon
                       icon={faLock}
