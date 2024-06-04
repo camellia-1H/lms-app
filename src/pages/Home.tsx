@@ -3,23 +3,34 @@ import Search from '../components/Search';
 import CartCategoryList from '../components/CartCategoryList';
 import { Link } from 'react-router-dom';
 import CartCourseList from '../components/CartCourseList';
+import { ReactTyped } from "react-typed";
 
 const Home: FC = () => {
   return (
     <div>
       <Link to={'/order'}>Ordersdbfaksdbfsabdsadbi</Link>
       <div className="bg-[#111827] h-[550px]">
-        <div className="w-full h-auto py-32">
+        <div className="w-full h-auto py-28">
           <div className="flex flex-col items-center text-center text-white">
-            <h1 className="text-5xl font-bold">Learn with</h1>
-            <h1 className="text-yellow-500 text-7xl font-bold pt-8 pb-4">
+            <h1 className="text-7xl font-bold">Learn with</h1>
+            {/* <h1 className="text-yellow-500 text-7xl font-bold pt-8 pb-4 text-container text-to-type">
               dòng chữ chạy linh tinh
-            </h1>
-            <h2 className="text-lg pb-2">
+            </h1> */}
+            <ReactTyped 
+              strings={[
+                "Artificial Intelligence",
+                "Quality Instructors",
+                "Latest technology"
+              ]}
+              typeSpeed={80}
+              backSpeed={80}
+              loop
+              className='text-yellow-500 text-8xl font-bold pt-8 pb-4'/>
+            <h2 className="text-xl pb-2">
               Choose among 1000+ programs for the kids
             </h2>
             <Search />
-            <p className="opacity-60 pt-6">
+            <p className="opacity-60 pt-6 text-xl mt-5">
               300,000+ Students, 180 Instructors , 56 Subjects, 1million hours
               of Teaching
             </p>
@@ -38,13 +49,13 @@ const Home: FC = () => {
             <div className="min-w-fit mt-6">
               <Link
                 to={'/upload'}
-                className="text-white font-semibold px-3 py-2 bg-blue-700 rounded-lg hover:bg-black"
+                className="text-white font-semibold px-10 py-5 bg-blue-700 rounded-lg outline-2 hover:outline-blue-700 hover:bg-blue-800 text-lg"
               >
                 Learn More
               </Link>
             </div>
           </div>
-          <div className="lg:w-3/12 md:w-full sm:w-full lg:mt-0 md:mt-14 sm:mt-14 flex flex-col lg:px-4">
+          <div className="lg:w-3/12 md:w-full sm:w-full lg:mt-0 md:mt-14 sm:mt-14 flex flex-col lg:px-4 items-center items-center content-center">
             <div className="shrink-0 flex flex-1 flex-col items-center">
               <img
                 src="https://demos.wplms.io/main/wp-content/uploads/2023/05/icon1-1-100x100.png"
@@ -80,7 +91,7 @@ const Home: FC = () => {
               </p>
             </div>
           </div>
-          <div className="lg:w-3/12 md:w-full sm:w-full lg:mt-0 md:mt-14 sm:mt-14 flex flex-col lg:px-4">
+          <div className="lg:w-3/12 md:w-full sm:w-full lg:mt-0 md:mt-14 sm:mt-14 flex flex-col lg:px-4 justify-between">
             <div className="shrink-0 flex flex-1 flex-col items-center">
               <img
                 src="https://demos.wplms.io/main/wp-content/uploads/2023/05/icon4-120x112.png"
@@ -91,10 +102,9 @@ const Home: FC = () => {
                 Public Speaking
               </h2>
             </div>
-
             <div className="flex flex-col lg:text-start sm:text-center">
               <p className="text-white font-semibold text-lg mt-6">
-                Let your childrent talk with our instructor.
+                Let your childrent talk with our instructor. Call me now.
               </p>
             </div>
           </div>
@@ -103,7 +113,7 @@ const Home: FC = () => {
           <div className="">
             <div className="flex flex-col text-center">
               <h1 className="text-3xl font-bold">Popular Courses</h1>
-              <p className="text-xl mt-6">
+              <p className="text-xl my-6">
                 Choose from 100+ courses from experienced teachers
               </p>
             </div>
@@ -120,10 +130,10 @@ const Home: FC = () => {
                   />
                 </div>
                 <div className="lg:max-w-[450px] lg:ml-20 lg:text-start sm:text-center ">
-                  <h1 className="text-3xl font-bold lg:mt-0 sm:mt-6">
+                  <h1 className="text-6xl font-bold lg:mt-0 sm:mt-6 w-full">
                     Become an instructor
                   </h1>
-                  <p className="text-lg mt-6">
+                  <p className="text-lg mt-6 italic text-justify">
                     Instructors from around the world teach millions of learners
                     on team. We provide the tools and skills to teach what you
                     love.
@@ -131,7 +141,7 @@ const Home: FC = () => {
                   <div className="min-w-fit mt-6">
                     <Link
                       to={'/register-member'}
-                      className="text-white font-bold px-4 py-3 bg-blue-700 rounded-lg hover:bg-black"
+                      className="text-white font-bold px-8 py-4 bg-blue-700 rounded-lg hover:bg-black text-lg hover:bg-blue-800"
                     >
                       Start teaching today
                     </Link>

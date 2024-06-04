@@ -14,7 +14,7 @@ const CartCourse = ({ course }: { course: Course }) => {
           className="block rounded-lg w-full lg:h-60 sm:h-44"
         />
       </div>
-      <h3 className="text-lg font-bold leading-5 mt-3 lg:w-56 sm:w-44 line-clamp-2">
+      <h3 className="text-lg font-bold leading-5 mt-3 my-2 lg:w-56 sm:w-44 line-clamp-2 lg:w-full">
         {course.title}
       </h3>
 
