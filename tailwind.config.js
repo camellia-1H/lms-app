@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  // important: true,
+  darkMode: 'class',
+  content: [
+    './index.html',
+    './src/**/*.{vue,js,ts,jsx,tsx}',
+    './node_modules/primereact/**/*.{js,ts,jsx,tsx}',
+  ],
   theme: {
     extend: {
       keyframes: {

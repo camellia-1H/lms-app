@@ -310,9 +310,9 @@ const CourseChapterDetailPage: FC = () => {
           <div>
             <p>Course Progress</p>
             <ProgressBar
-              completed={
+              completed={Math.ceil(
                 (listChaptersCompleted.length / listChapters.length) * 100
-              }
+              )}
               height="10px"
               labelSize="10px"
             />

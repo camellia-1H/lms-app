@@ -7,10 +7,12 @@ const ReviewCourse = ({
   courseID,
   courseData,
   fetchGetListReview,
+  refetch,
 }: {
   courseID: string;
   courseData: any;
-  fetchGetListReview: any;
+  fetchGetListReview: () => Promise<void>;
+  refetch: () => any;
 }) => {
   console.log('voo foori');
 
@@ -38,7 +40,12 @@ const ReviewCourse = ({
           </p>
           <div>
             <h2 className="font-bold">Add your review : </h2>
-            <RatingForm reviewDetail={reviewDetail} courseData={courseData} />
+            <RatingForm
+              reviewDetail={reviewDetail}
+              courseData={courseData}
+              fetchGetListReview={fetchGetListReview}
+              refetch={refetch}
+            />
           </div>
         </div>
       )}
@@ -49,6 +56,7 @@ const ReviewCourse = ({
             reviewDetail={reviewDetail}
             courseData={courseData}
             fetchGetListReview={fetchGetListReview}
+            refetch={refetch}
           />
         </div>
       )}

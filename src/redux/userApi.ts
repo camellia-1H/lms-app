@@ -75,10 +75,17 @@ export const userApi = createApi({
         body: data,
       }),
     }),
-
+    // student
     getListCoursesProgress: build.query({
       query: (userID) => ({
         url: `/user/${userID}/get-list-progress`,
+        method: 'GET',
+      }),
+    }),
+    // teacher
+    getListReviews: build.query({
+      query: (userID) => ({
+        url: `/user/${userID}/get-list-reviews`,
         method: 'GET',
       }),
     }),
@@ -94,4 +101,5 @@ export const {
   useManageRequestTeacherMutation,
   //GET
   useGetListCoursesProgressQuery,
+  useGetListReviewsQuery,
 } = userApi;

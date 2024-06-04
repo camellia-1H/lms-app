@@ -73,19 +73,10 @@ const CourseDetailPage: FC = () => {
     data: courseData,
     isLoading,
     isSuccess,
+    refetch,
   } = useGetCourseDetailPublicQuery({
     courseID: courseID,
   });
-
-  const fetchGetListReview = async () => {
-    const data = await getListReviewOfCourse({
-      courseID: courseID,
-      lastEvaluatedKey,
-      limit: LIMIT_QUERY_REVIEWS_FRONT,
-    }).unwrap();
-    setListReview(data.reviews);
-    setLastEvaluatedKey(data.lastEvaluatedKey);
-  };
 
   // get userInfo author
   const [getAuthorInfo] = useGetUserInfoMutation();
@@ -98,11 +89,24 @@ const CourseDetailPage: FC = () => {
       setAuthInfo(data.userInfo);
     };
 
-    fetchGetListReview();
     if (isSuccess) {
       fetchAuthorInfo();
     }
   }, [isLoading]);
+
+  const fetchGetListReview = async () => {
+    const data = await getListReviewOfCourse({
+      courseID: courseID,
+      lastEvaluatedKey,
+      limit: LIMIT_QUERY_REVIEWS_FRONT,
+    }).unwrap();
+    setListReview(data.reviews);
+    setLastEvaluatedKey(data.lastEvaluatedKey);
+  };
+
+  useEffect(() => {
+    fetchGetListReview();
+  }, [courseID]);
 
   /// load more review
   const handleLoadMore = async () => {
@@ -197,11 +201,13 @@ const CourseDetailPage: FC = () => {
               />
               <h2 className="text-md font-bold">
                 <span className="mr-1">
-                  {Math.round(
-                    (courseData.course?.totalRate /
-                      courseData.course?.totalReviews) *
-                      10
-                  ) / 10}
+                  {courseData.course?.totalRate
+                    ? Math.ceil(
+                        (courseData.course?.totalRate /
+                          courseData.course?.totalReviews) *
+                          10
+                      ) / 10
+                    : 0}
                 </span>
                 rate
               </h2>
@@ -210,7 +216,7 @@ const CourseDetailPage: FC = () => {
               onClick={() => setModalListReviewOpen(true)}
               className="text-sky-600 underline"
             >
-              ({courseData.course?.totalReviews} ratings)
+              ({courseData.course?.totalReviews ?? 0} ratings)
             </button>
             <span className="text-white">
               {courseData.course?.totalStudents} students
@@ -238,11 +244,13 @@ const CourseDetailPage: FC = () => {
                   />
                   <h2 className="text-md font-bold">
                     <span className="mr-1">
-                      {Math.round(
-                        (courseData.course?.totalRate /
-                          courseData.course?.totalReviews) *
-                          10
-                      ) / 10}
+                      {courseData.course?.totalRate
+                        ? Math.ceil(
+                            (courseData.course?.totalRate /
+                              courseData.course?.totalReviews) *
+                              10
+                          ) / 10
+                        : 0}
                     </span>
                     rate
                   </h2>
@@ -251,7 +259,7 @@ const CourseDetailPage: FC = () => {
                   onClick={() => setModalListReviewOpen(true)}
                   className="text-sky-600 underline"
                 >
-                  ({courseData.course?.totalReviews} ratings)
+                  ({courseData.course?.totalReviews ?? 0} ratings)
                 </button>
                 <span className="text-white">
                   {courseData.course?.totalStudents} students
@@ -297,11 +305,13 @@ const CourseDetailPage: FC = () => {
                   />
                   <h2 className="text-md font-bold">
                     <span className="mr-1">
-                      {Math.round(
-                        (courseData.course?.totalRate /
-                          courseData.course?.totalReviews) *
-                          10
-                      ) / 10}
+                      {courseData.course?.totalRate
+                        ? Math.ceil(
+                            (courseData.course?.totalRate /
+                              courseData.course?.totalReviews) *
+                              10
+                          ) / 10
+                        : 0}
                     </span>
                     rate
                   </h2>
@@ -310,7 +320,7 @@ const CourseDetailPage: FC = () => {
                   onClick={() => setModalListReviewOpen(true)}
                   className="text-sky-600 underline"
                 >
-                  ({courseData.course?.totalReviews} ratings)
+                  ({courseData.course?.totalReviews ?? 0} ratings)
                 </button>
                 <span className="text-white">
                   {courseData.course?.totalStudents} students
@@ -354,15 +364,7 @@ const CourseDetailPage: FC = () => {
           />
         </div>
       )}
-      <div>
-        CourseDetailPage Page
-        <button
-          onClick={() => navigate(`/courses/${courseID}/draft`)}
-          className="text-red-600"
-        >
-          Draft
-        </button>
-      </div>
+
       <div className="w-full lg:px-32 md:px-20 sm:px-6 lg:my-10 sm:mb-10">
         <div className="lg:w-8/12 sm:w-full flex flex-col gap-y-10 pb-10 border-b border-gray-400">
           {isSuccess && (
@@ -654,7 +656,7 @@ const CourseDetailPage: FC = () => {
                   <div className="mr-4">
                     <Link to={`/user/${courseData.course?.userID}`}>
                       <img
-                        src="https://img-c.udemycdn.com/user/200_H/13922584_4ff5_3.jpg"
+                        src={authInfo?.avatar}
                         alt=""
                         className="rounded-full w-28 h-28"
                       />
@@ -666,24 +668,21 @@ const CourseDetailPage: FC = () => {
                         icon={faCirclePlay}
                         className="w-4 mr-3"
                       />
-                      <span className="text-gray-600">2 courses</span>
+                      <span className="text-gray-600">
+                        {authInfo?.totalCourses} courses
+                      </span>
                     </p>
                     <p className="text-sm">
                       <FontAwesomeIcon icon={faUsers} className="w-4 mr-3" />
-                      <span className="text-gray-600">1,179,793 Students</span>
+                      <span className="text-gray-600">
+                        {authInfo?.totalStudents} Students
+                      </span>
                     </p>
                   </div>
                 </div>
                 <div>
                   <p className="text-gray-600 text-sm">
-                    Al Sweigart is a software developer and author. He has
-                    written eight programming books, spoken at Python
-                    conferences, and has taught both kids and adults how to
-                    program. Python is his favorite programming language, and he
-                    is the developer of several open source modules for it. He
-                    is driven to make programming knowledge available to all,
-                    and his books freely available under a Creative Commons
-                    license.
+                    {authInfo?.description}
                   </p>
                 </div>
               </div>
@@ -699,11 +698,13 @@ const CourseDetailPage: FC = () => {
                 />
                 <h2 className="text-2xl font-bold">
                   <span className="mr-1">
-                    {Math.round(
-                      (courseData.course?.totalRate /
-                        courseData.course?.totalReviews) *
-                        10
-                    ) / 10}
+                    {courseData.course?.totalRate
+                      ? Math.ceil(
+                          (courseData.course?.totalRate /
+                            courseData.course?.totalReviews) *
+                            10
+                        ) / 10
+                      : 0}
                   </span>
                   course rating
                 </h2>
@@ -711,7 +712,7 @@ const CourseDetailPage: FC = () => {
                   .
                 </span>
                 <h2 className="text-2xl font-bold">
-                  <span>{courseData.course?.totalReviews}</span> ratings
+                  <span>{courseData.course?.totalReviews ?? 0}</span> ratings
                 </h2>
               </div>
 
@@ -724,6 +725,7 @@ const CourseDetailPage: FC = () => {
                     courseID={courseID as string}
                     courseData={courseData.course}
                     fetchGetListReview={fetchGetListReview}
+                    refetch={refetch}
                   />
                 )}
               {isSuccessGetListReview && (
@@ -736,9 +738,9 @@ const CourseDetailPage: FC = () => {
                       >
                         <div className="flex border-t border-gray-300 pt-4 gap-x-4">
                           <img
-                            src="https://img-c.udemycdn.com/user/50x50/221068940_34ad.jpg"
+                            src={review.avatar}
                             alt=""
-                            className="rounded-full"
+                            className="rounded-full w-16 h-16"
                           />
                           <div>
                             <p className="text-lg font-bold">{review.name}</p>

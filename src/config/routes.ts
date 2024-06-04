@@ -35,9 +35,15 @@ export const routes = {
   /// Sidebar Student
   dashStudent: '/student/dashboard',
   // student_course: '/student/dashboard/course',
-  dashTeacher: '/teacher/dashboard',
   profileDashStudent: '/student/profile',
   coursesDashStudent: '/student/courses',
+  statsDashStudent: '/student/stats',
+
+  dashTeacher: '/teacher/dashboard',
+  profileDashTeacher: '/teacher/profile',
+  coursesDashTeacher: '/teacher/courses',
+  reviewsDashTeacher: '/teacher/reviews',
+  statsDashTeacher: '/teacher/stats',
 
   // payment
   order: '/order',

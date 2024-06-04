@@ -15,7 +15,8 @@ interface RatingFormProps {
     rate: number;
   };
   courseData: any;
-  fetchGetListReview?: any;
+  fetchGetListReview: () => Promise<void>;
+  refetch: () => any;
 }
 
 const formSchema = z.object({
@@ -29,6 +30,7 @@ export const RatingForm = ({
   reviewDetail,
   courseData,
   fetchGetListReview,
+  refetch,
 }: RatingFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -47,23 +49,23 @@ export const RatingForm = ({
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
-      console.log(review);
-      console.log(rate);
-
       const validatedData = formSchema.parse({ review: review, rate: rate });
       // setReview(values.review);
       console.log(validatedData);
 
       await createRating({
         authorID: courseData.userID,
+        courseTitle: courseData.title,
         userID: user.userID,
         name: user.name,
+        avatar: user.avatar ?? '',
         courseID: courseData.courseID,
         ...validatedData,
       }).unwrap();
       // updatedAt: generateTime(),
       toast.success('Create Rating Success');
       await fetchGetListReview();
+      refetch();
       toggleEdit();
     } catch (error: any) {
       console.log(error.errors);

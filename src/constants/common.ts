@@ -31,6 +31,17 @@ const FLAG_REQUEST = {
   REJECT: 'reject',
 };
 
+const PACKAGE_TYPE = {
+  BASIC: 'packageBasic',
+  PRO: 'packagePro',
+};
+
+const PAYMENT_STATUS = {
+  CANCEL: 0,
+  PENDING: 1,
+  SUCCESS: 2,
+};
+
 export {
   LIMIT_DATA_QUERY,
   LIMIT_QUERY_REVIEWS_FRONT,
@@ -39,4 +50,6 @@ export {
   COURSE_STATUS,
   REQUEST_TEACHER,
   FLAG_REQUEST,
+  PACKAGE_TYPE,
+  PAYMENT_STATUS,
 };

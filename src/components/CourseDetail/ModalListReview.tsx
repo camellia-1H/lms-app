@@ -65,7 +65,7 @@ const ModalListReview = ({
                       />
                       <h2 className="text-2xl font-bold">
                         <span className="mr-1">
-                          {Math.round(
+                          {Math.ceil(
                             (courseData.course?.totalRate /
                               courseData.course?.totalReviews) *
                               10
@@ -97,9 +97,9 @@ const ModalListReview = ({
                         >
                           <div className="flex border-t border-gray-300 pt-4 gap-x-4">
                             <img
-                              src="https://img-c.udemycdn.com/user/50x50/221068940_34ad.jpg"
+                              src={review.avatar}
                               alt=""
-                              className="rounded-full"
+                              className="rounded-full w-16 h-16"
                             />
                             <div>
                               <p className="text-lg font-bold">Devesh G.</p>

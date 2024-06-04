@@ -26,10 +26,24 @@ const Payment = lazy(() => import('../pages/Payment'));
 const Result = lazy(() => import('../pages/Result'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const StudentDashboard = lazy(() => import('../pages/StudentDashboard'));
-const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
-const ProfileDashboardPage = lazy(() => import('../pages/dashboard/Profile'));
+const StudentProfileDashPage = lazy(
+  () => import('../pages/dashboard/student/StudentProfile')
+);
 const StudentCoursesDashPage = lazy(
-  () => import('../pages/dashboard/StudentCourse')
+  () => import('../pages/dashboard/student/StudentCourse')
+);
+const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
+const TeacherProfileDashPage = lazy(
+  () => import('../pages/dashboard/teacher/TeacherProfile')
+);
+const TeacherCoursesDashPage = lazy(
+  () => import('../pages/dashboard/teacher/TeacherCourse')
+);
+const TeacherReviewsDashPage = lazy(
+  () => import('../pages/dashboard/teacher/TeacherReviews')
+);
+const StatsReviewsDashPage = lazy(
+  () => import('../pages/dashboard/teacher/TeacherStats')
 );
 // const StudentCourse = lazy(() => import('../pages/StudentCourse'));
 
@@ -76,19 +90,45 @@ const privateRoutes = [
   //   component: StudentCourse,
   //   mainSidebarOnly: true,
   // },
+
+  {
+    path: config.routes.profileDashStudent,
+    component: StudentProfileDashPage,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.coursesDashStudent,
+    component: StudentCoursesDashPage,
+    mainSidebarOnly: true,
+  },
+  // {
+  //   path: config.routes.coursesDashStudent,
+  //   component: StudentCoursesDashPage,
+  //   mainSidebarOnly: true,
+  // },
   {
     path: config.routes.dashTeacher,
     component: TeacherDashboard,
     mainSidebarOnly: true,
   },
   {
-    path: config.routes.profileDashStudent,
-    component: ProfileDashboardPage,
+    path: config.routes.profileDashTeacher,
+    component: TeacherProfileDashPage,
     mainSidebarOnly: true,
   },
   {
-    path: config.routes.coursesDashStudent,
-    component: StudentCoursesDashPage,
+    path: config.routes.coursesDashTeacher,
+    component: TeacherCoursesDashPage,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.reviewsDashTeacher,
+    component: TeacherReviewsDashPage,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.statsDashTeacher,
+    component: StatsReviewsDashPage,
     mainSidebarOnly: true,
   },
 ];

@@ -166,7 +166,7 @@ const CartBuyCourse = ({
               user.userID === courseData.userID && (
                 <button
                   onClick={() => navigate(`/courses/${courseID}/draft`)}
-                  className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  className="mt-3 mb-6 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                 >
                   Draft
                 </button>

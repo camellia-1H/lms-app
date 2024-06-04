@@ -1,17 +1,17 @@
 import { FC, useEffect, useState } from 'react';
 // import { useScanAllCoursesMutation } from '../redux/coursesApi';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { RootState } from '../../../redux/store';
 import {
   useGetUserInfoMutation,
   useManageRequestTeacherMutation,
-} from '../../redux/userApi';
-import { REQUEST_TEACHER } from '../../constants/common';
-import ProfileFrontPage from '../ProfileFront';
-import Loader from '../../components/Loader';
+} from '../../../redux/userApi';
+import { REQUEST_TEACHER } from '../../../constants/common';
+import ProfileFrontPage from '../../ProfileFront';
+import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { useUploadS3ImageMutation } from '../../redux/utilsApi';
+import { useUploadS3ImageMutation } from '../../../redux/utilsApi';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
