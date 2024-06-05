@@ -139,48 +139,48 @@ const TeacherReviewsDashPage: FC = () => {
             field="courseTitle"
             header="Course Title"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
           />
           <Column
             field="userID"
             header="UserID"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
           />
           <Column
             field="name"
             header="Name"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
           />
           <Column
             field="review"
             header="Review"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
           />
           <Column
             field="rate"
             header="Rate"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
             body={rateBodyTemplate}
           />
           <Column
             field="updatedAt"
             header="UpdatedAt"
             sortable
-            style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-            className="text-lg"
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-md"
           />
           <Column
             field="custom"
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
             body={(rowData) => {
               return (

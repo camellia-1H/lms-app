@@ -35,16 +35,15 @@ const TeacherProfileDashPage: FC = () => {
   ] = useGetUserInfoMutation();
 
   const [uploadImageS3] = useUploadS3ImageMutation();
-
+  const fetchAuthorInfo = async () => {
+    const data = await getAuthorInfo({
+      userID: user.userID,
+    }).unwrap();
+    setUserInfo(data.userInfo);
+    setImageUrl(data.userInfo?.avatar);
+    setName(data.userInfo.name);
+  };
   useEffect(() => {
-    const fetchAuthorInfo = async () => {
-      const data = await getAuthorInfo({
-        userID: user.userID,
-      }).unwrap();
-      setUserInfo(data.userInfo);
-      setImageUrl(data.userInfo?.avatar);
-      setName(data.userInfo.name);
-    };
     fetchAuthorInfo();
   }, []);
 
@@ -259,68 +258,17 @@ const TeacherProfileDashPage: FC = () => {
       )}
       <hr className="my-4" />
 
-      <div>
-        <h1 className="text-3xl font-bold">Package</h1>
-        {/* {user.userID && successGetAuth && (
+      {successGetAuth && (
+        <div>
+          <h1 className="text-3xl font-bold">Package</h1>
           <div className="mt-6">
-            {userInfo?.requestTeachStatus === REQUEST_TEACHER.DEFAULT ? (
-              <div>
-                <span className="text-white px-3 py-2 text-xl font-semibold bg-sky-400 rounded-full">
-                  You are student
-                </span>
-                <button
-                  className="px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  onClick={() =>
-                    handleManageRequestTeacher(
-                      user.userID,
-                      REQUEST_TEACHER.PENDING
-                    )
-                  }
-                >
-                  Request Teacher
-                </button>
-              </div>
-            ) : userInfo?.requestTeachStatus === REQUEST_TEACHER.PENDING ? (
-              <div>
-                <span className="text-white px-3 py-2 text-xl font-semibold bg-yellow-400 rounded-full">
-                  Pending
-                </span>
-
-                <button
-                  className="px-3 py-2 text-xl font-semibold text-black hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  onClick={() =>
-                    handleManageRequestTeacher(
-                      user.userID,
-                      REQUEST_TEACHER.DEFAULT
-                    )
-                  }
-                >
-                  Un Request Teacher
-                </button>
-              </div>
-            ) : userInfo?.requestTeachStatus === REQUEST_TEACHER.REJECT ? (
-              <div>
-                <span className="text-gray-600">Rejected</span>
-                <button
-                  onClick={() =>
-                    handleManageRequestTeacher(
-                      user.userID,
-                      REQUEST_TEACHER.DEFAULT
-                    )
-                  }
-                >
-                  Un Request Teacher
-                </button>
-              </div>
-            ) : (
-              <h1>You are teacher</h1>
-            )}
+            <ListPackage
+              userInfo={userInfo}
+              fetchAuthorInfo={fetchAuthorInfo}
+            />
           </div>
-        )} */}
-        <div className="mt-6">
-          <ListPackage />
         </div>
-      </div>
+      )}
     </>
   );
 };

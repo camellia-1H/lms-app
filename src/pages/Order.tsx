@@ -1,27 +1,46 @@
-import {
-  TextField,
-  Box,
-  Button,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
-import { createPaymentLink } from '../utils/payosApi';
-
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useScript from 'react-script-hook';
-import { useCreatePaymentLinkMutation } from '../redux/orderApi';
 import toast from 'react-hot-toast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile, faVideo } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
+
+import { RootState } from '../redux/store';
+import { createPaymentLink } from '../utils/payosApi';
+import Loader from '../components/Loader';
+import { useBuyCourseMutation } from '../redux/coursesApi';
+import { PAYMENT_STATUS, PAYMENT_TYPE } from '../constants/common';
+import { numberWithCommas } from '../utils/common';
 
 export default function Order() {
+  const user = useSelector((state: RootState) => state.user.user);
   const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
+
   const [openUICustomLoading, setOpenUICustomLoading] = useState(false);
   const [redirectLoading, setRedirectLoading] = useState(false);
   const [openDialogLoading, setOpenDialogLoading] = useState(false);
-  const productNameRef = useRef('');
-  const descriptionRef = useRef('');
-  const priceRef = useRef(1000);
+  const [descriptionRef, setDescription] = useState<string>('Payment course');
+
+  // const priceRef = useRef(2000);
+
+  const [buyCourse, { isLoading }] = useBuyCourseMutation();
+
+  const handleBuyCourse = async (status: number) => {
+    await buyCourse({
+      userID: state?.userID,
+      authorID: state?.authorID,
+      courseID: state?.courseID,
+      amount: Number(state.courseData.price),
+      // courseTitle: state.courseData.title,
+      description: descriptionRef,
+      payment_flg: status,
+      // type: PAYMENT_TYPE.COURSE,
+    }).unwrap();
+    toast.success('Buy course successfully');
+  };
 
   // const [createPaymentLink] = useCreatePaymentLinkMutation();
 
@@ -39,9 +58,10 @@ export default function Order() {
     setLoading(true);
     try {
       const body = JSON.stringify({
-        description: descriptionRef.current.value,
-        productName: productNameRef.current.value,
-        amount: Number(priceRef.current.value),
+        description: descriptionRef,
+        productName: state.courseData.title,
+        // 0 -> 50 => 0 -> 5000đ
+        amount: Number(state.courseData.price) * 1000,
         returnUrl: RETURN_URL,
         cancelUrl: CANCEL_URL,
       });
@@ -114,137 +134,126 @@ export default function Order() {
         );
       }
       // console.log(url);
-      let { open } = window.PayOSCheckout.usePayOS({
+      let { open } = (window as any).PayOSCheckout.usePayOS({
         RETURN_URL: RETURN_URL,
         ELEMENT_ID: 'config_root',
         CHECKOUT_URL: url,
         onExit: (eventData: any) => {
           console.log(eventData);
         },
-        onSuccess: (eventData: any) => {
+        onSuccess: async (eventData: any) => {
           console.log(eventData);
-          window.location.href = `${RETURN_URL}?orderCode=${eventData.orderCode}`;
+          await handleBuyCourse(PAYMENT_STATUS.SUCCESS);
+          // window.location.href = `${RETURN_URL}?orderCode=${eventData.orderCode}`;
+          navigate(`/courses/${state?.courseID}`);
         },
-        onCancel: (eventData: any) => {
+        onCancel: async (eventData: any) => {
           console.log(eventData);
-          window.location.href = `${CANCEL_URL}?orderCode=${eventData.orderCode}`;
+          await handleBuyCourse(PAYMENT_STATUS.CANCEL);
+          navigate(`/courses/${state?.courseID}`);
+          // window.location.href = `${CANCEL_URL}?orderCode=${eventData.orderCode}`;
         },
       });
       open();
     }
   };
   return (
-    <Box
-      component={'div'}
-      className="flex flex-col !content-center flex-wrap gap-5"
-    >
-      <Header />
-      <Box
-        component="div"
-        className="w-3/4 md:w-1/2"
-        sx={{ alignSelf: 'center' }}
-      >
-        <Typography component="h4" variant="h4" className="!font-bold">
-          Tạo mới đơn hàng
-        </Typography>
-        <Box component="div" sx={{ marginTop: '20px', marginBottom: '20px' }}>
-          <Typography>Tên sản phẩm:</Typography>
-          <Box component="div" sx={{ width: '100%', marginTop: '10px' }}>
-            <TextField
-              id="outlined-basic"
-              label="Nhập tên sản phẩm"
-              variant="outlined"
-              defaultValue="Mì tôm Hảo Hảo ly"
-              inputRef={productNameRef}
-              fullWidth
-            />
-          </Box>
-        </Box>
-        <Box component="div" sx={{ marginTop: '20px', marginBottom: '20px' }}>
-          <Typography>Đơn giá:</Typography>
-          <Box component="div" sx={{ width: '100%', marginTop: '10px' }}>
-            <TextField
-              id="outlined-basic"
-              label="Nhập đơn giá"
-              variant="outlined"
-              defaultValue="1000"
-              inputRef={priceRef}
-              fullWidth
-            />
-          </Box>
-        </Box>
-        <Box component="div" sx={{ marginBottom: '20px' }}>
-          <Typography>Nội dung thanh toán:</Typography>
-          <Box component="div" sx={{ width: '100%', marginTop: '10px' }}>
-            <TextField
-              id="outlined-basic"
-              label="Nhập nội dung"
-              variant="outlined"
-              defaultValue="Thanh toan don hang"
-              inputRef={descriptionRef}
-              fullWidth
-            />
-          </Box>
-        </Box>
-        <Box component="div" className="flex flex-col gap-3 items-center">
-          <Button
-            variant="contained"
-            onClick={() =>
-              createPaymentLinkHandle(redirectPaymentLink, setRedirectLoading)
-            }
-            disabled={redirectLoading}
-            className="!bg-[#5D5FEF] !normal-case"
-          >
-            Đến trang thanh toán
-            {redirectLoading ? (
-              <>
-                {' '}
-                &nbsp; <CircularProgress className="!text-white" size={20} />
-              </>
-            ) : (
-              ''
-            )}
-          </Button>
-          <Typography>Hoặc</Typography>
-          <Button
-            variant="contained"
-            onClick={() =>
-              createPaymentLinkHandle(openPaymentDialog, setOpenDialogLoading)
-            }
-            disabled={openDialogLoading}
-            className="!bg-[#5D5FEF] !normal-case"
-          >
-            Mở Dialog thanh toán
-            {openDialogLoading ? (
-              <>
-                {' '}
-                &nbsp; <CircularProgress className="!text-white" size={20} />
-              </>
-            ) : (
-              ''
-            )}
-          </Button>
-          <Typography>Hoặc</Typography>
-          <Button
-            variant="contained"
-            onClick={() =>
-              createPaymentLinkHandle(openUICustom, setOpenUICustomLoading)
-            }
-            disabled={openUICustomLoading}
-            className="!bg-[#5D5FEF] !normal-case"
-          >
-            Chuyển trang giao diện tùy chỉnh
-            {openUICustomLoading ? (
-              <>
-                {' '}
-                &nbsp; <CircularProgress className="!text-white" size={20} />
-              </>
-            ) : (
-              ''
-            )}
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+    <>
+      {(redirectLoading || openDialogLoading || isLoading) && <Loader />}
+      <div className="bg-[#111827] h-32">
+        <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
+          <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
+            Payment
+          </h1>
+        </div>
+      </div>
+      <div className="lg:px-32 md:px-20 sm:px-6 mt-6">
+        <div className="flex flex-col gap-y-10">
+          <h1 className="font-bold text-xl">New Order</h1>
+          <div className="flex">
+            <div className="flex flex-col gap-y-4 w-6/12">
+              <div className="flex gap-x-10">
+                <div className="w-3/12">
+                  <img
+                    src={state.courseData.imageUrl}
+                    alt=""
+                    className="block w-full rounded-lg"
+                  />
+                </div>
+                <div className="w-9/12">
+                  <h1 className="text-xl font-bold">
+                    {state.courseData.title}
+                  </h1>
+                  <div className="flex flex-col gap-y-3 mt-3">
+                    <div className="flex">
+                      <p className="justify-items-start w-4 mr-2">
+                        <FontAwesomeIcon
+                          icon={faVideo}
+                          className="w-full text-gray-800/80 text-md"
+                        />
+                      </p>
+                      <span>27 hours on-demand video</span>
+                    </div>
+                    <div className="flex">
+                      <p className="justify-items-start w-4 mr-[6px]">
+                        <FontAwesomeIcon
+                          icon={faFile}
+                          className="w-max text-gray-800/80 text-md"
+                        />
+                      </p>
+                      <span>{state.courseData.totalChapters} chapters</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt">
+                <h1 className="">
+                  Amount :{' '}
+                  <span className="font-bold">
+                    {numberWithCommas(state.courseData.price)}
+                  </span>
+                </h1>
+                <p>Billing content:</p>
+                <textarea
+                  value={descriptionRef}
+                  onChange={(event) => setDescription(event.target.value)}
+                  className="max-w-[200px] h-10 mt-3 outline-none outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
+                />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold mb-3">Choose Payment</h1>
+              <div className="flex flex-col items-center gap-y-3">
+                <button
+                  className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  disabled={redirectLoading}
+                  onClick={() =>
+                    createPaymentLinkHandle(
+                      redirectPaymentLink,
+                      setRedirectLoading
+                    )
+                  }
+                >
+                  Go to payment Page
+                </button>
+                <p>OR</p>
+                <button
+                  className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  onClick={() =>
+                    createPaymentLinkHandle(
+                      openPaymentDialog,
+                      setOpenDialogLoading
+                    )
+                  }
+                  disabled={openDialogLoading}
+                >
+                  Open dialog payment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

@@ -68,7 +68,7 @@ const TabCourse = () => {
                     key={course.courseID.concat(
                       Math.floor(Math.random() * 100).toString()
                     )}
-                    className="lg:w-3/12 sm:w-4/12"
+                    className="lg:w-3/12 sm:w-4/12 overflow-hidden"
                   >
                     <CartCourse course={course} />
                   </div>

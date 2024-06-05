@@ -38,9 +38,15 @@ const PACKAGE_TYPE = {
 
 const PAYMENT_STATUS = {
   CANCEL: 0,
-  PENDING: 1,
-  SUCCESS: 2,
+  SUCCESS: 1,
 };
+
+const PAYMENT_TYPE = {
+  COURSE: 0,
+  PACKAGE: 1,
+};
+
+const PACKAGE_PRO_PRICE = 2;
 
 export {
   LIMIT_DATA_QUERY,
@@ -52,4 +58,6 @@ export {
   FLAG_REQUEST,
   PACKAGE_TYPE,
   PAYMENT_STATUS,
+  PAYMENT_TYPE,
+  PACKAGE_PRO_PRICE,
 };

@@ -207,7 +207,11 @@ const TeacherDashboard: React.FC = () => {
                       field="title"
                       header="Course Title"
                       sortable
-                      style={{ fontSize: '18px', minWidth: '12rem' }}
+                      style={{
+                        fontSize: '16px',
+                        minWidth: '12rem',
+                        overflow: 'hidden',
+                      }}
                       className="text-lg"
                     />
                     <Column

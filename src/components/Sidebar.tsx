@@ -3,22 +3,27 @@ import {
   faTableColumns,
   faBriefcase,
   faCalendarDays,
-  faUser,
   faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
 import { ROLE_USER } from '../constants/common';
+import { logOut } from '../redux/userReducer';
 
 const Sidebar: React.FC = () => {
   // const { userId } = useContext(UserContext); // Lấy userId từ context
   const user = useSelector((state: RootState) => state.user.user);
   // const role = 'RGV';
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  console.log(location.pathname === '/teacher/dashboard');
+  const handleLogout: any = () => {
+    dispatch(logOut());
+    navigate('/');
+  };
 
   return (
     <div className="fixed w-2/12 h-full">
@@ -218,17 +223,17 @@ const Sidebar: React.FC = () => {
               </div>
             )}
 
-            <li className="text-black hover:bg-sky-400 hover:text-white">
-              <Link
-                className="inline-block w-full font-semibold text-lg py-2 px-4"
-                to="/settings"
+            <li className="text-black hover:bg-sky-400 hover:text-white rounded-md">
+              <button
+                onClick={handleLogout}
+                className="w-full font-semibold text-lg px-2 py-2 text-start"
               >
                 <FontAwesomeIcon
                   icon={faRightToBracket}
                   className="text-xl mr-5 rounder"
                 />
                 Log Out
-              </Link>
+              </button>
             </li>
           </div>
         </ul>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, LinearProgress, Toolbar } from '@mui/material';
-import PaymentFieldsTableDemo from '../components/payos/PaymentFieldsTableDemo';
-import OrderTableDemo from '../components/payos/OrderTableDemo';
+import PaymentFieldsTableDemo from '../components/Payment/PaymentFieldsTableDemo';
+import OrderTableDemo from '../components/Payment/OrderTableDemo';
 import { useLocation } from 'react-router-dom';
 import { getOrder } from '../utils/payosApi';
 import Header from '../components/Header';
 import toast from 'react-hot-toast';
-export default function Result() {
+export default function OrderResult() {
   const [order, setOrder] = useState();
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -26,12 +26,12 @@ export default function Result() {
           if (data.error == 0) {
             setOrder(data.data);
           } else if (data.error == -1) {
-            toast.error('Không tìm thấy đơn hàng');
+            toast.error('Not found payment');
           }
           setLoading(false);
         })
         .catch((error) => {
-          toast.error('Có lỗi xảy ra');
+          toast.error('Something is error');
           setLoading(false);
         });
     } else {
@@ -46,7 +46,7 @@ export default function Result() {
       ) : (
         <Box>
           <OrderTableDemo data={order} />
-          <PaymentFieldsTableDemo data={order?.webhook_snapshot} />
+          {/* <PaymentFieldsTableDemo data={order?.webhook_snapshot} /> */}
         </Box>
       )}
     </Box>

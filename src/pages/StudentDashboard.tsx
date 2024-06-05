@@ -9,19 +9,32 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import ProgressBar from '@ramonak/react-progress-bar';
 import { useEffect, useState } from 'react';
-import { useGetUserInfoMutation } from '../redux/userApi';
+import {
+  useGetListCoursesProgressQuery,
+  useGetUserInfoMutation,
+} from '../redux/userApi';
 import Loader from '../components/Loader';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 const StudentDashboardPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
   console.log(user);
   const [userInfo, setUserInfo] = useState<any>();
 
+  const navigate = useNavigate();
+
   const [
     getAuthorInfo,
     { isLoading: loadingGetAuth, isSuccess: successGetAuth },
   ] = useGetUserInfoMutation();
+
+  const {
+    data: listCoursesProgress,
+    isLoading,
+    isSuccess,
+  } = useGetListCoursesProgressQuery(user.userID);
 
   useEffect(() => {
     const fetchAuthorInfo = async () => {
@@ -35,7 +48,7 @@ const StudentDashboardPage: React.FC = () => {
 
   return (
     <>
-      {loadingGetAuth && <Loader />}
+      {(loadingGetAuth || isLoading) && <Loader />}
       {successGetAuth && (
         <div className="flex flex-col gap-y-3">
           <div className="self-end">
@@ -74,7 +87,7 @@ const StudentDashboardPage: React.FC = () => {
                   />
                   <div>
                     <p className="text-slate-400">Learning Course</p>
-                    <p className="font-bold">21 Course</p>
+                    <p className="font-bold">3 Course</p>
                   </div>
                 </div>
               </div>
@@ -84,75 +97,94 @@ const StudentDashboardPage: React.FC = () => {
           <div className="flex">
             <div className="w-3/4 bg-white p-3 justify-between rounded-lg">
               <p className="text-xl font-bold">My Courses</p>
-              <div className="flex justify-between content-center items-center mb-10">
-                <p>Image</p>
-                <div>
-                  <p>History of India</p>
-                  <p>By Random Author</p>
-                </div>
-                <ProgressBar className="w-1/5" completed={50} />
-                <div className="flex">
-                  <FontAwesomeIcon
-                    icon={faStar}
-                    className="text-xl mr-2 rounder"
-                  />
-                  <p>5</p>
-                </div>
-                <button
-                  type="submit"
-                  className="mr-5 flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              {isSuccess && (
+                <DataTable
+                  value={listCoursesProgress.courses}
+                  tableStyle={{ minWidth: '50rem' }}
+                  paginator
+                  rows={5}
+                  stripedRows
+                  sortMode="multiple"
+                  removableSort
+                  showGridlines
+                  selectionMode="single"
+                  onSelectionChange={(e) => {
+                    console.log(e);
+                    navigate(`/courses/${e.value.progressID.split('#')[1]}`);
+                  }}
+                  className="mt-10"
                 >
-                  View Course
-                </button>
-              </div>
-              <div className="flex justify-between content-center items-center mb-10">
-                <p>Image</p>
-                <div>
-                  <p>History of India</p>
-                  <p>By Random Author</p>
-                </div>
-                <ProgressBar className="w-1/5" completed={50} />
-                <div className="flex">
-                  <FontAwesomeIcon
-                    icon={faStar}
-                    className="text-xl mr-2 rounder"
+                  <Column
+                    field="courseTitle"
+                    header="Course Title"
+                    sortable
+                    style={{
+                      fontSize: '16px',
+                      minWidth: '12rem',
+                      overflow: 'hidden',
+                    }}
+                    className="text-lg"
                   />
-                  <p>5</p>
-                </div>
-                <button
-                  type="submit"
-                  className="mr-5 flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                >
-                  View Course
-                </button>
-              </div>
-              <div className="flex justify-between content-center items-center mb-10">
-                <p>Image</p>
-                <div>
-                  <p>History of India</p>
-                  <p>By Random Author</p>
-                </div>
-                <ProgressBar className="w-1/5" completed={50} />
-                <div className="flex">
-                  <FontAwesomeIcon
-                    icon={faStar}
-                    className="text-xl mr-2 rounder"
+                  <Column
+                    field="completed"
+                    header="Completed"
+                    sortable
+                    style={{
+                      fontSize: '16px',
+                      minWidth: '12rem',
+                      overflow: 'hidden',
+                    }}
+                    className="text-lg"
+                    body={(rowData) => {
+                      return (
+                        <ProgressBar
+                          completed={Math.ceil(
+                            (rowData.completed.length / rowData.totalChapters) *
+                              100
+                          )}
+                          height="10px"
+                          labelSize="10px"
+                        />
+                      );
+                    }}
                   />
-                  <p>5</p>
-                </div>
-                <button
-                  type="submit"
-                  className="mr-5 flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                >
-                  View Course
-                </button>
-              </div>
+
+                  <Column
+                    field="createdAt"
+                    header="Bought at"
+                    sortable
+                    style={{
+                      fontSize: '16px',
+                      minWidth: '12rem',
+                      overflow: 'hidden',
+                    }}
+                    className="text-lg"
+                  />
+
+                  <Column
+                    field="updatedAt"
+                    header="UpdatedAt"
+                    sortable
+                    style={{
+                      fontSize: '16px',
+                      minWidth: '12rem',
+                      overflow: 'hidden',
+                    }}
+                    className="text-lg"
+                  />
+                </DataTable>
+              )}
               <div className="flex flex-row-reverse content-center items-center text-blue-800 hover:text-blue-900">
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   className="text-xl mr-5 rounder"
                 />
-                <p className="mx-3">View all</p>
+                <button
+                  onClick={() => navigate('/student/courses')}
+                  className="mx-3"
+                >
+                  View all
+                </button>
               </div>
             </div>
           </div>

@@ -9,10 +9,11 @@ import { IconField } from 'primereact/iconfield';
 import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../../../components/Loader';
 import { RootState } from '../../../redux/store';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { PAYMENT_STATUS } from '../../../constants/common';
 import { Tag } from 'primereact/tag';
+import { useGetRevenueQuery } from '../../../redux/userApi';
+import { numberWithCommas } from '../../../utils/common';
+import { Tooltip } from 'primereact/tooltip';
 
 const listStats = [
   {
@@ -69,11 +70,17 @@ const TeacherStatsDashPage: FC = () => {
   const [filters, setFilters] = useState<any>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
 
-  // const {
-  //   data: listReviews,
-  //   isLoading,
-  //   isSuccess,
-  // } = useGetListReviewsQuery(user.userID);
+  const {
+    data: revenues,
+    isLoading,
+    isSuccess,
+  } = useGetRevenueQuery(user.userID);
+
+  const {
+    data: listPayment,
+    isLoading: isPaymentLoading,
+    isSuccess: isPaymentSuccess,
+  } = useGetRevenueQuery(user.userID);
 
   useEffect(() => {
     initFilters();
@@ -86,25 +93,29 @@ const TeacherStatsDashPage: FC = () => {
   const initFilters = () => {
     setFilters({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-      orderID: {
+      userID: {
         operator: FilterOperator.AND,
-        constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+        constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }],
       },
       amount: {
         operator: FilterOperator.AND,
-        constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+        constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }],
       },
       createdAt: {
         operator: FilterOperator.AND,
         constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
       },
-      paymentStatus: {
+      courseID: {
         operator: FilterOperator.AND,
-        constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }],
+        constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
       },
       description: {
         operator: FilterOperator.AND,
         constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }],
+      },
+      payment_flg: {
+        operator: FilterOperator.AND,
+        constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
       },
     });
     setGlobalFilterValue('');
@@ -139,24 +150,19 @@ const TeacherStatsDashPage: FC = () => {
   const header = renderHeader();
 
   const getSeverity = (paymentInfo: any) => {
-    switch (paymentInfo.paymentStatus) {
+    switch (paymentInfo.payment_flg) {
       case PAYMENT_STATUS.CANCEL:
         return 'danger';
       case PAYMENT_STATUS.SUCCESS:
         return 'success';
-      case PAYMENT_STATUS.PENDING:
-        return 'warning';
+
       default:
         return null;
     }
   };
-  const paymentBodyTemplate = (course: any) => {
+  const paymentBodyTemplate = (payment: any) => {
     let value;
-    switch (course.courseStatus) {
-      case PAYMENT_STATUS.PENDING: {
-        value = 'Pending';
-        break;
-      }
+    switch (payment.payment_flg) {
       case PAYMENT_STATUS.SUCCESS: {
         value = 'Success';
         break;
@@ -164,12 +170,32 @@ const TeacherStatsDashPage: FC = () => {
       default:
         value = 'Cancel';
     }
-    return <Tag value={value} severity={getSeverity(course)}></Tag>;
+    return <Tag value={value} severity={getSeverity(payment)}></Tag>;
+  };
+
+  const courseBodyTemplate = (payment: any) => {
+    return (
+      <>
+        <Tooltip
+          target=".courseID"
+          mouseTrack
+          mouseTrackLeft={10}
+          className="bg-transparent px-1 py-2"
+        />
+        <button
+          onClick={() => navigate(`/courses/${payment.courseID}`)}
+          className="courseID"
+          data-pr-tooltip="View course"
+        >
+          {payment.courseID}
+        </button>
+      </>
+    );
   };
 
   return (
     <div className="">
-      {/* {isLoading && <Loader />} */}
+      {(isLoading || isPaymentLoading) && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className="self-end">
           <Link to={'/'} className="flex items-center">
@@ -188,76 +214,207 @@ const TeacherStatsDashPage: FC = () => {
           </div>
         </div>
       </div>
-      {/* {isSuccess && ( */}
-      <DataTable
-        value={listStats}
-        tableStyle={{ minWidth: '50rem' }}
-        paginator
-        rows={5}
-        stripedRows
-        sortMode="multiple"
-        removableSort
-        showGridlines
-        selectionMode="single"
-        // selection={selectedProduct}
-        onSelectionChange={(e) => {
-          console.log(e);
-          // navigate(`/courses/${e.value.progressID.split('#')[1]}`);
-          // setSelectedProduct(e.value);
-        }}
-        filters={filters}
-        globalFilterFields={[
-          'orderID',
-          'amount',
-          'createdAt',
-          'paymentStatus',
-          'description',
-        ]}
-        header={header}
-        emptyMessage="No customers found."
-        className="mt-10"
-        resizableColumns
+      <div
+        className="flex flex-col
+       gap-y-4 mt-4"
       >
-        <Column
-          field="orderID"
-          header="Order ID"
-          sortable
-          style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="amount"
-          header="Amount"
-          sortable
-          style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-
-        <Column
-          field="createdAt"
-          header="Created At"
-          sortable
-          style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="description"
-          header="Description"
-          sortable
-          style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="paymentStatus"
-          header="Payment Status"
-          sortable
-          style={{ fontSize: '18px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-          body={paymentBodyTemplate}
-        />
-      </DataTable>
-
-      {/* )} */}
+        {isSuccess && (
+          <div>
+            <h1 className="text-xl font-bold">Revenue</h1>
+            <DataTable
+              value={revenues}
+              tableStyle={{ minWidth: '50rem' }}
+              paginator
+              rows={5}
+              stripedRows
+              sortMode="multiple"
+              removableSort
+              showGridlines
+              selectionMode="single"
+              // selection={selectedProduct}
+              onSelectionChange={(e) => {
+                console.log(e);
+                // navigate(`/courses/${e.value.progressID.split('#')[1]}`);
+                // setSelectedProduct(e.value);
+              }}
+              filters={filters}
+              globalFilterFields={[
+                'userID',
+                'courseID',
+                'amount',
+                'description',
+                'payment_flg',
+                'createdAt',
+              ]}
+              header={header}
+              emptyMessage="No customers found."
+              resizableColumns
+            >
+              <Column
+                field="userID"
+                header="userID"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="courseID"
+                header="Course ID"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+                body={courseBodyTemplate}
+              />
+              <Column
+                field="amount"
+                header="Amount"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+                body={(payment) => {
+                  return numberWithCommas(payment.amount);
+                }}
+              />
+              <Column
+                field="createdAt"
+                header="Created At"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '10rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="description"
+                header="Description"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="payment_flg"
+                header="Status"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+                body={paymentBodyTemplate}
+              />
+            </DataTable>
+          </div>
+        )}
+        {isPaymentSuccess && (
+          <div>
+            <h1 className="text-xl font-bold">Payment</h1>
+            <DataTable
+              value={listPayment}
+              tableStyle={{ minWidth: '50rem' }}
+              paginator
+              rows={5}
+              stripedRows
+              sortMode="multiple"
+              removableSort
+              showGridlines
+              selectionMode="single"
+              // selection={selectedProduct}
+              onSelectionChange={(e) => {
+                console.log(e);
+                // navigate(`/courses/${e.value.progressID.split('#')[1]}`);
+                // setSelectedProduct(e.value);
+              }}
+              filters={filters}
+              globalFilterFields={[
+                'paymentID',
+                'amount',
+                'description',
+                'payment_flg',
+                'createdAt',
+              ]}
+              header={header}
+              emptyMessage="No customers found."
+              resizableColumns
+            >
+              <Column
+                field="paymentID"
+                header="PaymentID"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="amount"
+                header="Amount"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="description"
+                header="Description"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="createdAt"
+                header="Created At"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+              />
+              <Column
+                field="payment_flg"
+                header="Status"
+                sortable
+                style={{
+                  fontSize: '16px',
+                  minWidth: '8rem',
+                  overflow: 'hidden',
+                }}
+                className="text-lg"
+                body={paymentBodyTemplate}
+              />
+            </DataTable>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

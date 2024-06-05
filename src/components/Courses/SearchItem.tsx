@@ -1,7 +1,8 @@
-import { faMarker } from '@fortawesome/free-solid-svg-icons';
+import { faMarker, faFile } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { Course } from '../../models/Course';
+import { numberWithCommas } from '../../utils/common';
 
 const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
   return (
@@ -25,12 +26,15 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
             </p>
             <h2 className="text-sm text-gray-500">
               {courseData.category?.map((category: any) => (
-                <span>{category}</span>
+                <span>{category.split('#')[1]}</span>
               ))}
             </h2>
-            <div className="flex items-center">
-              <FontAwesomeIcon icon={faMarker} />
-              <h3 className="mt-2">
+            <div className="flex items-center mt-2 gap-x-2">
+              <FontAwesomeIcon
+                icon={faFile}
+                className="w-max text-gray-800/80 text-md"
+              />
+              <h3 className="">
                 <strong>{courseData.totalChapters}</strong> chapters
               </h3>
             </div>
@@ -40,9 +44,8 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
               <li>99 comments</li>
             </ul>
             <div className="flex flex-col justify-end absolute top-0 right-0">
-              <p className="font-bold">{courseData.price}</p>
               <p className="font-bold">
-                <s>123$</s>
+                {courseData.price ? numberWithCommas(courseData.price) : 'Free'}
               </p>
             </div>
           </div>

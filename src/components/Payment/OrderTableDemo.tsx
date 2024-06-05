@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   TableBody,
   TableCell,
@@ -10,41 +10,42 @@ import {
   Toolbar,
   Typography,
   Box,
-} from "@mui/material";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { useSelector } from "react-redux";
+} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { useSelector } from 'react-redux';
 
 function TableHeader() {
   return (
     <Toolbar className="!flex-1 !justify-center">
       <Typography className="!font-semibold" component="h5" variant="h5">
-        Mô tả đơn hàng
+        Order description
       </Typography>
     </Toolbar>
   );
 }
 
 export default function OrderTableDemo({ data }) {
+  console.log('data payment', data);
+
   return (
-    <Box component={"div"}>
+    <Box component={'div'}>
       <CssBaseline />
-      <Box sx={{ marginTop: "40px", marginBottom: "40px" }}>
+      <Box sx={{ marginTop: '40px', marginBottom: '40px' }}>
         <Typography className="!text-center">
-          Đơn hàng <b>{data?.id ? `#${data.id}` : "không tìm thấy"}</b>
+          Đơn hàng <b>{data?.id ? `#${data.id}` : 'not found'}</b>
           {data?.status
-            ? data.status == "PAID"
-              ? ` đã thanh toán thành công`
-              : ` chưa được thanh toán`
-            : ""}
+            ? data.status == 'PAID'
+              ? ` payment successfully`
+              : ` cancelled`
+            : ''}
         </Typography>
       </Box>
       <Box
         sx={{
-          width: "100%",
-          marginBottom: "40px",
-          display: "flex",
-          justifyContent: "center",
+          width: '100%',
+          marginBottom: '40px',
+          display: 'flex',
+          justifyContent: 'center',
         }}
       >
         <Paper>
@@ -54,20 +55,18 @@ export default function OrderTableDemo({ data }) {
               <TableBody>
                 {data ? (
                   <>
-                    <TableRow key={"id"}>
+                    <TableRow key={'id'}>
                       <TableCell align="left">
-                        <Typography>Mã đơn hàng</Typography>
+                        <Typography>Order Code</Typography>
                       </TableCell>
                       <TableCell align="left">
-                        <b>#{data["id"]}</b>
+                        <b>#{data['id']}</b>
                       </TableCell>
                     </TableRow>
-                    <TableRow key={"status"}>
-                      <TableCell align="left">Trạng thái</TableCell>
+                    <TableRow key={'status'}>
+                      <TableCell align="left">Status</TableCell>
                       <TableCell align="left">
-                        {data["status"] == "PAID"
-                          ? "Đã thanh toán"
-                          : "Chưa thanh toán"}
+                        {data['status'] == 'PAID' ? 'Success' : 'Cancelled'}
                       </TableCell>
                     </TableRow>
                     {/* <TableRow key={"items"}>
@@ -80,18 +79,18 @@ export default function OrderTableDemo({ data }) {
                         </ul>
                       </TableCell>
                     </TableRow> */}
-                    <TableRow key={"amount"}>
-                      <TableCell align="left">Tổng tiền</TableCell>
-                      <TableCell align="left">{data["amount"]} VNĐ</TableCell>
+                    <TableRow key={'amount'}>
+                      <TableCell align="left">Amount</TableCell>
+                      <TableCell align="left">{data['amount']}</TableCell>
                     </TableRow>
                   </>
                 ) : (
                   <TableRow
                     key={0}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell align="center" colSpan={12}>
-                      Không có thông tin đơn hàng
+                      Not found payment
                     </TableCell>
                   </TableRow>
                 )}

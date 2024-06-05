@@ -23,7 +23,7 @@ const RegisterMember = lazy(() => import('../pages/RegisterMember'));
 const About = lazy(() => import('../pages/About'));
 const Order = lazy(() => import('../pages/Order'));
 const Payment = lazy(() => import('../pages/Payment'));
-const Result = lazy(() => import('../pages/Result'));
+const OrderResult = lazy(() => import('../pages/OrderResult'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const StudentDashboard = lazy(() => import('../pages/StudentDashboard'));
 const StudentProfileDashPage = lazy(
@@ -32,6 +32,10 @@ const StudentProfileDashPage = lazy(
 const StudentCoursesDashPage = lazy(
   () => import('../pages/dashboard/student/StudentCourse')
 );
+const StudentStatsDashPage = lazy(
+  () => import('../pages/dashboard/student/StudentStats')
+);
+///
 const TeacherDashboard = lazy(() => import('../pages/TeacherDashboard'));
 const TeacherProfileDashPage = lazy(
   () => import('../pages/dashboard/teacher/TeacherProfile')
@@ -42,7 +46,7 @@ const TeacherCoursesDashPage = lazy(
 const TeacherReviewsDashPage = lazy(
   () => import('../pages/dashboard/teacher/TeacherReviews')
 );
-const StatsReviewsDashPage = lazy(
+const TeacherStatsDashPage = lazy(
   () => import('../pages/dashboard/teacher/TeacherStats')
 );
 // const StudentCourse = lazy(() => import('../pages/StudentCourse'));
@@ -100,6 +104,11 @@ const privateRoutes = [
     component: StudentCoursesDashPage,
     mainSidebarOnly: true,
   },
+  {
+    path: config.routes.statsDashStudent,
+    component: StudentStatsDashPage,
+    mainSidebarOnly: true,
+  },
   // {
   //   path: config.routes.coursesDashStudent,
   //   component: StudentCoursesDashPage,
@@ -127,12 +136,12 @@ const privateRoutes = [
   },
   {
     path: config.routes.statsDashTeacher,
-    component: StatsReviewsDashPage,
+    component: TeacherStatsDashPage,
     mainSidebarOnly: true,
   },
 
   /// payment
-  { path: config.routes.result, component: Result, mainOnly: true },
+  { path: config.routes.result, component: OrderResult, mainOnly: true },
 ];
 
 export { publicRoutes, privateRoutes };

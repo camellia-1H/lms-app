@@ -89,6 +89,26 @@ export const userApi = createApi({
         method: 'GET',
       }),
     }),
+    getRevenue: build.query({
+      query: (userID) => ({
+        url: `/user/${userID}/get-revenue`,
+        method: 'GET',
+      }),
+    }),
+    updatePackage: build.mutation({
+      query: (data) => ({
+        url: `/user/update-package`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    // any
+    getListPayment: build.query({
+      query: (userID) => ({
+        url: `/user/${userID}/get-payment`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -99,7 +119,10 @@ export const {
   useResendConfirmCodeMutation,
   useGetUserInfoMutation,
   useManageRequestTeacherMutation,
+  useUpdatePackageMutation,
   //GET
   useGetListCoursesProgressQuery,
+  useGetRevenueQuery,
   useGetListReviewsQuery,
+  useGetListPaymentQuery,
 } = userApi;

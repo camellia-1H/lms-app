@@ -369,7 +369,7 @@ const CourseDetailPage: FC = () => {
         </div>
       )}
 
-      {isSuccess && !isLoadingAuth && (
+      {isSuccess && isSuccessAuth && (
         <div className="lg:absolute lg:top-0 lg:right-[128px] lg:w-3/12 md:w-full sm:w-full py-10">
           <CartBuyCourse
             scrollShow={scrollShow}
@@ -379,6 +379,7 @@ const CourseDetailPage: FC = () => {
             isStartLearn={listChaptersCompleted.length > 0 ? false : true}
             nextChapter={nextChapter}
             courseTitle={courseData.course.title}
+            refetch={refetch}
           />
         </div>
       )}

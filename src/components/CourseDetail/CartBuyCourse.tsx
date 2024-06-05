@@ -12,6 +12,8 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { Course } from '../../models/Course';
+import { PAYMENT_STATUS } from '../../constants/common';
+import { numberWithCommas } from '../../utils/common';
 
 const CartBuyCourse = ({
   scrollShow,
@@ -21,6 +23,7 @@ const CartBuyCourse = ({
   isStartLearn,
   nextChapter,
   courseTitle,
+  refetch,
 }: {
   scrollShow: number;
   courseID: string;
@@ -29,6 +32,7 @@ const CartBuyCourse = ({
   isStartLearn: boolean;
   nextChapter: string;
   courseTitle: string;
+  refetch: () => void;
 }) => {
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -62,16 +66,30 @@ const CartBuyCourse = ({
   const navigate = useNavigate();
   const [buyCourse, { isLoading }] = useBuyCourseMutation();
 
-  const handleBuy = async () => {
-    // if (!isUserAuthor) {
+  const handleNavigateToOrder = () => {
+    navigate('/order', {
+      state: {
+        authorID: courseData.userID,
+        userID: user.userID,
+        courseID: courseID,
+        courseData: courseData,
+      },
+    });
+  };
+
+  const handleBuyCourseFree = async () => {
     await buyCourse({
       authorID: courseData.userID,
       userID: user.userID,
       courseID: courseID,
+      amount: 0,
+      // courseTitle: state.courseData.title,
+      payment_flg: PAYMENT_STATUS.SUCCESS,
     }).unwrap();
+    refetch();
     toast.success('Buy course successfully');
-    // }
   };
+
   const handleStartCourse = () => {
     navigate(`/courses/${courseID}/chapter/${nextChapter}`, {
       state: { title: courseTitle },
@@ -126,13 +144,21 @@ const CartBuyCourse = ({
                       </>
                     ) : (
                       <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
-                        <h3 className="text-3xl font-bold">₫2,199,000</h3>
+                        <h3 className="text-3xl font-bold">
+                          {courseData.price
+                            ? numberWithCommas(courseData.price)
+                            : 'Free'}
+                        </h3>
                         <div className="flex flex-col gap-y-4">
                           <button className="mt-3 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200">
                             Add to cart
                           </button>
                           <button
-                            onClick={handleBuy}
+                            onClick={
+                              courseData.price
+                                ? handleNavigateToOrder
+                                : handleBuyCourseFree
+                            }
                             className="mt-3 w-full justify-center rounded-md bg-white font-bold px-3 py-3 text-md text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                           >
                             Buy now
@@ -143,7 +169,11 @@ const CartBuyCourse = ({
                   </>
                 ) : (
                   <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
-                    <h3 className="text-3xl font-bold">₫2,199,000</h3>
+                    <h3 className="text-3xl font-bold">
+                      {courseData.price
+                        ? numberWithCommas(courseData.price)
+                        : 'Free'}
+                    </h3>
                     <div className="flex flex-col gap-y-4">
                       <button
                         onClick={() => navigate('/user/login')}
@@ -175,7 +205,11 @@ const CartBuyCourse = ({
 
             {!user.userID && (
               <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
-                <h3 className="text-3xl font-bold">₫2,199,000</h3>
+                <h3 className="text-3xl font-bold">
+                  {courseData.price
+                    ? numberWithCommas(courseData.price)
+                    : 'Free'}
+                </h3>
                 <div className="flex flex-col gap-y-4">
                   <button
                     onClick={() => navigate('/user/login')}

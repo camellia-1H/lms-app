@@ -7,7 +7,6 @@ import CartCourseList from '../components/CartCourseList';
 const Home: FC = () => {
   return (
     <div>
-      <Link to={'/order'}>Ordersdbfaksdbfsabdsadbi</Link>
       <div className="bg-[#111827] h-[550px]">
         <div className="w-full h-auto py-32">
           <div className="flex flex-col items-center text-center text-white">

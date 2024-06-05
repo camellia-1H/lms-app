@@ -226,7 +226,11 @@ const TeacherCoursesDashPage: FC = () => {
               field="title"
               header="Course Title"
               sortable
-              style={{ fontSize: '18px', minWidth: '12rem' }}
+              style={{
+                fontSize: '16px',
+                minWidth: '12rem',
+                overflow: 'hidden',
+              }}
               className="text-lg font-bold"
             />
             <Column
@@ -239,7 +243,11 @@ const TeacherCoursesDashPage: FC = () => {
               field="category"
               header="Category"
               sortable
-              style={{ fontSize: '18px', minWidth: '12rem' }}
+              style={{
+                fontSize: '16px',
+                minWidth: '12rem',
+                overflow: 'hidden',
+              }}
               className="text-lg"
               body={categoryBodyTemplate}
             />
@@ -254,19 +262,31 @@ const TeacherCoursesDashPage: FC = () => {
               field="createdAt"
               header="CreatedAt"
               sortable
-              style={{ fontSize: '18px', minWidth: '12rem' }}
+              style={{
+                fontSize: '16px',
+                minWidth: '12rem',
+                overflow: 'hidden',
+              }}
               className="text-lg"
             />
             <Column
               field="updatedAt"
               header="UpdatedAt"
               sortable
-              style={{ fontSize: '18px', minWidth: '12rem' }}
+              style={{
+                fontSize: '16px',
+                minWidth: '12rem',
+                overflow: 'hidden',
+              }}
               className="text-lg"
             />
             <Column
               field="custom"
-              style={{ fontSize: '18px', minWidth: '12rem' }}
+              style={{
+                fontSize: '16px',
+                minWidth: '12rem',
+                overflow: 'hidden',
+              }}
               className="text-lg"
               body={(rowData) => {
                 console.log(rowData);

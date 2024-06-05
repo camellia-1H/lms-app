@@ -11,8 +11,8 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
-import PaymentMethod from '../components/payos/PaymentMethod';
-import BankPayment from '../components/payos/BankPayment';
+import PaymentMethod from '../components/Payment/PaymentMethod';
+import BankPayment from '../components/Payment/BankPayment';
 
 const Payment = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);

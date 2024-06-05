@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 
 import { Course } from '../models/Course';
+import { numberWithCommas } from '../utils/common';
 
 const CartCourse = ({ course }: { course: Course }) => {
   return (
@@ -34,10 +35,9 @@ const CartCourse = ({ course }: { course: Course }) => {
       </div>
 
       <div className="flex mt-1 items-center">
-        <p>
-          <s>123$</s>
+        <p className="font-bold text-lg">
+          {course.price ? numberWithCommas(course.price) : 'Free'}
         </p>
-        <p className="ml-3 font-bold text-lg">{course.price}</p>
       </div>
     </Link>
   );

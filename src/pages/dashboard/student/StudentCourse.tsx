@@ -130,14 +130,14 @@ const StudentCoursesDashPage: FC = () => {
             field="courseTitle"
             header="Course Title"
             sortable
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
           />
           <Column
             field="completed"
             header="Completed"
             sortable
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
             body={(rowData) => {
               return (
@@ -156,7 +156,7 @@ const StudentCoursesDashPage: FC = () => {
             field="createdAt"
             header="Bought at"
             sortable
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
           />
 
@@ -164,13 +164,13 @@ const StudentCoursesDashPage: FC = () => {
             field="updatedAt"
             header="UpdatedAt"
             sortable
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
           />
 
           <Column
             field="custom"
-            style={{ fontSize: '18px', minWidth: '12rem' }}
+            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
             body={(rowData) => {
               return (
