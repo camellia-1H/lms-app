@@ -5,75 +5,25 @@ import { Column } from 'primereact/column';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { IconField } from 'primereact/iconfield';
-
-import { Link, useNavigate } from 'react-router-dom';
-import Loader from '../../../components/Loader';
-import { RootState } from '../../../redux/store';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
-import { PAYMENT_STATUS } from '../../../constants/common';
 import { Tag } from 'primereact/tag';
 
-const listStats = [
-  {
-    paymentID: 'paymentID1',
-    paymentID: 955484,
-    userID: '20240530063906352ITZY',
-    amount: 1000,
-    createdAt: '30/05/2024 14:29:59',
-    description: 'Thong tin don hang',
-    paymentStatus: PAYMENT_STATUS.CANCEL,
-  },
-  {
-    paymentID: 'paymentID2',
-    paymentID: 145677,
-    userID: '20240530063906352ITZY',
-    amount: 1000,
-    createdAt: '30/05/2024 02:23:41',
-    description: 'Thong tin don hang',
-    paymentStatus: PAYMENT_STATUS.SUCCESS,
-  },
-  {
-    paymentID: 'paymentID1',
-    paymentID: 425498,
-    userID: '20240530063906352ITZY',
-    amount: 1000,
-    createdAt: '30/05/2024 12:41:28',
-    description: 'Thong tin don hang mua khoa hoc',
-    paymentStatus: PAYMENT_STATUS.CANCEL,
-  },
-  {
-    paymentID: 'paymentID1',
-    paymentID: 753629,
-    userID: '20240530063906352ITZY',
-    amount: 3000,
-    createdAt: '02/06/2024 11:29:01',
-    description: 'mua khoa học',
-    paymentStatus: PAYMENT_STATUS.CANCEL,
-  },
-  {
-    paymentID: 'paymentID1',
-    paymentID: 412085,
-    userID: '20240530063906352ITZY',
-    amount: 1000,
-    createdAt: '30/04/2024 17:51:20',
-    description: 'Thong tin don hang',
-    paymentStatus: PAYMENT_STATUS.CANCEL,
-  },
-];
+import { Link } from 'react-router-dom';
+import Loader from '../../../components/Loader';
+import { useGetListPaymentQuery } from '../../../redux/userApi';
+import { RootState } from '../../../redux/store';
+import { PAYMENT_STATUS } from '../../../constants/common';
 
 const StudentStatsDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
-  const navigate = useNavigate();
   const [filters, setFilters] = useState<any>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
 
-  // const {
-  //   data: listReviews,
-  //   isLoading,
-  //   isSuccess,
-  // } = useGetListReviewsQuery(user.userID);
+  const {
+    data: listPayment,
+    isLoading: isPaymentLoading,
+    isSuccess: isPaymentSuccess,
+  } = useGetListPaymentQuery(user.userID);
 
   useEffect(() => {
     initFilters();
@@ -164,7 +114,7 @@ const StudentStatsDashPage: FC = () => {
 
   return (
     <div className="">
-      {/* {isLoading && <Loader />} */}
+      {isPaymentLoading && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className="self-end">
           <Link to={'/'} className="flex items-center">
@@ -183,74 +133,72 @@ const StudentStatsDashPage: FC = () => {
           </div>
         </div>
       </div>
-      {/* {isSuccess && ( */}
-      <DataTable
-        value={listStats}
-        tableStyle={{ minWidth: '50rem' }}
-        paginator
-        rows={5}
-        stripedRows
-        sortMode="multiple"
-        removableSort
-        showGridlines
-        selectionMode="single"
-        // selection={selectedProduct}
-        onSelectionChange={(e) => {
-          console.log(e);
-          // navigate(`/courses/${e.value.progressID.split('#')[1]}`);
-          // setSelectedProduct(e.value);
-        }}
-        filters={filters}
-        globalFilterFields={[
-          'paymentID',
-          'amount',
-          'createdAt',
-          'paymentStatus',
-          'description',
-        ]}
-        header={header}
-        emptyMessage="No customers found."
-        className="mt-10"
-        resizableColumns
-      >
-        <Column
-          field="paymentID"
-          header="Payment ID"
-          sortable
-          style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="amount"
-          header="Amount"
-          sortable
-          style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
+      {isPaymentSuccess && (
+        <DataTable
+          value={listPayment}
+          tableStyle={{ minWidth: '50rem' }}
+          paginator
+          rows={5}
+          stripedRows
+          sortMode="multiple"
+          removableSort
+          showGridlines
+          selectionMode="single"
+          onSelectionChange={(e) => {
+            console.log(e);
+          }}
+          filters={filters}
+          globalFilterFields={[
+            'paymentID',
+            'amount',
+            'createdAt',
+            'paymentStatus',
+            'description',
+          ]}
+          header={header}
+          emptyMessage="No customers found."
+          className="mt-10"
+          resizableColumns
+        >
+          <Column
+            field="paymentID"
+            header="Payment ID"
+            sortable
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-lg"
+          />
+          <Column
+            field="amount"
+            header="Amount"
+            sortable
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-lg"
+          />
 
-        <Column
-          field="createdAt"
-          header="Created At"
-          sortable
-          style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="description"
-          header="Description"
-          sortable
-          style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
-          className="text-lg"
-        />
-        <Column
-          field="paymentStatus"
-          header="Status"
-          sortable
-          style={{ fontSize: '18px', maxWidth: '6rem', overflow: 'hidden' }}
-          className="text-lg"
-          body={paymentBodyTemplate}
-        />
-      </DataTable>
+          <Column
+            field="createdAt"
+            header="Created At"
+            sortable
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-lg"
+          />
+          <Column
+            field="description"
+            header="Description"
+            sortable
+            style={{ fontSize: '16px', minWidth: '8rem', overflow: 'hidden' }}
+            className="text-lg"
+          />
+          <Column
+            field="paymentStatus"
+            header="Status"
+            sortable
+            style={{ fontSize: '18px', maxWidth: '6rem', overflow: 'hidden' }}
+            className="text-lg"
+            body={paymentBodyTemplate}
+          />
+        </DataTable>
+      )}
     </div>
   );
 };
