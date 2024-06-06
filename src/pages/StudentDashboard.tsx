@@ -95,7 +95,7 @@ const StudentDashboardPage: React.FC = () => {
           </div>
 
           <div className="flex">
-            <div className="w-3/4 bg-white p-3 justify-between rounded-lg">
+            <div className="w-full bg-white p-3 justify-between rounded-lg">
               <p className="text-xl font-bold">My Courses</p>
               {isSuccess && (
                 <DataTable

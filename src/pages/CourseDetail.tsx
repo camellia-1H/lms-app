@@ -184,7 +184,7 @@ const CourseDetailPage: FC = () => {
       console.log('window.scrollY', window.scrollY);
       console.log(window.innerHeight);
 
-      if (window.scrollY > window.innerHeight * 1.5) {
+      if (window.scrollY > window.innerHeight * 1.6) {
         setScrollShow(2);
       }
     };

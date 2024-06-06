@@ -128,7 +128,7 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
                       });
                       console.log(levelList);
 
-                      level.checked = true;
+                      level.checked = e.target.checked;
                       const newCheckedList = checkedList.filter(
                         (levelCheck: any) => !levelCheck.levelID
                       );

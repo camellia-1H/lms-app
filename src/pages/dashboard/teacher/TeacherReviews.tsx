@@ -107,7 +107,7 @@ const TeacherReviewsDashPage: FC = () => {
 
         <div className="flex flex-col gap-y-4">
           <div>
-            <h2 className="text-3xl font-bold">Course Progress</h2>
+            <h2 className="text-3xl font-bold">Review of courses</h2>
           </div>
         </div>
       </div>

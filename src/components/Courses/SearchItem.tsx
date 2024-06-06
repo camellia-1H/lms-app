@@ -38,11 +38,6 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
                 <strong>{courseData.totalChapters}</strong> chapters
               </h3>
             </div>
-            <ul className="mx-1 flex flex-1 mt-3 space-x-1 text-xs font-normal leading-4 text-gray-500 w-full">
-              <li>5h agos</li>
-              <li>&middot;</li>
-              <li>99 comments</li>
-            </ul>
             <div className="flex flex-col justify-end absolute top-0 right-0">
               <p className="font-bold">
                 {courseData.price ? numberWithCommas(courseData.price) : 'Free'}

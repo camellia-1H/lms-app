@@ -68,6 +68,14 @@ export const userApi = createApi({
       },
     }),
 
+    updateUserInfo: build.mutation({
+      query: (data) => ({
+        url: `/user/update-user-info`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
     manageRequestTeacher: build.mutation({
       query: (data) => ({
         url: `/user/request-teacher`,
@@ -120,6 +128,7 @@ export const {
   useGetUserInfoMutation,
   useManageRequestTeacherMutation,
   useUpdatePackageMutation,
+  useUpdateUserInfoMutation,
   //GET
   useGetListCoursesProgressQuery,
   useGetRevenueQuery,

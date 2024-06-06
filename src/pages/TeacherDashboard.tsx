@@ -22,6 +22,7 @@ import { Tag } from 'primereact/tag';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 
 import { COURSE_STATUS } from '../constants/common';
+import { numberWithCommas } from '../utils/common';
 
 const TeacherDashboard: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -182,7 +183,7 @@ const TeacherDashboard: React.FC = () => {
                 />
                 <div>
                   <p>Earning</p>
-                  <p className="font-bold">$ 540.50</p>
+                  <p className="font-bold">{numberWithCommas(21)}</p>
                 </div>
               </div>
             </div>

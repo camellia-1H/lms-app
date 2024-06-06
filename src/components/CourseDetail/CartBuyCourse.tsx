@@ -239,7 +239,7 @@ const CartBuyCourse = ({
                       className="w-full text-gray-800/80 text-md"
                     />
                   </p>
-                  <span>27 hours on-demand video</span>
+                  <span>30 mins on-demand video</span>
                 </div>
                 <div className="flex">
                   <p className="justify-items-start w-4 mr-[6px]">
