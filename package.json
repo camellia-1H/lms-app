@@ -48,6 +48,7 @@
     "react-router-dom": "^6.22.1",
     "react-script-hook": "^1.7.2",
     "react-scroll-to-bottom": "^4.2.0",
+    "react-typed": "^2.0.12",
     "redux-persist": "^6.0.0",
     "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.11",

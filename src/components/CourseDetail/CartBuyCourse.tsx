@@ -35,6 +35,7 @@ const CartBuyCourse = ({
   refetch: () => void;
 }) => {
   const user = useSelector((state: RootState) => state.user.user);
+  console.log(courseDataAuth);
 
   // const isUserAuthor = user.userID === courseData.userID;
 

@@ -134,7 +134,7 @@ const TeacherProfileDashPage: FC = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4 flex flex-col"
           >
-            <div className="flex gap-x-60">
+            <div className="flex gap-x-40">
               <div className="flex flex-col gap-y-4">
                 <label
                   htmlFor="name"
@@ -181,11 +181,10 @@ const TeacherProfileDashPage: FC = () => {
                 {imageUrl && (
                   <div className="flex flex-col items-center">
                     <h1 className="text-xl font-bold">Avatar</h1>
-                    <div className="flex items-center mt-2 ">
+                    <div className="flex items-center mt-2 w-64 h-64 ">
                       <img
                         src={imageUrl}
-                        className="w-64 h-64 rounded-full"
-                        height={200}
+                        className="w-full rounded-full block aspect-square"
                       ></img>
                     </div>
                   </div>
@@ -201,7 +200,7 @@ const TeacherProfileDashPage: FC = () => {
                       <div className="flex items-center mt-2">
                         <img
                           src={previewImage}
-                          className="w-64 h-64 rounded-full"
+                          className="w-64 h-64 rounded-full block aspect-square"
                           height={200}
                         ></img>
                       </div>

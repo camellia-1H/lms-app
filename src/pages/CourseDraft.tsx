@@ -29,6 +29,7 @@ import { ActionForm } from '../components/CourseCreate/ActionForm';
 import toast from 'react-hot-toast';
 import { generateTime } from '../utils/string-utils';
 import { COURSE_STATUS } from '../constants/common';
+import { Level, LevelForm } from '../components/CourseCreate/LevelForm';
 
 const CourseDraftPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -301,9 +302,14 @@ const CourseDraftPage: FC = () => {
               <div>
                 <div className="flex items-center gap-x-2">
                   <FontAwesomeIcon icon={faPencil} />
-                  <h2 className="text-xl">Resources & Attachments</h2>
+                  <h2 className="text-xl">Level</h2>
                 </div>
-                {/* <AttachmentForm initialData={course} courseID={course.id} /> */}
+                <LevelForm
+                  initialData={{
+                    level: (courseData.course?.level as any[]) ?? [],
+                  }}
+                  courseID={courseIDParam ?? courseID}
+                />
               </div>
             </div>
           </div>

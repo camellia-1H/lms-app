@@ -8,11 +8,12 @@ import {
   useScanAllCoursesMutation,
 } from '../redux/coursesApi';
 import { useEffect, useState } from 'react';
+import Loader from './Loader';
 
 export default function CartCourseList({ authorID }: { authorID?: string }) {
   const [listCourses, setListCourses] = useState<any[]>([]);
   // const [hasMore, setMore] = useState<boolean>();
-  const [getListCourses, { isSuccess: isSuccessGetListCourses }] =
+  const [getListCourses, { isLoading, isSuccess: isSuccessGetListCourses }] =
     useGetListCoursesMutation();
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState<any>();
 
@@ -44,6 +45,7 @@ export default function CartCourseList({ authorID }: { authorID?: string }) {
 
   return (
     <div>
+      {isLoading && <Loader />}
       {(isSuccess || isSuccessGetListCourses) && (
         <div>
           <Swiper

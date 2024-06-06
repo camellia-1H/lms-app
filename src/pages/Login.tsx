@@ -33,7 +33,7 @@ const LoginPage: FC = () => {
       {isLoading && <Loader />}
       <div className="w-[32rem] bg-gray-50 rounded-lg m-auto mt-[8%] shadow-sm shadow-gray-500">
         <div className="p-12">
-          <h1 className="text-3xl text-center mb-8">Login to LMS</h1>
+          <h1 className="text-4xl text-center mb-8">LOGIN TO LMS</h1>
           <form onSubmit={handleSubmit(submitForm)} className="flex flex-col">
             <div className="sm:col-span-3 mb-3">
               <label
@@ -64,8 +64,9 @@ const LoginPage: FC = () => {
                   Password
                 </label>
                 <button
+                  type="button"
                   onClick={() => navigate('/user/forgot-password')}
-                  className="text-sm text-sky-500 underline"
+                  className="text-sm text-sky-500 underline hover:text-sky-600"
                 >
                   Forgot password?
                 </button>
@@ -84,7 +85,7 @@ const LoginPage: FC = () => {
             </div>
             <button
               type="submit"
-              className="max-w-20 mt-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="max-w-20 mt-3 block bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
             >
               Login
             </button>

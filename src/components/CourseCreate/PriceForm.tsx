@@ -62,7 +62,9 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Course Price
+        <p>
+          Course Price (Unit : <span className="font-bold">thousand</span>)
+        </p>
         <button onClick={toggleEdit} className="flex items-center">
           {isEditing ? (
             <>Cancel</>

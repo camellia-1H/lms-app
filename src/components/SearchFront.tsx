@@ -78,7 +78,7 @@ const SearchFront: React.FC = () => {
       <div className="pt-1 w-full">
         <form action="" className="relative flex items-center">
           <input
-            className="w-full h-12 outline-none outline-gray-950/10 rounded-md p-2 focus:outline-blue-300 text-black"
+            className="w-full h-18 outline-none outline-gray-950/10 rounded-md p-4 focus:outline-blue-300 outline-2 text-black"
             type="text"
             placeholder="Search Course"
             value={searchValue}

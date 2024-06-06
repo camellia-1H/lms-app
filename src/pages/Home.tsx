@@ -3,6 +3,7 @@ import SearchFront from '../components/SearchFront';
 import CartCategoryList from '../components/CartCategoryList';
 import { Link } from 'react-router-dom';
 import CartCourseList from '../components/CartCourseList';
+import { ReactTyped } from 'react-typed';
 
 const Home: FC = () => {
   return (
@@ -10,17 +11,24 @@ const Home: FC = () => {
       <div className="bg-[#111827] h-[550px]">
         <div className="w-full h-auto py-32">
           <div className="flex flex-col items-center text-center text-white">
-            <h1 className="text-5xl font-bold">Learn with</h1>
-            <h1 className="text-yellow-500 text-7xl font-bold pt-8 pb-4">
-              dòng chữ chạy linh tinh
-            </h1>
-            <h2 className="text-lg pb-2">
-              Choose among 1000+ programs for the kids
+            <h1 className="text-7xl font-bold">Learn with</h1>
+            <ReactTyped
+              strings={[
+                'Artificial Intelligence',
+                'Quality Instructors',
+                'Latest technology',
+              ]}
+              typeSpeed={80}
+              backSpeed={80}
+              loop
+              className="text-yellow-500 text-6xl font-bold pt-8 pb-4"
+            />
+            <h2 className="text-lg pb-8">
+              Choose among 100+ programs for all level
             </h2>
             <SearchFront />
-            <p className="opacity-60 pt-6">
-              300,000+ Students, 180 Instructors , 56 Subjects, 1million hours
-              of Teaching
+            <p className="opacity-60 pt-4 text-lg mt-4">
+              100+ Students, 20 Instructors, 1 million hours of Teaching
             </p>
           </div>
         </div>
@@ -36,7 +44,7 @@ const Home: FC = () => {
             </p>
             <div className="min-w-fit mt-6">
               <Link
-                to={'/upload'}
+                to={'/about_us'}
                 className="text-white font-semibold px-3 py-2 bg-blue-700 rounded-lg hover:bg-black"
               >
                 Learn More

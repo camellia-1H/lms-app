@@ -14,7 +14,6 @@ import {
 import Parser from 'html-react-parser';
 
 import CartBuyCourse from '../components/CourseDetail/CartBuyCourse';
-import { Disclosure } from '@headlessui/react';
 import {
   useGetCourseDetailAuthQuery,
   useGetCourseDetailPublicQuery,
@@ -31,6 +30,7 @@ import { RootState } from '../redux/store';
 import ReviewCourse from '../components/CourseDetail/ReviewCourse';
 import CartCourseList from '../components/CartCourseList';
 import { useGetUserInfoMutation } from '../redux/userApi';
+import { Accordion, AccordionTab } from 'primereact/accordion';
 
 // logic call progress :
 // nếu user đã đăng nhập và lưu ở store thì mới gọi.
@@ -162,6 +162,16 @@ const CourseDetailPage: FC = () => {
         setLoadingAuth(false);
       }
     }, [isLoadingAuthValue]);
+  } else {
+    const { data, isLoading, isSuccess } = useGetListCourseChaptersQuery({
+      courseID: courseID as string,
+    });
+    useEffect(() => {
+      if (isSuccess) {
+        setListChapterOfCourses(data.chapters);
+        setCourseDataAuth({ isPaid: false });
+      }
+    }, [isLoading]);
   }
 
   // scroll effect
@@ -187,7 +197,7 @@ const CourseDetailPage: FC = () => {
 
   return (
     <div>
-      {isLoading && <Loader />}
+      {(isLoading || isLoadingAuth) && <Loader />}
       {(scrollShow === 1 || scrollShow === 2) && isSuccess && (
         <div
           className={[
@@ -369,7 +379,7 @@ const CourseDetailPage: FC = () => {
         </div>
       )}
 
-      {isSuccess && isSuccessAuth && (
+      {isSuccess && isSuccessAuth ? (
         <div className="lg:absolute lg:top-0 lg:right-[128px] lg:w-3/12 md:w-full sm:w-full py-10">
           <CartBuyCourse
             scrollShow={scrollShow}
@@ -382,6 +392,21 @@ const CourseDetailPage: FC = () => {
             refetch={refetch}
           />
         </div>
+      ) : (
+        isSuccess && (
+          <div className="lg:absolute lg:top-0 lg:right-[128px] lg:w-3/12 md:w-full sm:w-full py-10">
+            <CartBuyCourse
+              scrollShow={scrollShow}
+              courseID={courseID as string}
+              courseData={courseData.course}
+              courseDataAuth={courseDataAuth}
+              isStartLearn={listChaptersCompleted.length > 0 ? false : true}
+              nextChapter={nextChapter}
+              courseTitle={courseData.course.title}
+              refetch={refetch}
+            />
+          </div>
+        )
       )}
 
       <div className="w-full lg:px-32 md:px-20 sm:px-6 lg:my-10 sm:mb-10">
@@ -393,246 +418,73 @@ const CourseDetailPage: FC = () => {
                 <h2 className="text-2xl font-bold">Course Content</h2>
                 <div className="flex items-center mb-4 mt-8">
                   <span className="font-thin">
-                    <strong>16</strong> chapters
+                    <strong>{courseData.course.totalChapters}</strong> chapters
                   </span>
                   <span className="text-lg font-extrabold px-2 text-gray-500">
                     .
                   </span>
                   <span className="font-thin">
-                    <strong>9h 30m</strong> total length
+                    <strong>30m</strong> total length
                   </span>
                 </div>
 
-                <div className="border border-gray-200 shadow-sm">
-                  <div className="flex flex-col gap-x-4 px-6">
+                <div className="">
+                  <div className="flex flex-col gap-x-4 px-6 max-h[300px] overflow-auto">
                     {listChaptersOfCourses.map((chapter) => (
-                      <div
-                        key={chapter.chapterID}
-                        className="flex justify-between border-b border-gray-200/90 py-5"
-                      >
-                        <div className="flex gap-x-3">
-                          <Disclosure>
+                      <>
+                        {chapter.isPublished ? (
+                          <Accordion key={chapter.chapterID}>
+                            <AccordionTab
+                              header={
+                                <div className="flex justify-between border-b border-gray-200/90 py-2 gap-x-3">
+                                  <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-x-3">
+                                      <FontAwesomeIcon
+                                        icon={faVideo}
+                                        className="text-sky-500"
+                                      />
+
+                                      <div className="flex">
+                                        <p>
+                                          <span>{chapter.position + 1}. </span>{' '}
+                                          {chapter.chapterTitle}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-sky-500">
+                                    ( Preview )
+                                  </div>
+                                </div>
+                              }
+                            >
+                              <video
+                                src={chapter.chapterVideoUrl}
+                                controls
+                              ></video>
+                            </AccordionTab>
+                          </Accordion>
+                        ) : (
+                          <div className="flex justify-between border-b border-gray-200/90 py-5">
                             <div className="flex flex-col">
                               <div className="flex items-center gap-x-3">
                                 <FontAwesomeIcon
                                   icon={faVideo}
-                                  className="text-sky-500"
+                                  className="text-sky-500 pl-11"
                                 />
 
                                 <div className="flex">
-                                  <p>
+                                  <p className="font-bold text-gray-600">
                                     <span>{chapter.position + 1}. </span>{' '}
                                     {chapter.chapterTitle}
                                   </p>
-                                  <Disclosure.Button className="pl-2">
-                                    <FontAwesomeIcon icon={faChevronDown} />
-                                  </Disclosure.Button>
                                 </div>
                               </div>
-                              <>
-                                <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                  Yes! You can purchase a license that you can
-                                  share with your entire team.
-                                </Disclosure.Panel>
-                              </>
                             </div>
-                          </Disclosure>
-                        </div>
-                        {chapter.isPublished && (
-                          <div className="flex gap-x-2 items-start">
-                            <button className="text-sky-400 underline">
-                              Preview(ifpublish)
-                            </button>
-                            <video
-                              src={chapter.chapterVideoUrl}
-                              controls
-                            ></video>
-                            <span className="text-gray-500">05:59</span>
                           </div>
                         )}
-                      </div>
+                      </>
                     ))}
-
-                    {/* <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200/90 py-5">
-                      <div className="flex gap-x-3">
-                        <Disclosure>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-x-3">
-                              <FontAwesomeIcon
-                                icon={faVideo}
-                                className="text-sky-500"
-                              />
-
-                              <div className="flex">
-                                <p>
-                                  <span>1. </span> Automate the Boring Stuff
-                                  with Python Programming
-                                </p>
-                                <Disclosure.Button className="pl-2">
-                                  <FontAwesomeIcon icon={faChevronDown} />
-                                </Disclosure.Button>
-                              </div>
-                            </div>
-                            <>
-                              <Disclosure.Panel className="text-gray-500 text-sm mt-2 w-full">
-                                Yes! You can purchase a license that you can
-                                share with your entire team.
-                              </Disclosure.Panel>
-                            </>
-                          </div>
-                        </Disclosure>
-                      </div>
-                      <div className="flex gap-x-2 items-start">
-                        <button className="text-sky-400 underline">
-                          Preview(ifpublish)
-                        </button>
-                        <span className="text-gray-500">05:59</span>
-                      </div>
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -649,22 +501,6 @@ const CourseDetailPage: FC = () => {
                     ></div> */}
                     {Parser(courseData.course.descriptionDetail)}
                   </div>
-                </div>
-                <div>
-                  <button className="text-sky-500 flex items-center">
-                    Show more
-                    <FontAwesomeIcon
-                      icon={faChevronDown}
-                      className="text-black text-xs rounded-full ml-2 mt-[2px]"
-                    />
-                  </button>
-                  <button className="text-sky-500 flex items-center">
-                    Collapse
-                    <FontAwesomeIcon
-                      icon={faChevronUp}
-                      className="text-black text-xs rounded-full ml-2 mt-[2px]"
-                    />
-                  </button>
                 </div>
               </div>
             </>

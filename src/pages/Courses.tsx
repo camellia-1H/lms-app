@@ -10,7 +10,6 @@ import {
   Transition,
 } from '@headlessui/react';
 
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronDown,
@@ -22,11 +21,7 @@ import { useSelector } from 'react-redux';
 
 import SearchList from '../components/Courses/SearchList';
 import { RootState } from '../redux/store';
-import {
-  useCreateCourseMutation,
-  useSearchCourseFilterMutation,
-} from '../redux/coursesApi';
-import Loader from '../components/Loader';
+import { useSearchCourseFilterMutation } from '../redux/coursesApi';
 import { LIMIT_DATA_QUERY } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 import TabCourse from '../components/Courses/TabCourse';
@@ -40,8 +35,6 @@ interface levelItem {
 
 const CoursesPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
-
-  const navigate = useNavigate();
 
   const [levelExp, setLevelExp] = useState<levelItem[]>(levelList);
   const [priceListMaster, setPriceList] = useState<any[]>(priceList);
@@ -82,19 +75,7 @@ const CoursesPage: FC = () => {
     setFilteredCategoryList(filteredCategoryList);
   }, [queryCategory]);
 
-  const [createCourse, { isSuccess, isError, error, isLoading }] =
-    useCreateCourseMutation();
-
   const [searchCourseFilter] = useSearchCourseFilterMutation();
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate('/courses/create');
-    }
-    if (isError) {
-      console.log((error as any).data);
-    }
-  }, [isLoading]);
 
   useEffect(() => {
     const prices: any[] = [];
@@ -161,8 +142,6 @@ const CoursesPage: FC = () => {
 
   return (
     <div>
-      {isLoading && <Loader />}
-
       {/* <button onClick={() => navigate(`/user/?&userId=1`)}>
         List courses
       </button> */}
@@ -171,15 +150,6 @@ const CoursesPage: FC = () => {
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
             Course
           </h1>
-          <button
-            onClick={() => {
-              createCourse({ userID: user.userID, authorName: user.name });
-            }}
-            disabled={isLoading}
-            className="text-white"
-          >
-            Create
-          </button>
         </div>
       </div>
       <div className="lg:px-32 md:px-20 sm:px-6">
