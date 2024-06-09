@@ -6,7 +6,6 @@ import {
   useGetUserInfoMutation,
   useManageRequestTeacherMutation,
 } from '../../../redux/userApi';
-import { REQUEST_TEACHER } from '../../../constants/common';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -14,7 +13,17 @@ import { useUploadS3ImageMutation } from '../../../redux/utilsApi';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import ListPackage from '../../../components/Dashboard/ListPackage';
+
+const FormSchema = z.object({
+  email: z.string().email().min(1, 'Bắt buộc'),
+  name: z.string().min(1, 'Name must be least 1 characters'),
+  description: z.string().min(1, 'Description must be least 1 characters').ma,
+});
+type FormInput = z.infer<typeof FormSchema>;
 
 const TeacherProfileDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -57,9 +66,13 @@ const TeacherProfileDashPage: FC = () => {
     }).unwrap();
   };
 
-  const form = useForm();
-
-  const { isSubmitting, isValid } = form.formState;
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm<FormInput>({
+    resolver: zodResolver(FormSchema),
+  });
 
   const onSubmit = async (values: any) => {
     console.log(values);
@@ -131,7 +144,7 @@ const TeacherProfileDashPage: FC = () => {
             </div>
           </div>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 mt-4 flex flex-col"
           >
             <div className="flex gap-x-40">
@@ -147,7 +160,7 @@ const TeacherProfileDashPage: FC = () => {
                   value={name}
                   disabled={isSubmitting}
                   className="w-full outline-none min-w-[400px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...form.register('name')}
+                  {...register('name')}
                 />
 
                 <label
@@ -161,7 +174,7 @@ const TeacherProfileDashPage: FC = () => {
                   value={userInfo?.email}
                   disabled={true}
                   className="w-full outline-none bg-gray-300 min-w-[400px]  focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...form.register('email')}
+                  {...register('email')}
                 />
 
                 <label
@@ -174,7 +187,7 @@ const TeacherProfileDashPage: FC = () => {
                   content={userInfo?.description}
                   // value={}
                   className="w-full outline-none min-w-[400px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...form.register('description')}
+                  {...register('description')}
                 />
               </div>
               <div className="flex items-center">
@@ -240,10 +253,10 @@ const TeacherProfileDashPage: FC = () => {
 
             <div className="flex items-center">
               <button
-                disabled={!isValid || isSubmitting || isLoading}
+                disabled={isSubmitting || isLoading}
                 type="submit"
                 className={[
-                  !isValid || isSubmitting
+                  isSubmitting
                     ? 'bg-gray-500/70 '
                     : 'cursor-pointer hover:bg-black bg-blue-500 ',
                   'px-3 py-2 rounded-lg text-white font-bold',

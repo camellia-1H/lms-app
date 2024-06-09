@@ -388,7 +388,7 @@ const CourseDetailPage: FC = () => {
             courseDataAuth={courseDataAuth}
             isStartLearn={listChaptersCompleted.length > 0 ? false : true}
             nextChapter={nextChapter}
-            courseTitle={courseData.course.title}
+            courseTitle={courseData.course?.title}
             refetch={refetch}
           />
         </div>
@@ -402,7 +402,7 @@ const CourseDetailPage: FC = () => {
               courseDataAuth={courseDataAuth}
               isStartLearn={listChaptersCompleted.length > 0 ? false : true}
               nextChapter={nextChapter}
-              courseTitle={courseData.course.title}
+              courseTitle={courseData.course?.title}
               refetch={refetch}
             />
           </div>

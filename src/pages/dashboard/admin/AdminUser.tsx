@@ -1,12 +1,11 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-
 import { RootState } from '../../../redux/store';
-import TeacherPayment from '../../../components/Dashboard/TeacherPayment';
-import TeacherRevenue from '../../../components/Dashboard/TeacherRevenue';
+import AdminListStudent from '../../../components/Dashboard/AdminListStudent';
+import AdminListTeacher from '../../../components/Dashboard/AdminListTeacher';
 
-const TeacherStatsDashPage: FC = () => {
+const AdminUserDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ const TeacherStatsDashPage: FC = () => {
 
         <div className="flex flex-col gap-y-4">
           <div>
-            <h2 className="text-3xl font-bold">Manage Stats</h2>
+            <h2 className="text-3xl font-bold">Manage User</h2>
           </div>
         </div>
       </div>
@@ -35,11 +34,11 @@ const TeacherStatsDashPage: FC = () => {
         className="flex flex-col
        gap-y-4 mt-4"
       >
-        <TeacherRevenue />
-        <TeacherPayment />
+        <AdminListStudent />
+        <AdminListTeacher />
       </div>
     </div>
   );
 };
 
-export default TeacherStatsDashPage;
+export default AdminUserDashPage;

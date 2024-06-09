@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
@@ -7,17 +7,11 @@ import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { levelList } from '../../constants/data-master';
-
-interface levelItem {
-  levelID: string;
-  levelType: string;
-  checked?: boolean;
-}
+import { levelList as levelCourse } from '../../constants/data-master';
 
 interface LevelProps {
   initialData: {
-    level: string[];
+    level: string;
   };
   courseID: string;
 }
@@ -25,37 +19,38 @@ interface LevelProps {
 // const userID = 'userID1';
 const obj: any = {};
 
+//   { levelID: 'levelID#All_Levels', levelType: 'all_level' },
+const levelList = levelCourse.filter(
+  (level) => level.levelID !== 'levelID#All_Levels'
+);
+
 export const LevelForm = ({ initialData, courseID }: LevelProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [isEditing, setIsEditing] = useState(false);
-  const initialLevel = initialData.level.map((level: any) => {
-    console.log(level);
-
-    return {
-      levelID: level.levelID,
-      levelType: level.levelType,
-    };
-  });
-  const [checkedList, setCheckedList] = useState<levelItem[]>(initialLevel);
+  const initialLevel = { levelType: initialData?.level, checked: true };
+  const [checkedList, setCheckedList] = useState<any[]>([initialLevel]);
 
   checkedList.forEach((item) => {
-    obj[item.levelID] = true;
+    obj[item.levelType] = true;
   });
+  console.log('checkedList', checkedList);
 
-  levelList.forEach((level: any) => {
-    level['checked'] = false;
-    if (obj[level.levelID] === true) {
-      level['checked'] = true;
-    }
-  });
+  useEffect(() => {
+    levelList.forEach((level: any) => {
+      level['checked'] = false;
+      if (obj[level.levelType] === true) {
+        level['checked'] = true;
+      }
+    });
+  }, []);
 
   const toggleEdit = () => {
     setIsEditing((current) => !current);
   };
 
   const [updateCourse, { isLoading }] = useUpdateCourseMutation();
-  console.log(checkedList);
+  console.log(levelList);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -66,7 +61,7 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
       await updateCourse({
         userID: user.userID,
         courseID,
-        level: checkedList.map((item) => `${item.levelType}`),
+        level: checkedList[0].levelType,
         updatedAt: generateTime(),
       }).unwrap();
       toast.success('Course updated');
@@ -95,12 +90,12 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
         <p className="text-sm mt-2">Select Level</p>
       ) : (
         <div>
-          {checkedList.map((level) => (
-            <span
-              key={level.levelID}
-              className="text-sm mr-2 font-bold text-red-600"
-            >
-              {level.levelID.split('#')[1]}
+          {checkedList.map((item) => (
+            <span className="text-sm mr-2 font-bold text-red-600">
+              {typeof item.levelType === 'string' &&
+                item.levelType
+                  .replace(/^\w/, (c: any) => c.toUpperCase())
+                  .replaceAll('_', ' ')}
             </span>
           ))}
         </div>
@@ -111,11 +106,7 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
           <div className="mt-6 py-3 border-t-2">
             <div>
               {levelList.map((level) => (
-                <div
-                  key={level.levelID.split('#')[1]}
-                  className="flex items-center"
-                >
-                  {/* {/* <div key={price.priceID} className="flex items-center"> */}
+                <div key={level.levelType} className="flex items-center">
                   <input
                     type="radio"
                     id={level.levelID.split('#')[1]}
@@ -126,37 +117,19 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
                       levelList.map((level) => {
                         level.checked = false;
                       });
-                      console.log(levelList);
 
                       level.checked = e.target.checked;
+
                       const newCheckedList = checkedList.filter(
-                        (levelCheck: any) => !levelCheck.levelID
+                        (levelCheck: any) => !levelCheck.levelType
                       );
                       setCheckedList([...newCheckedList, level]);
                     }}
                   />
-                  {/* <input
-                    type="checkbox"
-                    name=""
-                    id={level.levelID.split('#')[1]}
-                    className="w-4 h-4 mr-2"
-                    checked={level.checked}
-                    onChange={(e) => {
-                      level.checked = e.target.checked;
-                      if (level.checked) {
-                        setCheckedList([...checkedList, level]);
-                      } else {
-                        const newCheckedList = checkedList.filter(
-                          (levelCheck: levelItem) =>
-                            levelCheck.levelID !== level.levelID
-                        );
-                        obj[level.levelID] = false;
-                        setCheckedList(newCheckedList);
-                      }
-                    }}
-                  /> */}
-                  <label htmlFor={level.levelID.split('#')[1]}>
-                    {level.levelID.split('#')[1]}
+                  <label
+                    htmlFor={level.levelID.split('#')[1].replaceAll('_', ' ')}
+                  >
+                    {level.levelID.split('#')[1].replaceAll('_', ' ')}
                   </label>
                 </div>
               ))}

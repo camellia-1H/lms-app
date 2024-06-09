@@ -221,10 +221,10 @@ export default function Order() {
                 />
               </div>
             </div>
-            <div>
+            <div className="flex flex-col items-center">
               <h1 className="text-xl font-bold mb-3">Choose Payment</h1>
               <div className="flex flex-col items-center gap-y-3">
-                <button
+                {/* <button
                   className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                   disabled={redirectLoading}
                   onClick={() =>
@@ -236,7 +236,7 @@ export default function Order() {
                 >
                   Go to payment Page
                 </button>
-                <p>OR</p>
+                <p>OR</p> */}
                 <button
                   className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                   onClick={() =>

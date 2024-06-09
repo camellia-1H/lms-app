@@ -14,7 +14,7 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
         <div className="lg:w-4/12 sm:w-6/12">
           <img
             src={courseData.imageUrl}
-            alt=""
+            alt="noImg"
             className="rounded-xl block w-full"
           />
         </div>
@@ -24,11 +24,18 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
             <p className="lg:w-10/12 sm:w-10/12 text-sm">
               {courseData.description}
             </p>
-            <h2 className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600 my-2">
+              {(courseData.level as string).replace(/^\w/, (c: any) =>
+                c.toUpperCase()
+              )}
+            </p>
+            <div className="flex gap-x-1 flex-wrap mt-2">
               {courseData.category?.map((category: any) => (
-                <span>{category.split('#')[1]}</span>
+                <span className="text-sm px-2 py-0.5 bg-sky-700 rounded-md text-white">
+                  {(category.split('#')[1] as string).replaceAll('_', ' ')}
+                </span>
               ))}
-            </h2>
+            </div>
             <div className="flex items-center mt-2 gap-x-2">
               <FontAwesomeIcon
                 icon={faFile}

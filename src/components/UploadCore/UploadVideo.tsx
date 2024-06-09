@@ -4,6 +4,7 @@ import { Uploader } from './Uploader';
 import {
   useCreateCourseChapterVideoMutation,
   useUpdateCourseChapterMutation,
+  useUpdateDurationChapterMutation,
 } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
@@ -21,6 +22,7 @@ const UploadVideo = ({
   setChapterVideo: (objectVideoURL: string) => void;
 }) => {
   const token = useSelector((state: RootState) => state.user.token);
+  const user = useSelector((state: RootState) => state.user.user);
 
   const [file, setFile] = useState<any>();
   const [objectVideoURL, setObjectVideoURL] = useState<string>('');
@@ -29,9 +31,11 @@ const UploadVideo = ({
   const [isSuccess, setSuccess] = useState<boolean>(false);
 
   const [progress, setProgress] = useState<number>(0);
+  const [videoDuration, setVideoDuration] = useState<number>();
 
   const [createCourseChapterVideo] = useCreateCourseChapterVideoMutation();
   const [updateCourseChapter] = useUpdateCourseChapterMutation();
+  const [updateDuration] = useUpdateDurationChapterMutation();
 
   useEffect(() => {
     if (file) {
@@ -41,6 +45,13 @@ const UploadVideo = ({
         accessToken: token.accessToken,
       };
       console.log(file);
+      const video = document.createElement('video');
+
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        setVideoDuration(video.duration);
+      };
+      video.src = URL.createObjectURL(file);
 
       let percentage = 0;
 
@@ -92,6 +103,13 @@ const UploadVideo = ({
       updatedAt: generateTime(),
     });
 
+    updateDuration({
+      userID: user.userID,
+      courseID,
+      chapterID,
+      duration: Math.round(videoDuration as number),
+    });
+
     updateCourseChapter({
       courseID,
       chapterID,
@@ -104,6 +122,7 @@ const UploadVideo = ({
     setChapterVideo(objectVideoURL);
     toggleEdit();
   };
+  console.log('videoDuration', videoDuration);
 
   return (
     <div>

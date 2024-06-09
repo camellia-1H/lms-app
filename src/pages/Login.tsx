@@ -5,10 +5,29 @@ import { useDispatch } from 'react-redux';
 import { setAccessToken } from '../redux/userReducer';
 import { useLoginMutation } from '../redux/userApi';
 import { useNavigate } from 'react-router-dom';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import Loader from '../components/Loader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
+
+const FormSchema = z.object({
+  email: z.string().email('Must be email').min(1, 'Required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+type FormInput = z.infer<typeof FormSchema>;
 
 const LoginPage: FC = () => {
-  const { register, handleSubmit } = useForm();
+  const [showIn, setShow] = useState<boolean>(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInput>({
+    resolver: zodResolver(FormSchema),
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -22,11 +41,15 @@ const LoginPage: FC = () => {
       email: data.email,
       password: data.password,
     });
-    console.log(loginCognito);
-    dispatch(setAccessToken(loginCognito));
-    await login().unwrap();
-    setLoading(false);
-    navigate(-1);
+    if (loginCognito) {
+      dispatch(setAccessToken(loginCognito));
+      await login().unwrap();
+      setLoading(false);
+      navigate(-1);
+    } else {
+      setLoading(false);
+      setShow(true);
+    }
   };
   return (
     <div className="w-full">
@@ -34,6 +57,12 @@ const LoginPage: FC = () => {
       <div className="w-[32rem] bg-gray-50 rounded-lg m-auto mt-[8%] shadow-sm shadow-gray-500">
         <div className="p-12">
           <h1 className="text-4xl text-center mb-8">LOGIN TO LMS</h1>
+          {showIn && (
+            <div className="flex gap-x-2 items-center">
+              <FontAwesomeIcon icon={faX} className="text-red-400" />
+              <p className="text-red-400 italic">Incorrect email or password</p>
+            </div>
+          )}
           <form onSubmit={handleSubmit(submitForm)} className="flex flex-col">
             <div className="sm:col-span-3 mb-3">
               <label
@@ -43,6 +72,9 @@ const LoginPage: FC = () => {
                 Email
               </label>
               <div className="mt-2">
+                {errors?.email?.message && (
+                  <p className="text-sm text-red-600">{errors.email.message}</p>
+                )}
                 <input
                   type="text"
                   id="email"
@@ -72,10 +104,14 @@ const LoginPage: FC = () => {
                 </button>
               </div>
               <div className="mt-2">
+                {errors?.password?.message && (
+                  <p className="text-sm text-red-600">
+                    {errors.password.message}
+                  </p>
+                )}
                 <input
                   type="password"
                   id="password"
-                  v-model="password"
                   required
                   placeholder="Password"
                   {...register('password')}

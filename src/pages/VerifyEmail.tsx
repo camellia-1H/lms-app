@@ -4,6 +4,7 @@ import {
   useResendConfirmCodeMutation,
   useVerifyEmailMutation,
 } from '../redux/userApi';
+import { useNavigate } from 'react-router-dom';
 
 const VerifyEmail: FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -11,11 +12,14 @@ const VerifyEmail: FC = () => {
   const [verify] = useVerifyEmailMutation();
   const [resendVerifyCode] = useResendConfirmCodeMutation();
 
+  const navigate = useNavigate();
+
   const submitForm = async (data: any) => {
-    await verify({
+    const result = await verify({
       email: data.email,
       confirmation_code: data.confirmationCode,
     });
+    if (result) navigate('/');
   };
 
   const handleResendVerifyCode = async () => {

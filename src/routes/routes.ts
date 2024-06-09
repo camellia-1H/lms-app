@@ -10,6 +10,10 @@ const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const VerifyEmail = lazy(() => import('../pages/VerifyEmail'));
 const ForgotPass = lazy(() => import('../pages/ForgotPass'));
+const ForgotChangePassword = lazy(
+  () => import('../pages/ForgotChangePassword')
+);
+const ChangePassword = lazy(() => import('../pages/ChangePassword'));
 const Profile = lazy(() => import('../pages/Profile'));
 const ProfileFrontPage = lazy(() => import('../pages/ProfileFront'));
 const Courses = lazy(() => import('../pages/Courses'));
@@ -49,6 +53,20 @@ const TeacherReviewsDashPage = lazy(
 const TeacherStatsDashPage = lazy(
   () => import('../pages/dashboard/teacher/TeacherStats')
 );
+// admin
+const AdminUserDashPage = lazy(
+  () => import('../pages/dashboard/admin/AdminUser')
+);
+
+const AdminStudentProfile = lazy(
+  () => import('../pages/dashboard/admin/AdminStudentProfile')
+);
+const AdminTeacherProfile = lazy(
+  () => import('../pages/dashboard/admin/AdminTeacherProfile')
+);
+const AdminStatsDashPage = lazy(
+  () => import('../pages/dashboard/admin/AdminStats')
+);
 // const StudentCourse = lazy(() => import('../pages/StudentCourse'));
 
 // Public routes
@@ -58,6 +76,7 @@ const publicRoutes = [
   { path: config.routes.register, component: Register },
   { path: config.routes.verify, component: VerifyEmail },
   { path: config.routes.forgot, component: ForgotPass },
+  { path: config.routes.forgotChangPass, component: ForgotChangePassword },
   { path: config.routes.courses, component: Courses },
   { path: config.routes.course, component: CourseDetail },
   { path: config.routes.members, component: Members },
@@ -73,6 +92,7 @@ const publicRoutes = [
 
 const privateRoutes = [
   // { path: config.routes.profile, component: Profile },
+  { path: config.routes.changePassword, component: ChangePassword },
   {
     path: config.routes.courseVideo,
     component: CourseChapterDetail,
@@ -137,6 +157,27 @@ const privateRoutes = [
   {
     path: config.routes.statsDashTeacher,
     component: TeacherStatsDashPage,
+    mainSidebarOnly: true,
+  },
+  // admin
+  {
+    path: config.routes.userDashAdmin,
+    component: AdminUserDashPage,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.adminStudentProfile,
+    component: AdminStudentProfile,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.adminTeacherProfile,
+    component: AdminTeacherProfile,
+    mainSidebarOnly: true,
+  },
+  {
+    path: config.routes.statsDashAdmin,
+    component: AdminStatsDashPage,
     mainSidebarOnly: true,
   },
 

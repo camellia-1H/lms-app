@@ -8,7 +8,6 @@ import {
   useUpdateUserInfoMutation,
 } from '../../../redux/userApi';
 import { REQUEST_TEACHER } from '../../../constants/common';
-import ProfileFrontPage from '../../ProfileFront';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -21,13 +20,13 @@ const ProfileDashboardPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   // const [isRHV, setIsRHV] = useState();
-  const [userInfo, setUserInfo] = useState<any>();
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   const [fileName, setFileName] = useState<string>('');
   const [typeImage, setTypeImage] = useState<string>('');
   const [previewImage, setpreviewImage] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>();
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState<string>('');
 
   const [
     updateUserInfo,
@@ -60,6 +59,7 @@ const ProfileDashboardPage: FC = () => {
       userID: userID,
       flg: flg,
     }).unwrap();
+    fetchAuthorInfo();
   };
 
   const form = useForm();
@@ -153,7 +153,7 @@ const ProfileDashboardPage: FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={name}
+                    // value={name}
                     disabled={isSubmitting}
                     className="w-full outline-none min-w-[300px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
                     {...form.register('name')}
@@ -258,7 +258,7 @@ const ProfileDashboardPage: FC = () => {
         {user.userID && successGetAuth && (
           <div className="mt-6">
             {userInfo?.requestTeachStatus === REQUEST_TEACHER.DEFAULT ? (
-              <div>
+              <div className="flex gap-x-2">
                 <span className="text-white px-3 py-2 text-xl font-semibold bg-sky-400 rounded-full">
                   You are student
                 </span>
@@ -275,7 +275,7 @@ const ProfileDashboardPage: FC = () => {
                 </button>
               </div>
             ) : userInfo?.requestTeachStatus === REQUEST_TEACHER.PENDING ? (
-              <div>
+              <div className="flex gap-x-2">
                 <span className="text-white px-3 py-2 text-xl font-semibold bg-yellow-400 rounded-full">
                   Pending
                 </span>
@@ -293,17 +293,19 @@ const ProfileDashboardPage: FC = () => {
                 </button>
               </div>
             ) : userInfo?.requestTeachStatus === REQUEST_TEACHER.REJECT ? (
-              <div>
-                <span className="text-gray-600">Rejected</span>
+              <div className="flex gap-x-2">
+                <span className="px-3 py-2 text-xl font-semibold bg-gray-400 rounded-full text-gray-600">
+                  Rejected
+                </span>
                 <button
                   onClick={() =>
                     handleManageRequestTeacher(
                       user.userID,
-                      REQUEST_TEACHER.DEFAULT
+                      REQUEST_TEACHER.PENDING
                     )
                   }
                 >
-                  Un Request Teacher
+                  Request Teacher
                 </button>
               </div>
             ) : (

@@ -45,7 +45,7 @@ export const DescriptionForm = ({
     defaultValues: initialData,
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -81,6 +81,11 @@ export const DescriptionForm = ({
       {!isEditing && <p className="text-sm mt-2">{description}</p>}
       {isEditing && (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+          {errors?.description?.message && (
+            <p className="text-sm text-red-600">
+              {errors.description?.message}
+            </p>
+          )}
           <input
             type="text"
             disabled={isSubmitting}
@@ -91,10 +96,10 @@ export const DescriptionForm = ({
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={!isValid || isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading}
               type="submit"
               className={[
-                !isValid || isSubmitting
+                isSubmitting
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

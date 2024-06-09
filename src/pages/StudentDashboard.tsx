@@ -87,7 +87,7 @@ const StudentDashboardPage: React.FC = () => {
                   />
                   <div>
                     <p className="text-slate-400">Learning Course</p>
-                    <p className="font-bold">3 Course</p>
+                    <p className="font-bold">2 Course</p>
                   </div>
                 </div>
               </div>

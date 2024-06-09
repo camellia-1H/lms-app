@@ -8,8 +8,8 @@ interface TokenItem {
 
 Amplify.configure({
   Auth: {
-    userPoolId: 'us-east-1_l7ZzNbz7E',
-    userPoolWebClientId: '6g0frahgmfbch91tbvo8k8sp5d',
+    userPoolId: 'us-east-1_SqUJ8lB7B',
+    userPoolWebClientId: '4rsej5bs5m6iuq0o396to2uaph',
   },
 });
 
@@ -36,8 +36,15 @@ const loginCognito = async (loginRequest: any): Promise<any> => {
       },
     };
   } catch (error: any) {
+    console.log(error);
+
+    if (error.name === 'NotAuthorizedException') {
+      toast.error('Incorrect username or password.');
+      return 'hehehehe';
+    }
     if (error.name === 'UserNotConfirmedException') {
-      throw { message: 'Login cognito failed' };
+      toast.error('UserNotConfirmedException');
+      return 'hehehehe';
     }
   }
 };
@@ -110,4 +117,36 @@ export const resetPassword = async (
     }
     return false;
   }
+};
+
+export const changePassword = async (
+  email: string,
+  oldPassword: string,
+  newPassword: string
+) => {
+  try {
+    await Auth.signIn({
+      username: email,
+      password: oldPassword,
+    });
+    const user = await Auth.currentAuthenticatedUser();
+    const result = await Auth.changePassword(user, oldPassword, newPassword);
+    if (result !== 'SUCCESS') {
+      return false;
+    }
+    return true;
+  } catch (err: any) {
+    if (err.code === 'NotAuthorizedException') {
+      toast.error('NotAuthorizedException');
+    } else {
+      toast.error('NotAuthorizedException');
+    }
+    return false;
+  } finally {
+    await Auth.signOut();
+  }
+};
+
+export const logOut = async () => {
+  await Auth.signOut();
 };

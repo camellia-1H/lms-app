@@ -38,6 +38,11 @@ const CourseChapterDetailPage: FC = () => {
   const [isPre, setPre] = useState<boolean>();
   const [isNext, setNext] = useState<boolean>();
 
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(0);
+  console.log('currentTime', currentTime);
+  console.log('setTotalTime', totalTime);
+
   const { data, isSuccess, isLoading, refetch, isFetching } =
     useGetListCourseChaptersQuery({
       courseID: courseID as string,
@@ -118,10 +123,6 @@ const CourseChapterDetailPage: FC = () => {
       video.play();
     }
   };
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [totalTime, setTotalTime] = useState<number>(0);
-  console.log('currentTime', currentTime);
-  console.log('setTotalTime', totalTime);
 
   useEffect(() => {
     const setTime = () => {
@@ -148,6 +149,7 @@ const CourseChapterDetailPage: FC = () => {
       courseID: courseID as string,
       userID: user.userID,
       chapter: chapterID as string,
+      duration: Math.round(totalTime),
     }).unwrap();
     refetch();
   };

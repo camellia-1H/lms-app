@@ -24,6 +24,7 @@ import { coursesApi } from './coursesApi';
 import { userApi } from './userApi';
 import userReducer from './userReducer';
 import { orderApi } from './orderApi';
+import { adminApi } from './adminApi';
 
 const reducers = combineReducers({
   user: userReducer,
@@ -32,6 +33,7 @@ const reducers = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [utilsApi.reducerPath]: utilsApi.reducer,
   [orderApi.reducerPath]: orderApi.reducer,
+  [adminApi.reducerPath]: adminApi.reducer,
 });
 
 const expireReducer = (reducerKey: string, expirationKey: string) => ({
@@ -106,7 +108,8 @@ const store = configureStore({
       .concat(utilsApi.middleware)
       .concat(coursesApi.middleware)
       .concat(userApi.middleware)
-      .concat(orderApi.middleware),
+      .concat(orderApi.middleware)
+      .concat(adminApi.middleware),
 });
 
 export const persistor = persistStore(store);

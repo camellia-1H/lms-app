@@ -14,6 +14,7 @@ import {
 import { RootState } from '../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { logOut } from '../redux/userReducer';
+import { logOut as logOutAuth } from '../services/authorize';
 import { ROLE_USER } from '../constants/common';
 
 const navigation = [
@@ -39,6 +40,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout: any = () => {
+    logOutAuth();
     dispatch(logOut());
     navigate('/');
   };
@@ -110,12 +112,26 @@ const Header: React.FC = () => {
                                     navigate(
                                       user.role === ROLE_USER.RHV
                                         ? `/student/dashboard`
-                                        : `/teacher/dashboard`
+                                        : (user.role as string).startsWith(
+                                            ROLE_USER.RGV
+                                          )
+                                        ? `/teacher/dashboard`
+                                        : '/admin/manage-user'
                                     )
                                   }
                                   className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
                                 >
                                   Dashboard
+                                </button>
+                              </MenuItem>
+                              <MenuItem>
+                                <button
+                                  onClick={() =>
+                                    navigate('/user/change-password')
+                                  }
+                                  className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"
+                                >
+                                  Chang password
                                 </button>
                               </MenuItem>
                               <MenuSeparator className="my-1 h-px bg-gray-300" />
@@ -198,7 +214,11 @@ const Header: React.FC = () => {
                                       navigate(
                                         user.role === ROLE_USER.RHV
                                           ? `/student/dashboard`
-                                          : `/teacher/dashboard`
+                                          : (user.role as string).startsWith(
+                                              ROLE_USER.RGV
+                                            )
+                                          ? `/teacher/dashboard`
+                                          : '/admin/manage-user'
                                       )
                                     }
                                     className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10"

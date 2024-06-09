@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import SearchList from '../components/Courses/SearchList';
 import { RootState } from '../redux/store';
 import { useSearchCourseFilterMutation } from '../redux/coursesApi';
-import { LIMIT_DATA_QUERY } from '../constants/common';
+import { LIMIT_MAX } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 import TabCourse from '../components/Courses/TabCourse';
 import SearchFilter from '../components/Courses/SearchFilter';
@@ -131,7 +131,7 @@ const CoursesPage: FC = () => {
       level: level[0],
       price: price[0],
       categories: categories,
-      limit: LIMIT_DATA_QUERY,
+      limit: LIMIT_MAX,
       lastEvaluatedKey,
     }).unwrap();
     // setListCourseQuery([...listCourseQuery, ...listCourseQueryRel.courses]);

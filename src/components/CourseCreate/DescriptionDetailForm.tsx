@@ -49,7 +49,7 @@ export const DescriptionDetailForm = ({
     defaultValues: initialData,
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting, errors } = form.formState;
 
   const onSubmit = async () => {
     try {
@@ -93,13 +93,18 @@ export const DescriptionDetailForm = ({
             value={descriptionDetail}
             setDescriptionDetail={setDescriptionDetail}
           />
+          {errors?.descriptionDetail?.message && (
+            <p className="text-sm text-red-600">
+              {errors.descriptionDetail.message}
+            </p>
+          )}
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={!isValid || isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading}
               type="submit"
               className={[
-                !isValid || isSubmitting
+                isSubmitting
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

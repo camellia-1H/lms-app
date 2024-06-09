@@ -8,6 +8,8 @@ export const routes = {
   register: '/user/register',
   verify: '/user/verify-email',
   forgot: '/user/forgot-password',
+  forgotChangPass: '/user/forgot-password/change-password',
+  changePassword: '/user/change-password',
   post: '/:userID/post/:postid',
   postLink: (userID: string, postid: string) => `/@${userID}/post/${postid}`,
   ///
@@ -45,8 +47,15 @@ export const routes = {
   reviewsDashTeacher: '/teacher/reviews',
   statsDashTeacher: '/teacher/stats',
 
+  userDashAdmin: '/admin/manage-user',
+  statsDashAdmin: '/admin/stats',
+
+  adminStudentProfile: '/admin/student/:userID',
+  adminTeacherProfile: '/admin/teacher/:userID',
+
   // payment
   order: '/order',
   payment: '/payment',
   result: '/orderresult',
+  //
 };

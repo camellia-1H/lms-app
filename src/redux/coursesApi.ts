@@ -158,6 +158,15 @@ export const coursesApi = createApi({
       invalidatesTags: ['updateCourseChapter'],
     }),
 
+    updateDurationChapter: build.mutation({
+      query: ({ courseID, chapterID, ...data }) => ({
+        url: `/courses/${courseID}/chapter/${chapterID}/update-duration`,
+        method: 'POST',
+        body: data,
+      }),
+      // invalidatesTags: ['updateCourseChapter'],
+    }),
+
     createCourseChapterVideo: build.mutation({
       query: ({ courseID, chapterID, ...data }) => ({
         url: `/courses/${courseID}/chapter/${chapterID}/video`,
@@ -260,6 +269,7 @@ export const {
   useDeleteCourseChapterMutation,
   useBuyCourseMutation,
   useUpdateCourseProgressMutation,
+  useUpdateDurationChapterMutation,
   // rating, review
   useGetReviewUserOfCourseQuery,
   useGetListReviewOfCourseMutation,
