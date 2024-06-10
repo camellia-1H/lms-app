@@ -1,12 +1,19 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 export const ActionForm = ({
   handleDeleteCourse,
+  courseData,
 }: {
   handleDeleteCourse: () => void;
+  courseData: any;
 }) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [isShow, setShow] = useState<boolean>(false);
   const toggleEdit = () => setShow((current) => !current);
 
@@ -14,8 +21,18 @@ export const ActionForm = ({
     <>
       <div className="border-l-2 border-gray-200 ml-3">
         <button
+          disabled={
+            (user.role as string).startsWith(ROLE_USER.RGV) &&
+            courseData.courseStatus === COURSE_STATUS.PUBLIC
+          }
           onClick={toggleEdit}
-          className="inline-flex w-full justify-center rounded-md bg-red-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-900 sm:ml-3 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+          className={[
+            'inline-flex w-full justify-center text-white rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto ',
+            (user.role as string).startsWith(ROLE_USER.RGV) &&
+            courseData.courseStatus === COURSE_STATUS.PUBLIC
+              ? 'bg-gray-500 '
+              : 'bg-red-700 hover:bg-red-900 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200 ',
+          ].join('')}
         >
           Delete
         </button>

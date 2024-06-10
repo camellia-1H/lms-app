@@ -39,6 +39,7 @@ const reducers = combineReducers({
 const expireReducer = (reducerKey: string, expirationKey: string) => ({
   in: (state: any) => {
     // console.log(state);
+    console.log(reducerKey);
     return {
       ...state,
       [expirationKey]: new Date(state.token[expirationKey]).getTime(), // Chuyển đổi thời gian hết hạn thành milliseconds
@@ -95,7 +96,7 @@ const persistConfig = {
   stateReconciler: autoMergeLevel2,
 };
 
-const persistedReducer = persistReducer(persistConfig, reducers);
+const persistedReducer = persistReducer<any>(persistConfig, reducers);
 
 const store = configureStore({
   reducer: persistedReducer,

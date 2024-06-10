@@ -28,8 +28,9 @@ import { DescriptionDetailForm } from '../components/CourseCreate/DescriptionDet
 import { ActionForm } from '../components/CourseCreate/ActionForm';
 import toast from 'react-hot-toast';
 import { generateTime } from '../utils/string-utils';
-import { COURSE_STATUS } from '../constants/common';
-import { Level, LevelForm } from '../components/CourseCreate/LevelForm';
+import { COURSE_STATUS, FLAG_REQUEST, ROLE_USER } from '../constants/common';
+import { LevelForm } from '../components/CourseCreate/LevelForm';
+import { useManagePublicCourseMutation } from '../redux/adminApi';
 
 const CourseDraftPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -66,6 +67,10 @@ const CourseDraftPage: FC = () => {
   const [updateCourse, { isLoading: isUpdateCourseLoading }] =
     useUpdateCourseMutation();
 
+  // ADMIN
+  const [managePublicCourse, { isLoading: isManagePublicCourseLoading }] =
+    useManagePublicCourseMutation();
+
   useEffect(() => {
     if (isSuccess) {
       setRequiredFields([
@@ -89,7 +94,7 @@ const CourseDraftPage: FC = () => {
 
   const handleDeleteCourse = async () => {
     await deleteCourse({
-      userID: user.userID,
+      userID: courseData.course.userID,
       courseID: courseIDParam ?? courseID,
     }).unwrap();
     toast.success('Delete Course Success');
@@ -101,7 +106,7 @@ const CourseDraftPage: FC = () => {
   const handleRequestPublicCourse = async () => {
     try {
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.course.userID,
         courseID: courseIDParam ?? courseID,
         courseStatus: COURSE_STATUS.PENDING,
         updatedAt: generateTime(),
@@ -116,7 +121,7 @@ const CourseDraftPage: FC = () => {
   const handleRequestUnpublicCourse = async () => {
     try {
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.course.userID,
         courseID: courseIDParam ?? courseID,
         courseStatus: COURSE_STATUS.DEFAULT,
         updatedAt: generateTime(),
@@ -127,12 +132,31 @@ const CourseDraftPage: FC = () => {
       toast.error('Something went wrong');
     }
   };
+  // ADMIN
+  const handleAcceptPublicCourse = async () => {
+    await managePublicCourse({
+      authorID: courseData.course.userID,
+      courseID: courseData.course.courseID,
+      flg: FLAG_REQUEST.ACCEPT,
+    }).unwrap();
+    refetch();
+  };
+
+  const handleRejectPublicCourse = async () => {
+    await managePublicCourse({
+      authorID: courseData.course.userID,
+      courseID: courseData.course.courseID,
+      flg: FLAG_REQUEST.REJECT,
+    }).unwrap();
+    refetch();
+  };
 
   return (
     <div className="">
-      {(isLoading || isDeleteCourseLoading || isUpdateCourseLoading) && (
-        <Loader />
-      )}
+      {(isLoading ||
+        isDeleteCourseLoading ||
+        isUpdateCourseLoading ||
+        isManagePublicCourseLoading) && <Loader />}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -150,78 +174,166 @@ const CourseDraftPage: FC = () => {
               </span> */}
             </div>
 
-            <div className="flex items-center">
-              {courseData.course?.courseStatus === COURSE_STATUS.DEFAULT ? (
+            <div>
+              {(user.role as string).startsWith(ROLE_USER.RGV) && (
                 <div className="flex items-center">
-                  <FontAwesomeIcon
-                    icon={faLock}
-                    className="text-2xl text-red-500"
-                  />
-                  <button
-                    onClick={handleRequestPublicCourse}
-                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Publish
-                  </button>
-                </div>
-              ) : courseData.course?.courseStatus === COURSE_STATUS.PENDING ? (
-                <div className="flex items-center">
-                  <div className="flex items-center">
-                    <FontAwesomeIcon
-                      icon={faLock}
-                      className="text-2xl text-red-500"
-                    />
-                    <button
-                      disabled={true}
-                      className="text-sm block ml-4 bg-yellow-500 font-medium text-white rounded-md px-3 py-2"
-                    >
-                      Pending
-                    </button>
-                  </div>
+                  {courseData.course?.courseStatus === COURSE_STATUS.DEFAULT ? (
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={faLock}
+                        className="text-2xl text-red-500"
+                      />
+                      <button
+                        onClick={handleRequestPublicCourse}
+                        className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Request Publish
+                      </button>
+                    </div>
+                  ) : courseData.course?.courseStatus ===
+                    COURSE_STATUS.PENDING ? (
+                    <div className="flex items-center">
+                      <div className="flex items-center">
+                        <FontAwesomeIcon
+                          icon={faLock}
+                          className="text-2xl text-red-500"
+                        />
+                        <button
+                          disabled={true}
+                          className="text-sm block ml-4 bg-yellow-500 font-medium text-white rounded-md px-3 py-2"
+                        >
+                          Pending
+                        </button>
+                      </div>
 
-                  <button
-                    onClick={handleRequestUnpublicCourse}
-                    className="text-sm block ml-4 bg-sky-900 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Unpublish Request
-                  </button>
-                </div>
-              ) : courseData.course?.courseStatus === COURSE_STATUS.REJECT ? (
-                <div className="flex items-center">
-                  <div className="flex items-center">
-                    <FontAwesomeIcon
-                      icon={faLock}
-                      className="text-2xl text-red-500"
-                    />
-                    <button
-                      disabled={true}
-                      className="text-sm block ml-4 bg-gray-500 font-medium text-white rounded-md px-3 py-2"
-                    >
-                      Rejected
-                    </button>
-                  </div>
-                  <button
-                    onClick={handleRequestPublicCourse}
-                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    Publish request
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <FontAwesomeIcon
-                    icon={faLockOpen}
-                    className="text-2xl text-red-500"
+                      <button
+                        onClick={handleRequestUnpublicCourse}
+                        className="text-sm block ml-4 bg-sky-900 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Unrequest publish
+                      </button>
+                    </div>
+                  ) : courseData.course?.courseStatus ===
+                    COURSE_STATUS.REJECT ? (
+                    <div className="flex items-center">
+                      <div className="flex items-center">
+                        <FontAwesomeIcon
+                          icon={faLock}
+                          className="text-2xl text-red-500"
+                        />
+                        <button
+                          disabled={true}
+                          className="text-sm block ml-4 bg-gray-500 font-medium text-white rounded-md px-3 py-2"
+                        >
+                          Rejected
+                        </button>
+                      </div>
+                      <button
+                        onClick={handleRequestPublicCourse}
+                        className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Publish request
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={faLockOpen}
+                        className="text-2xl text-red-500"
+                      />
+                      <p
+                        // onClick={handleRequestUnpublicCourse}
+                        className="text-sm block ml-4 bg-green-500 hover:bg-green-600 font-medium text-white rounded-md px-3 py-2"
+                      >
+                        Public
+                      </p>
+                    </div>
+                  )}
+                  <ActionForm
+                    handleDeleteCourse={handleDeleteCourse}
+                    courseData={courseData.course}
                   />
-                  <button
-                    onClick={handleRequestUnpublicCourse}
-                    className="text-sm block ml-4 bg-blue-500 hover:bg-blue-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-                  >
-                    UnPublish
-                  </button>
                 </div>
               )}
-              <ActionForm handleDeleteCourse={handleDeleteCourse} />
+
+              {/* ADMIN */}
+              {user.role === ROLE_USER.ROP && (
+                <div className="flex items-center">
+                  {courseData.course?.courseStatus === COURSE_STATUS.DEFAULT ? (
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={faLock}
+                        className="text-2xl text-red-500"
+                      />
+                    </div>
+                  ) : courseData.course?.courseStatus ===
+                    COURSE_STATUS.PENDING ? (
+                    <div className="flex items-center">
+                      <div className="flex items-center">
+                        <FontAwesomeIcon
+                          icon={faLock}
+                          className="text-2xl text-red-500"
+                        />
+                        <button
+                          disabled={true}
+                          className="text-sm block ml-4 bg-yellow-500 font-medium text-white rounded-md px-3 py-2"
+                        >
+                          Pending
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={handleAcceptPublicCourse}
+                        className="text-sm block ml-4 bg-sky-900 hover:bg-sky-950 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={handleRejectPublicCourse}
+                        className="text-sm block ml-4 bg-red-900 hover:bg-red-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  ) : courseData.course?.courseStatus ===
+                    COURSE_STATUS.REJECT ? (
+                    <div className="flex items-center">
+                      <div className="flex items-center">
+                        <FontAwesomeIcon
+                          icon={faLock}
+                          className="text-2xl text-red-500"
+                        />
+                        <button
+                          disabled={true}
+                          className="text-sm block ml-4 bg-gray-500 font-medium text-white rounded-md px-3 py-2"
+                        >
+                          Rejected
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={faLockOpen}
+                        className="text-2xl text-red-500"
+                      />
+                      <p className="text-sm block ml-4 bg-green-500 hover:bg-green-600 font-medium text-white rounded-md px-3 py-2">
+                        Public
+                      </p>
+                      <button
+                        onClick={handleRequestUnpublicCourse}
+                        className="text-sm block ml-4 bg-sky-900 hover:bg-sky-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      >
+                        UnPublish
+                      </button>
+                    </div>
+                  )}
+                  <ActionForm
+                    handleDeleteCourse={handleDeleteCourse}
+                    courseData={courseData.course}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -238,12 +350,14 @@ const CourseDraftPage: FC = () => {
                   <TitleForm
                     initialData={{ title: courseData.course?.title as string }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                   <DescriptionForm
                     initialData={{
                       description: courseData.course?.description as string,
                     }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                   <DescriptionDetailForm
                     initialData={{
@@ -251,18 +365,21 @@ const CourseDraftPage: FC = () => {
                         ?.descriptionDetail as string,
                     }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                   <ImageForm
                     initialData={{
                       imageUrl: courseData.course?.imageUrl as string,
                     }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                   <CategoryForm
                     initialData={{
                       category: courseData.course?.category as string[],
                     }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                 </>
               )}
@@ -281,6 +398,7 @@ const CourseDraftPage: FC = () => {
                   <ChaptersForm
                     initialData={data.chapters}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                 )}
               </div>
@@ -296,6 +414,7 @@ const CourseDraftPage: FC = () => {
                   <PriceForm
                     initialData={{ price: courseData.course?.price as number }}
                     courseID={courseIDParam ?? courseID}
+                    courseData={courseData.course}
                   />
                 )}
               </div>
@@ -306,7 +425,7 @@ const CourseDraftPage: FC = () => {
                 </div>
                 <LevelForm
                   initialData={{
-                    level: (courseData.course?.level as any[]) ?? [],
+                    level: courseData.course?.level ?? '',
                   }}
                   courseID={courseIDParam ?? courseID}
                 />

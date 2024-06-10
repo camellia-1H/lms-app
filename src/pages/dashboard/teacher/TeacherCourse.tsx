@@ -7,45 +7,50 @@ import { InputText } from 'primereact/inputtext';
 import { IconField } from 'primereact/iconfield';
 
 import { RootState } from '../../../redux/store';
-import { useGetListCoursesProgressQuery } from '../../../redux/userApi';
 import Loader from '../../../components/Loader';
 import { Link, useNavigate } from 'react-router-dom';
-import ProgressBar from '@ramonak/react-progress-bar';
 import {
   useCreateCourseMutation,
-  useGetListCoursesMutation,
+  useDeleteCourseMutation,
 } from '../../../redux/coursesApi';
 import { COURSE_STATUS } from '../../../constants/common';
 import { Tag } from 'primereact/tag';
+import { useGetListCourseOfTeacherQuery } from '../../../redux/adminApi';
+import toast from 'react-hot-toast';
 
 const TeacherCoursesDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const navigate = useNavigate();
 
-  const [listCourses, setListCourses] = useState<any[]>([]);
   const [filters, setFilters] = useState<any>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
-  // const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  // const [hasMore, setMore] = useState<boolean>();
-  const [getListCourses, { isLoading, isSuccess: isSuccessGetListCourses }] =
-    useGetListCoursesMutation();
+
+  const {
+    data: listCourses,
+    isLoading,
+    isSuccess: isSuccessGetListCourses,
+    // refetch,
+  } = useGetListCourseOfTeacherQuery(user.userID);
 
   const [createCourse, { isSuccess, isLoading: createCourseLoading }] =
     useCreateCourseMutation();
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const data = await getListCourses({
-        userID: user.userID,
-        // lastEvaluatedKey: undefined,
-        // limit: 3,
-      }).unwrap();
-      setListCourses(data.courses);
-    };
+  const [deleteCourse, { isLoading: deleteCourseLoading }] =
+    useDeleteCourseMutation();
 
-    fetchCourses();
-  }, []);
+  const handleDeleteCourse = async (course: any) => {
+    try {
+      await deleteCourse({
+        userLoginID: user.userID,
+        userID: course.userID,
+        courseID: course.courseID,
+      }).unwrap();
+      toast.success('Delete Course success');
+    } catch (error) {
+      toast.error('Teacher not permission : delete course public');
+    }
+  };
 
   useEffect(() => {
     initFilters();
@@ -166,7 +171,7 @@ const TeacherCoursesDashPage: FC = () => {
 
   return (
     <div className="">
-      {(isLoading || createCourseLoading) && <Loader />}
+      {(isLoading || createCourseLoading || deleteCourseLoading) && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className="self-end">
           <Link to={'/'} className="flex items-center">
@@ -292,9 +297,9 @@ const TeacherCoursesDashPage: FC = () => {
                 console.log(rowData);
 
                 return (
-                  <div>
+                  <div className="flex gap-x-2">
                     <button
-                      className="px-3 py-2 text-lg font-semibold text-sky-400 hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                      className="text-sm font-semibold text-sky-400 hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                       onClick={() =>
                         navigate(`/courses/${rowData.courseID}/draft`)
                       }
@@ -302,9 +307,8 @@ const TeacherCoursesDashPage: FC = () => {
                       Edit
                     </button>
                     <button
-                      className="px-3 py-2 text-lg font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                      // onClick={() => handleDelete(rowData)}
+                      onClick={() => handleDeleteCourse(rowData)}
+                      className="text-sm font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                     >
                       Delete
                     </button>

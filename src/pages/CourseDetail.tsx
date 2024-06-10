@@ -315,15 +315,11 @@ const CourseDetailPage: FC = () => {
                 {courseData.course?.description}
               </h2>
               <div className="flex gap-x-2">
-                <span className="text-sky-300 text-sm px-2 py-1 bg-gray-600 rounded-lg">
-                  Creative
-                </span>
-                <span className="text-sky-300 text-sm px-2 py-1 bg-gray-600 rounded-lg">
-                  Creative
-                </span>
-                <span className="text-sky-300 text-sm px-2 py-1 bg-gray-600 rounded-lg">
-                  Creative
-                </span>
+                {courseData.course.category?.map((category: any) => (
+                  <span className="text-sm px-2 py-0.5 bg-sky-700 rounded-md text-white">
+                    {(category.split('#')[1] as string).replaceAll('_', ' ')}
+                  </span>
+                ))}
               </div>
               <div className="flex gap-x-1">
                 <div className="text-white flex items-center">
@@ -371,7 +367,7 @@ const CourseDetailPage: FC = () => {
                   className="text-gray-200 mr-2"
                 />
                 <p className="text-white text-sm font-thin">
-                  Last updated at {courseData.course?.updatedAt}
+                  Last updated at {courseData.course?.updatedAt.split(' ')[0]}
                 </p>
               </div>
             </div>
@@ -430,61 +426,69 @@ const CourseDetailPage: FC = () => {
 
                 <div className="">
                   <div className="flex flex-col gap-x-4 px-6 max-h[300px] overflow-auto">
-                    {listChaptersOfCourses.map((chapter) => (
-                      <>
-                        {chapter.isPublished ? (
-                          <Accordion key={chapter.chapterID}>
-                            <AccordionTab
-                              header={
-                                <div className="flex justify-between border-b border-gray-200/90 py-2 gap-x-3">
-                                  <div className="flex justify-between items-center">
-                                    <div className="flex items-center gap-x-3">
-                                      <FontAwesomeIcon
-                                        icon={faVideo}
-                                        className="text-sky-500"
-                                      />
+                    {listChaptersOfCourses.length > 0 &&
+                      listChaptersOfCourses.map((chapter) => (
+                        <>
+                          {chapter.isPublished ? (
+                            <Accordion key={chapter.chapterID}>
+                              <AccordionTab
+                                header={
+                                  <div className="flex justify-between border-b border-gray-200/90 py-2 gap-x-3">
+                                    <div className="flex justify-between items-center">
+                                      <div className="flex items-center gap-x-3">
+                                        <FontAwesomeIcon
+                                          icon={faVideo}
+                                          className="text-sky-500"
+                                        />
 
-                                      <div className="flex">
-                                        <p>
-                                          <span>{chapter.position + 1}. </span>{' '}
-                                          {chapter.chapterTitle}
-                                        </p>
+                                        <div className="flex">
+                                          <p>
+                                            <span>
+                                              {chapter.position + 1}.{' '}
+                                            </span>{' '}
+                                            {chapter.chapterTitle}
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
+                                    <div className="text-sky-500">
+                                      ( Preview )
+                                    </div>
                                   </div>
-                                  <div className="text-sky-500">
-                                    ( Preview )
-                                  </div>
-                                </div>
-                              }
-                            >
-                              <video
-                                src={chapter.chapterVideoUrl}
-                                controls
-                              ></video>
-                            </AccordionTab>
-                          </Accordion>
-                        ) : (
-                          <div className="flex justify-between border-b border-gray-200/90 py-5">
-                            <div className="flex flex-col">
-                              <div className="flex items-center gap-x-3">
-                                <FontAwesomeIcon
-                                  icon={faVideo}
-                                  className="text-sky-500 pl-11"
-                                />
+                                }
+                              >
+                                <video
+                                  src={chapter.chapterVideoUrl}
+                                  controls
+                                ></video>
+                              </AccordionTab>
+                            </Accordion>
+                          ) : (
+                            <div className="flex justify-between border-b border-gray-200/90 py-5">
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-x-3">
+                                  <FontAwesomeIcon
+                                    icon={faVideo}
+                                    className="text-sky-500 pl-11"
+                                  />
 
-                                <div className="flex">
-                                  <p className="font-bold text-gray-600">
-                                    <span>{chapter.position + 1}. </span>{' '}
-                                    {chapter.chapterTitle}
-                                  </p>
+                                  <div className="flex">
+                                    <p className="font-bold text-gray-600">
+                                      <span>{chapter.position + 1}. </span>{' '}
+                                      {chapter.chapterTitle}
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        )}
-                      </>
-                    ))}
+                          )}
+                        </>
+                      ))}
+                    {!listChaptersOfCourses.length && (
+                      <div>
+                        <h1 className="text-xl">Course hasn't chapter</h1>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

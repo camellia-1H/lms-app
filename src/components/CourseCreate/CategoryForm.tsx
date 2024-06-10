@@ -8,6 +8,7 @@ import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { categoryList } from '../../constants/data-master';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface categoryItem {
   categoryID: string;
@@ -19,12 +20,17 @@ interface CategoryFormProps {
     category: string[];
   };
   courseID: string;
+  courseData: any;
 }
 
 // const userID = 'userID1';
 const obj: any = {};
 
-export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
+export const CategoryForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: CategoryFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -112,6 +118,10 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
                   className="flex items-center"
                 >
                   <input
+                    disabled={
+                      (user.role as string).startsWith(ROLE_USER.RGV) &&
+                      courseData.courseStatus === COURSE_STATUS.PUBLIC
+                    }
                     type="checkbox"
                     name=""
                     id={category.categoryID.split('#')[1]}
@@ -141,10 +151,16 @@ export const CategoryForm = ({ initialData, courseID }: CategoryFormProps) => {
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isLoading
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

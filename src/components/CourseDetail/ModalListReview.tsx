@@ -65,11 +65,13 @@ const ModalListReview = ({
                       />
                       <h2 className="text-2xl font-bold">
                         <span className="mr-1">
-                          {Math.ceil(
-                            (courseData.course?.totalRate /
-                              courseData.course?.totalReviews) *
-                              10
-                          ) / 10}
+                          {courseData.course?.totalRate > 0
+                            ? Math.ceil(
+                                (courseData.course?.totalRate /
+                                  courseData.course?.totalReviews) *
+                                  10
+                              ) / 10
+                            : 0}
                         </span>
                         course rating
                       </h2>
@@ -77,7 +79,8 @@ const ModalListReview = ({
                         .
                       </span>
                       <h2 className="text-2xl font-bold">
-                        <span>{courseData.course?.totalReviews}</span> ratings
+                        <span>{courseData.course?.totalReviews ?? 0}</span>{' '}
+                        ratings
                       </h2>
                     </div>
                     <button

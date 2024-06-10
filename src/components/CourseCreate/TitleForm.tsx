@@ -10,12 +10,14 @@ import { generateTime } from '../../utils/string-utils';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface TitleFormProps {
   initialData: {
     title: string;
   };
   courseID: string;
+  courseData: any;
 }
 
 const formSchema = z.object({
@@ -24,7 +26,11 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
+export const TitleForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: TitleFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
   const [title, setTitle] = useState<string>(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
@@ -89,10 +95,16 @@ export const TitleForm = ({ initialData, courseID }: TitleFormProps) => {
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isSubmitting
+                isSubmitting ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

@@ -12,15 +12,20 @@ import {
 } from '../../redux/coursesApi';
 import { useNavigate } from 'react-router-dom';
 import { CourseChapter } from '../../models/CourseChapter';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
+import { RootState, useSelector } from '../../redux/store';
 
 interface ChaptersFormProps {
   initialData: CourseChapter[];
   courseID: string;
+  courseData: any;
 }
 
-export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
+export const ChaptersForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: ChaptersFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [isCreating, setIsCreating] = useState(false);
@@ -59,7 +64,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       await createCourseChapter({
         courseID: courseID,
         position: initialData.length ? initialData.length : 0,
-        userID: user.userID,
+        userID: courseData.userID,
       }).unwrap();
       toast.success('Chapter created');
       toggleCreating();
@@ -96,7 +101,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       await deleteCourseChapter({
         courseID: courseID,
         chapterID: chapterID,
-        userID: user.userID,
+        userID: courseData.userID,
       }).unwrap();
       toast.success('Chapter deleted');
     } catch {
@@ -126,10 +131,21 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
       </div>
       {isCreating && (
         <button
-          disabled={isLoading}
+          disabled={
+            isLoading ||
+            ((user.role as string).startsWith(ROLE_USER.RGV) &&
+              courseData.courseStatus === COURSE_STATUS.PUBLIC)
+          }
           onClick={handleCreateChapterCourse}
           type="submit"
-          className="mt-3 px-3 py-2 rounded-lg text-white font-bold hover:bg-black bg-blue-500"
+          className={[
+            'mt-3 px-3 py-2 rounded-lg text-white font-bold ',
+            isLoading ||
+            ((user.role as string).startsWith(ROLE_USER.RGV) &&
+              courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              ? 'bg-gray-500'
+              : 'hover:bg-black bg-blue-500 ',
+          ].join('')}
         >
           Create
         </button>
@@ -147,6 +163,7 @@ export const ChaptersForm = ({ initialData, courseID }: ChaptersFormProps) => {
             onReorder={onReorder}
             onDeleteChapter={onDeleteChapter}
             listChapters={initialData}
+            courseData={courseData}
           />
         </div>
       )}

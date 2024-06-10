@@ -79,11 +79,16 @@ export const coursesApi = createApi({
       }),
       invalidatesTags: ['updateCourse'],
     }),
-
+    // admin//teacher
     deleteCourse: build.mutation({
-      query: ({ userID, courseID }) => ({
-        url: `/courses/${courseID}?userID=${userID}`,
+      query: ({ userLoginID, userID, courseID }) => ({
+        url: `/courses/delete-course`,
         method: 'DELETE',
+        body: {
+          userLoginID: userLoginID,
+          userID: userID,
+          courseID: courseID,
+        },
       }),
     }),
 

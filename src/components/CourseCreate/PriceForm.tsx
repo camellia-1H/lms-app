@@ -10,19 +10,25 @@ import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface PriceFormProps {
   initialData: {
     price: number;
   };
   courseID: string;
+  courseData: any;
 }
 
 const formSchema = z.object({
   price: z.coerce.number(),
 });
 
-export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
+export const PriceForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: PriceFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [price, setPrice] = useState<number>(initialData?.price);
@@ -83,8 +89,8 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
       )}
       {isEditing && (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-          {errors?.email?.message && (
-            <p className="text-sm text-red-600">{errors.email.message}</p>
+          {errors?.price?.message && (
+            <p className="text-sm text-red-600">{errors.price.message}</p>
           )}
           <input
             type="text"
@@ -96,10 +102,16 @@ export const PriceForm = ({ initialData, courseID }: PriceFormProps) => {
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isSubmitting
+                isSubmitting ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

@@ -31,7 +31,7 @@ const toastOptions = {
     },
   },
   error: {
-    duration: 2000,
+    duration: 3000,
     style: {
       background: '#363636',
       color: '#fff',

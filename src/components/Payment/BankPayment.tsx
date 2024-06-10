@@ -19,20 +19,20 @@ import ShareIcon from '@mui/icons-material/Share';
 import { toJpeg } from 'html-to-image';
 import toast from 'react-hot-toast';
 
-const BankPayment = ({ props }) => {
+const BankPayment = ({ props }: { props: any }) => {
   console.log(props);
 
   const [open, setOpen] = useState(false);
   const [openQR, setOpenQR] = useState(false);
   const [isCheckout, setIsCheckout] = useState(false);
-  const [bank, setBank] = useState(null);
+  const [bank, setBank] = useState<any>(null);
 
   const socket = io(
     'https://a50crcnry3.execute-api.us-east-1.amazonaws.com/Dev'
   );
 
   const navigate = useNavigate();
-  const handleCopyText = (textToCopy) => {
+  const handleCopyText = (textToCopy: any) => {
     // Tạo một textarea ẩn để sao chép nội dung
     toast.success('Sao chép thành công');
     navigator.clipboard.writeText(textToCopy);
@@ -58,7 +58,7 @@ const BankPayment = ({ props }) => {
   const downloadQRCode = async () => {
     var node = document.getElementById('my-node');
 
-    toJpeg(node, { quality: 0.95 })
+    toJpeg(node as any, { quality: 0.95 })
       .then(function (dataUrl) {
         // download(dataUrl, "my-node.png");
         const link = document.createElement('a');
@@ -76,7 +76,7 @@ const BankPayment = ({ props }) => {
     (async () => {
       getListBank()
         .then((res) => {
-          const bank = res.data.filter((bank) => bank.bin === props.bin);
+          const bank = res.data.filter((bank: any) => bank.bin === props.bin);
           setBank(bank[0]);
         })
         .catch((err) => console.log(err));

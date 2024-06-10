@@ -8,12 +8,16 @@ import {
 import { CourseChapter } from '../../models/CourseChapter';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
+import { RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface ChaptersListProps {
   listChapters: CourseChapter[];
   onReorder: (updateData: { chapterID: string; position: number }[]) => void;
   onEdit: (chapterID: string) => void;
   onDeleteChapter: (chapterID: string) => void;
+  courseData: any;
 }
 
 export const ChaptersList = ({
@@ -21,7 +25,10 @@ export const ChaptersList = ({
   onReorder,
   onEdit,
   onDeleteChapter,
+  courseData,
 }: ChaptersListProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(listChapters);
 
@@ -64,7 +71,13 @@ export const ChaptersList = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="chapters">
+      <Droppable
+        droppableId="chapters"
+        isDropDisabled={
+          (user.role as string).startsWith(ROLE_USER.RGV) &&
+          courseData.courseStatus === COURSE_STATUS.PUBLIC
+        }
+      >
         {(provided) => (
           <div
             {...provided.droppableProps}
@@ -116,20 +129,32 @@ export const ChaptersList = ({
                             />
                           )}
                         </div>
-                        <div className="flex">
-                          <button
-                            onClick={() => onEdit(chapter.chapterID)}
-                            className="text-blue-500 cursor-pointer hover:opacity-75"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => onDeleteChapter(chapter.chapterID)}
-                            className="ml-2 text-red-500 cursor-pointer hover:opacity-75"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        {(user.role as string).startsWith(ROLE_USER.RGV) &&
+                        courseData.courseStatus === COURSE_STATUS.PUBLIC ? (
+                          <div className="flex gap-x-2">
+                            <s className="text-blue-500 hover:opacity-75">
+                              Edit
+                            </s>
+                            <s className="text-red-500 hover:opacity-75">
+                              Delete
+                            </s>
+                          </div>
+                        ) : (
+                          <div className="flex gap-x-2">
+                            <button
+                              onClick={() => onEdit(chapter.chapterID)}
+                              className="text-blue-500 cursor-pointer hover:opacity-75"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => onDeleteChapter(chapter.chapterID)}
+                              className="text-red-500 cursor-pointer hover:opacity-75"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

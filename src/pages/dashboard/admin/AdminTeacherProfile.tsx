@@ -8,33 +8,46 @@ import { IconField } from 'primereact/iconfield';
 import { useGetRevenueQuery } from '../../../redux/userApi';
 import Loader from '../../../components/Loader';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useGetListCoursesMutation } from '../../../redux/coursesApi';
-import { COURSE_STATUS, PAYMENT_STATUS } from '../../../constants/common';
+import {
+  COURSE_STATUS,
+  FLAG_REQUEST,
+  PAYMENT_STATUS,
+} from '../../../constants/common';
 import { Tag } from 'primereact/tag';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChartSimple,
   faChevronCircleLeft,
   faUsers,
-  faVideo,
 } from '@fortawesome/free-solid-svg-icons';
 import { numberWithCommas } from '../../../utils/common';
 import { Tooltip } from 'primereact/tooltip';
+import {
+  useGetListCourseOfTeacherQuery,
+  useManagePublicCourseMutation,
+} from '../../../redux/adminApi';
+import { useDeleteCourseMutation } from '../../../redux/coursesApi';
+import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
 
 const TeacherCoursesDashPage: FC = () => {
+  const user = useSelector((state: RootState) => state.user.user);
   const { userID } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  const [listCourses, setListCourses] = useState<any[]>([]);
   const [filters, setFilters] = useState<any>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
   const [globalFilterValuePayment, setGlobalFilterValuePayment] =
     useState<string>('');
-  // const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  // const [hasMore, setMore] = useState<boolean>();
-  const [getListCourses, { isLoading, isSuccess: isSuccessGetListCourses }] =
-    useGetListCoursesMutation();
+
+  const {
+    data: listCourses,
+    isLoading,
+    isSuccess: isSuccessGetListCourses,
+    refetch,
+  } = useGetListCourseOfTeacherQuery(userID);
 
   const {
     data: revenues,
@@ -42,18 +55,40 @@ const TeacherCoursesDashPage: FC = () => {
     isSuccess,
   } = useGetRevenueQuery(state.userID);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const data = await getListCourses({
-        userID: state.userID,
-        // lastEvaluatedKey: undefined,
-        // limit: 3,
-      }).unwrap();
-      setListCourses(data.courses);
-    };
+  const [managePublicCourse] = useManagePublicCourseMutation();
+  const [deleteCourse, { isLoading: deleteCourseLoading }] =
+    useDeleteCourseMutation();
 
-    fetchCourses();
-  }, []);
+  const handleAcceptPublicCourse = async (course: any) => {
+    await managePublicCourse({
+      authorID: state.userID,
+      courseID: course.courseID,
+      flg: FLAG_REQUEST.ACCEPT,
+    }).unwrap();
+    refetch();
+  };
+
+  const handleRejectPublicCourse = async (course: any) => {
+    await managePublicCourse({
+      authorID: state.userID,
+      courseID: course.courseID,
+      flg: FLAG_REQUEST.REJECT,
+    }).unwrap();
+    refetch();
+  };
+
+  const handleDeleteCourse = async (course: any) => {
+    try {
+      await deleteCourse({
+        userLoginID: user.userID,
+        userID: course.userID,
+        courseID: course.courseID,
+      }).unwrap();
+      toast.success('Delete Course success');
+    } catch (error) {
+      toast.error('Not Permission');
+    }
+  };
 
   useEffect(() => {
     initFilters();
@@ -135,32 +170,49 @@ const TeacherCoursesDashPage: FC = () => {
     }
   };
   const statusBodyTemplate = (course: any) => {
+    console.log(course);
+
     return (
-      <Tag
-        value={
-          course.courseStatus === COURSE_STATUS.DEFAULT
-            ? 'Default'
-            : course.courseStatus === COURSE_STATUS.PENDING
-            ? 'Pending'
-            : course.courseStatus === COURSE_STATUS.PUBLIC
-            ? 'Public'
-            : 'Reject'
-        }
-        severity={getSeverity(course)}
-      ></Tag>
+      <div className="flex gap-x-2">
+        <Tag
+          value={
+            course.courseStatus === COURSE_STATUS.DEFAULT
+              ? 'Default'
+              : course.courseStatus === COURSE_STATUS.PENDING
+              ? 'Pending'
+              : course.courseStatus === COURSE_STATUS.PUBLIC
+              ? 'Public'
+              : 'Reject'
+          }
+          severity={getSeverity(course)}
+        ></Tag>
+        {course.courseStatus === COURSE_STATUS.PENDING && (
+          <div className="flex gap-x-2">
+            <button
+              className="text-sm font-semibold text-green-400 hover:text-green-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+              onClick={() => handleAcceptPublicCourse(course)}
+            >
+              Accecpt
+            </button>
+            <button
+              className="text-sm font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+              onClick={() => handleRejectPublicCourse(course)}
+            >
+              Reject
+            </button>
+          </div>
+        )}
+      </div>
     );
   };
 
   const categoryBodyTemplate = (course: any) => {
-    console.log(course);
-
     let category = '';
     if (course.category.length) {
       (course.category as any[]).forEach((item) => {
         category += `${(item.split('#')[1] as string).replace('_', ' ')}, `;
       });
     }
-    console.log(category);
 
     return category;
   };
@@ -283,7 +335,7 @@ const TeacherCoursesDashPage: FC = () => {
 
   return (
     <div className="flex flex-col gap-y-8">
-      {(isLoading || isLoadingPayment) && <Loader />}
+      {(isLoading || isLoadingPayment || deleteCourseLoading) && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className=" flex items-center gap-x-2">
           <FontAwesomeIcon icon={faChevronCircleLeft} />
@@ -365,7 +417,6 @@ const TeacherCoursesDashPage: FC = () => {
             resizableColumns
             selectionMode="single"
             onSelectionChange={(e) => {
-              console.log(e);
               navigate(`/courses/${e.value.courseID}`);
             }}
             filters={filters}
@@ -440,8 +491,6 @@ const TeacherCoursesDashPage: FC = () => {
               }}
               className="text-lg"
               body={(rowData) => {
-                console.log(rowData);
-
                 return (
                   <div className="flex gap-x-2">
                     <button
@@ -454,8 +503,7 @@ const TeacherCoursesDashPage: FC = () => {
                     </button>
                     <button
                       className="font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                      // onClick={() => handleDelete(rowData)}
+                      onClick={() => handleDeleteCourse(rowData)}
                     >
                       Delete
                     </button>
@@ -482,7 +530,6 @@ const TeacherCoursesDashPage: FC = () => {
               selectionMode="single"
               // selection={selectedProduct}
               onSelectionChange={(e) => {
-                console.log(e);
                 // navigate(`/courses/${e.value.progressID.split('#')[1]}`);
                 // setSelectedProduct(e.value);
               }}

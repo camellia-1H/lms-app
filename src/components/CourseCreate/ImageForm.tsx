@@ -8,15 +8,21 @@ import { generateTime } from '../../utils/string-utils';
 import { useUploadS3ImageMutation } from '../../redux/utilsApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface ImageFormProps {
   initialData: {
     imageUrl: string;
   };
   courseID: string;
+  courseData: any;
 }
 
-export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
+export const ImageForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: ImageFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -28,7 +34,7 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
   const toggleEdit = () => {
     setIsEditing((current) => !current);
     setpreviewImage('');
-    setImageUrl(previewImage);
+    setImageUrl(previewImage.length ? previewImage : imageUrl);
   };
 
   const setFileTobase = (file: File) => {
@@ -165,10 +171,16 @@ export const ImageForm = ({ initialData, courseID }: ImageFormProps) => {
           </div>
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isLoading
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

@@ -10,12 +10,14 @@ import { useUpdateCourseMutation } from '../../redux/coursesApi';
 import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface DescriptionFormProps {
   initialData: {
     description: string;
   };
   courseID: string;
+  courseData: any;
 }
 
 const formSchema = z.object({
@@ -27,6 +29,7 @@ const formSchema = z.object({
 export const DescriptionForm = ({
   initialData,
   courseID,
+  courseData,
 }: DescriptionFormProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -96,10 +99,17 @@ export const DescriptionForm = ({
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isSubmitting || isLoading}
+              disabled={
+                isSubmitting ||
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isSubmitting
+                isSubmitting ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

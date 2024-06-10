@@ -228,7 +228,7 @@ const AdminStudentProfile: FC = () => {
           {state?.requestTeachStatus === REQUEST_TEACHER.DEFAULT ? (
             <div className="flex gap-x-2">
               <span className="text-white px-3 py-2 text-xl font-semibold bg-sky-400 rounded-full">
-                You are student
+                User is student
               </span>
             </div>
           ) : state?.requestTeachStatus === REQUEST_TEACHER.PENDING ? (
