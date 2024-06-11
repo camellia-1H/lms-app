@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { Course } from '../../models/Course';
 import { PAYMENT_STATUS } from '../../constants/common';
-import { numberWithCommas } from '../../utils/common';
+import { numberWithCommas, parseSecondToTime } from '../../utils/common';
 
 const CartBuyCourse = ({
   scrollShow,
@@ -239,7 +239,9 @@ const CartBuyCourse = ({
                       className="w-full text-gray-800/80 text-md"
                     />
                   </p>
-                  <span>30 mins on-demand video</span>
+                  <span>
+                    {parseSecondToTime(courseData.totalTime)} on-demand video
+                  </span>
                 </div>
                 <div className="flex">
                   <p className="justify-items-start w-4 mr-[6px]">
@@ -248,7 +250,7 @@ const CartBuyCourse = ({
                       className="w-max text-gray-800/80 text-md"
                     />
                   </p>
-                  <span>14 chapters</span>
+                  <span>{courseData.totalChapters} chapters</span>
                 </div>
                 <div className="flex">
                   <p className="justify-items-start w-4 mr-2">

@@ -70,7 +70,7 @@ export const ImageForm = ({
         typeImage: typeImage,
       });
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
         imageUrl: responeUploadImageS3.data,
         updatedAt: generateTime(),

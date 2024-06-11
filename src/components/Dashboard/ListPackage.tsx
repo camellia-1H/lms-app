@@ -136,10 +136,10 @@ const ListPackage = ({
                 className="text-xl text-green-500"
               />
               <span>
-                Limit Course : <strong>2</strong>
+                Limit Course : <strong>10</strong>
               </span>
             </div>
-            <div className="flex gap-x-3 items-center">
+            {/* <div className="flex gap-x-3 items-center">
               <FontAwesomeIcon
                 icon={faCheck}
                 className="text-xl text-green-500"
@@ -147,7 +147,7 @@ const ListPackage = ({
               <span>
                 Display order : <strong>Medium</strong>
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@ const ListPackage = ({
                 Limit Course : <strong>No limit</strong>
               </span>
             </div>
-            <div className="flex gap-x-3 items-center">
+            {/* <div className="flex gap-x-3 items-center">
               <FontAwesomeIcon
                 icon={faCheck}
                 className="text-xl text-green-500"
@@ -198,8 +198,8 @@ const ListPackage = ({
               <span>
                 Display order : <strong>Highest</strong>
               </span>
-            </div>
-            <div className="flex gap-x-3 items-center">
+            </div> */}
+            {/* <div className="flex gap-x-3 items-center">
               <FontAwesomeIcon
                 icon={faCheck}
                 className="text-xl text-green-500"
@@ -207,7 +207,7 @@ const ListPackage = ({
               <span>
                 <strong>Auto</strong> accept request post course
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

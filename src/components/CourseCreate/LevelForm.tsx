@@ -8,12 +8,14 @@ import { generateTime } from '../../utils/string-utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { levelList as levelCourse } from '../../constants/data-master';
+import { COURSE_STATUS, ROLE_USER } from '../../constants/common';
 
 interface LevelProps {
   initialData: {
     level: string;
   };
   courseID: string;
+  courseData: any;
 }
 
 // const userID = 'userID1';
@@ -24,11 +26,18 @@ const levelList = levelCourse.filter(
   (level) => level.levelID !== 'levelID#All_Levels'
 );
 
-export const LevelForm = ({ initialData, courseID }: LevelProps) => {
+export const LevelForm = ({
+  initialData,
+  courseID,
+  courseData,
+}: LevelProps) => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const [isEditing, setIsEditing] = useState(false);
-  const initialLevel = { levelType: initialData?.level, checked: true };
+  const initialLevel = {
+    levelType: initialData?.level,
+    checked: true,
+  };
   const [checkedList, setCheckedList] = useState<any[]>([initialLevel]);
 
   checkedList.forEach((item) => {
@@ -59,9 +68,12 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
         toast.error('Must least one level');
       }
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
-        level: checkedList[0].levelType,
+        level:
+          checkedList.length > 1
+            ? checkedList[1].levelType
+            : checkedList[0].levelType,
         updatedAt: generateTime(),
       }).unwrap();
       toast.success('Course updated');
@@ -138,10 +150,16 @@ export const LevelForm = ({ initialData, courseID }: LevelProps) => {
 
           <div className="flex items-center gap-x-2">
             <button
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
+              }
               type="submit"
               className={[
-                isLoading
+                isLoading ||
+                ((user.role as string).startsWith(ROLE_USER.RGV) &&
+                  courseData.courseStatus === COURSE_STATUS.PUBLIC)
                   ? 'bg-gray-500/70 '
                   : 'cursor-pointer hover:bg-black bg-blue-500 ',
                 'px-3 py-2 rounded-lg text-white font-bold',

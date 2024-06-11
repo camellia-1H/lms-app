@@ -14,12 +14,14 @@ interface ChapterUploadVideoFormProps {
   };
   chapterID: string;
   courseID: string;
+  courseData: any;
 }
 
 export const ChapterUploadVideoForm = ({
   initialData,
   chapterID,
   courseID,
+  courseData,
 }: ChapterUploadVideoFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [chapterVideo, setChapterVideo] = useState<string>(
@@ -77,6 +79,7 @@ export const ChapterUploadVideoForm = ({
             chapterID={chapterID}
             toggleEdit={toggleEdit}
             setChapterVideo={setChapterVideo}
+            courseData={courseData}
           />
         </div>
       )}

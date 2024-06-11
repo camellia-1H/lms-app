@@ -51,7 +51,7 @@ export const TitleForm = ({
       console.log(values);
       setTitle(values.title);
       await updateCourse({
-        userID: user.userID, // author
+        userID: courseData.userID, // author
         courseID,
         title: values.title,
         updatedAt: generateTime(),

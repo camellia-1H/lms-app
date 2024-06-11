@@ -28,10 +28,8 @@ const ProfileDashboardPage: FC = () => {
   const [imageUrl, setImageUrl] = useState<string>();
   const [name, setName] = useState<string>('');
 
-  const [
-    updateUserInfo,
-    { isLoading: loadingUpdateUserInfo, isSuccess: successUpdate },
-  ] = useUpdateUserInfoMutation();
+  const [updateUserInfo, { isLoading: loadingUpdateUserInfo }] =
+    useUpdateUserInfoMutation();
 
   const [
     getAuthorInfo,
@@ -153,7 +151,7 @@ const ProfileDashboardPage: FC = () => {
                   </label>
                   <input
                     type="text"
-                    // value={name}
+                    defaultValue={name}
                     disabled={isSubmitting}
                     className="w-full outline-none min-w-[300px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
                     {...form.register('name')}

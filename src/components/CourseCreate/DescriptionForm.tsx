@@ -54,7 +54,7 @@ export const DescriptionForm = ({
     try {
       setDescription(values.description);
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
         description: values.description,
         updatedAt: generateTime(),

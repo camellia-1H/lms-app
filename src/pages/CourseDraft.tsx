@@ -17,7 +17,6 @@ import { ChaptersForm } from '../components/CourseCreate/ChaptersForm';
 import { RootState } from '../redux/store';
 import {
   useDeleteCourseMutation,
-  useGetCourseDetailAuthQuery,
   useGetCourseDetailPublicQuery,
   useGetListCourseChaptersQuery,
   useUpdateCourseMutation,
@@ -147,6 +146,15 @@ const CourseDraftPage: FC = () => {
       authorID: courseData.course.userID,
       courseID: courseData.course.courseID,
       flg: FLAG_REQUEST.REJECT,
+    }).unwrap();
+    refetch();
+  };
+
+  const handleUnpublicCourse = async () => {
+    await managePublicCourse({
+      authorID: courseData.course.userID,
+      courseID: courseData.course.courseID,
+      flg: FLAG_REQUEST.ADMIN_UNPUBLIC,
     }).unwrap();
     refetch();
   };
@@ -321,7 +329,7 @@ const CourseDraftPage: FC = () => {
                         Public
                       </p>
                       <button
-                        onClick={handleRequestUnpublicCourse}
+                        onClick={handleUnpublicCourse}
                         className="text-sm block ml-4 bg-sky-900 hover:bg-sky-950/90 font-medium text-white rounded-md px-3 py-2 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
                       >
                         UnPublish
@@ -428,6 +436,7 @@ const CourseDraftPage: FC = () => {
                     level: courseData.course?.level ?? '',
                   }}
                   courseID={courseIDParam ?? courseID}
+                  courseData={courseData.course}
                 />
               </div>
             </div>

@@ -53,7 +53,7 @@ export const PriceForm = ({
       console.log(values);
       setPrice(values.price);
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
         price: values.price,
         updatedAt: generateTime(),

@@ -57,7 +57,7 @@ export const DescriptionDetailForm = ({
   const onSubmit = async () => {
     try {
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
         descriptionDetail: descriptionDetail,
         updatedAt: generateTime(),

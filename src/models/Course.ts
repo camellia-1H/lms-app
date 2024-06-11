@@ -16,6 +16,7 @@ export interface Course {
   courseStatus: number;
   totalStudents: number;
   totalReviews: number;
+  totalTime: number;
   totalRate: number;
   authorName: string;
 

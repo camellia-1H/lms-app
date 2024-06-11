@@ -6,17 +6,19 @@ import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { InputText } from 'primereact/inputtext';
 import { IconField } from 'primereact/iconfield';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Loader from '../../../components/Loader';
 import { RootState } from '../../../redux/store';
 import { useGetListReviewsQuery } from '../../../redux/userApi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { useDeleteRatingCourseMutation } from '../../../redux/coursesApi';
+import toast from 'react-hot-toast';
 
 const TeacherReviewsDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [filters, setFilters] = useState<any>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
 
@@ -24,8 +26,21 @@ const TeacherReviewsDashPage: FC = () => {
     data: listReviews,
     isLoading,
     isSuccess,
+    refetch,
   } = useGetListReviewsQuery(user.userID);
 
+  const [deleteRating, { isLoading: isDeleteRatingLoading }] =
+    useDeleteRatingCourseMutation();
+
+  const handleDeleteRating = async (ratingInfo: any) => {
+    await deleteRating({
+      authorID: user.userID,
+      courseID: ratingInfo.courseID,
+      userID: ratingInfo.userID,
+    }).unwrap();
+    toast.success('Delete rating success');
+    refetch();
+  };
   useEffect(() => {
     initFilters();
   }, []);
@@ -92,7 +107,7 @@ const TeacherReviewsDashPage: FC = () => {
 
   return (
     <div className="">
-      {isLoading && <Loader />}
+      {(isLoading || isDeleteRatingLoading) && <Loader />}
       <div className="flex flex-col gap-y-3">
         <div className="self-end">
           <Link to={'/'} className="flex items-center">
@@ -183,19 +198,13 @@ const TeacherReviewsDashPage: FC = () => {
             style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
             body={(rowData) => {
+              console.log(rowData);
+
               return (
                 <div>
                   <button
-                    className="px-3 py-2 text-lg font-semibold text-sky-400 hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                    // onClick={() => handleEdit(rowData)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-3 py-2 text-lg font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                    // onClick={() => handleDelete(rowData)}
+                    className="text-sm font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                    onClick={() => handleDeleteRating(rowData)}
                   >
                     Delete
                   </button>

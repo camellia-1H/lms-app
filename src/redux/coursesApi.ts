@@ -238,6 +238,15 @@ export const coursesApi = createApi({
       }),
       invalidatesTags: ['createRating'],
     }),
+    // only rgv
+    deleteRatingCourse: build.mutation({
+      query: (data) => ({
+        url: `/courses/delete-rating`,
+        method: 'POST',
+        body: data,
+      }),
+      // invalidatesTags: ['createRating'],
+    }),
 
     getListCourseRecent: build.query({
       query: () => ({
@@ -279,6 +288,7 @@ export const {
   useGetReviewUserOfCourseQuery,
   useGetListReviewOfCourseMutation,
   useCreateRatingCourseMutation,
+  useDeleteRatingCourseMutation,
   // list course recent
   useGetListCourseRecentQuery,
   useGetListCoursePopularQuery,

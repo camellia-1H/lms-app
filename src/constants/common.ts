@@ -36,6 +36,7 @@ const FLAG_REQUEST = {
   UPDATE: 'update',
   ACCEPT: 'accept',
   REJECT: 'reject',
+  ADMIN_UNPUBLIC: 'unpublic',
 };
 
 const PACKAGE_TYPE = {

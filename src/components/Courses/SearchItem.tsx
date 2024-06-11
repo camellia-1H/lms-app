@@ -25,9 +25,11 @@ const SearchItem = ({ courseData }: { courseData: Partial<Course> }) => {
               {courseData.description}
             </p>
             <p className="text-sm text-gray-600 my-2">
-              {(courseData.level as string).replace(/^\w/, (c: any) =>
-                c.toUpperCase()
-              )}
+              {courseData.level
+                ? (courseData.level as string).replace(/^\w/, (c: any) =>
+                    c.toUpperCase()
+                  )
+                : 'LevelBuggg'}
             </p>
             <div className="flex gap-x-1 flex-wrap mt-2">
               {courseData.category?.map((category: any) => (

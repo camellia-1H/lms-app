@@ -112,7 +112,7 @@ export const ChaptersList = ({
                     >
                       <br className="h-5 w-5" />
                     </div>
-                    <div className="flex flex-1 justify-between">
+                    <div className="flex flex-1 justify-between items-center">
                       <span>{chapter.chapterTitle}</span>
                       <div className="pr-2 flex gap-x-2">
                         {/* {chapter.isFree && <span className="text-red">Free</span>} */}

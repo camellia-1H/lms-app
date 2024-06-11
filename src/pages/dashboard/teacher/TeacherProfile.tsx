@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import {
   useGetUserInfoMutation,
-  useManageRequestTeacherMutation,
+  useUpdateUserInfoMutation,
 } from '../../../redux/userApi';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
@@ -21,7 +21,7 @@ import ListPackage from '../../../components/Dashboard/ListPackage';
 const FormSchema = z.object({
   email: z.string().email().min(1, 'Bắt buộc'),
   name: z.string().min(1, 'Name must be least 1 characters'),
-  description: z.string().min(1, 'Description must be least 1 characters').ma,
+  description: z.string().min(1, 'Description must be least 1 characters'),
 });
 type FormInput = z.infer<typeof FormSchema>;
 
@@ -43,6 +43,9 @@ const TeacherProfileDashPage: FC = () => {
     { isLoading: loadingGetAuth, isSuccess: successGetAuth },
   ] = useGetUserInfoMutation();
 
+  const [updateUserInfo, { isLoading: loadingUpdateUserInfo }] =
+    useUpdateUserInfoMutation();
+
   const [uploadImageS3] = useUploadS3ImageMutation();
   const fetchAuthorInfo = async () => {
     const data = await getAuthorInfo({
@@ -56,16 +59,6 @@ const TeacherProfileDashPage: FC = () => {
     fetchAuthorInfo();
   }, []);
 
-  const [manageRequestTeacher, { isLoading, isSuccess }] =
-    useManageRequestTeacherMutation();
-
-  const handleManageRequestTeacher = async (userID: string, flg: number) => {
-    await manageRequestTeacher({
-      userID: userID,
-      flg: flg,
-    }).unwrap();
-  };
-
   const {
     register,
     handleSubmit,
@@ -75,32 +68,35 @@ const TeacherProfileDashPage: FC = () => {
   });
 
   const onSubmit = async (values: any) => {
-    console.log(values);
+    try {
+      await updateUserInfo({
+        userID: user.userID,
+        name: values.name,
+      }).unwrap();
+      toast.success('Profile updated');
+      fetchAuthorInfo();
+    } catch {
+      toast.error('Something went wrong');
+    }
+  };
 
+  const updateAvatar = async () => {
     try {
       const responeUploadImageS3: any = await uploadImageS3({
         imageUrl: previewImage,
         fileName: fileName,
         typeImage: typeImage,
-      });
-      //   await updateCourse({
-      //     userID: user.userID,
-      //     courseID,
-      //     imageUrl: responeUploadImageS3.data,
-      //     updatedAt: generateTime(),
-      //   }).unwrap();
-      toast.success('Course updated');
-      //   setDescription(values.description);
-      //   await updateCourse({
-      //     userID: user.userID,
-      //     courseID,
-      //     description: values.description,
-      //     updatedAt: generateTime(),
-      //   }).unwrap();
-      //   toast.success('Course updated');
-      //   toggleEdit();
+      }).unwrap();
+      console.log(responeUploadImageS3.data);
+      setpreviewImage('');
+      await updateUserInfo({
+        userID: user.userID,
+        avatar: responeUploadImageS3,
+      }).unwrap();
+      toast.success('Profile updated');
+      fetchAuthorInfo();
     } catch {
-      //   toast.error('Something went wrong');
+      toast.error('Something went wrong');
     }
   };
 
@@ -123,7 +119,7 @@ const TeacherProfileDashPage: FC = () => {
 
   return (
     <>
-      {(isLoading || loadingGetAuth) && <Loader />}
+      {(loadingGetAuth || loadingUpdateUserInfo) && <Loader />}
 
       {successGetAuth && (
         <div className="flex flex-col gap-y-3">
@@ -147,7 +143,7 @@ const TeacherProfileDashPage: FC = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 mt-4 flex flex-col"
           >
-            <div className="flex gap-x-40">
+            <div className="flex gap-x-20">
               <div className="flex flex-col gap-y-4">
                 <label
                   htmlFor="name"
@@ -157,7 +153,7 @@ const TeacherProfileDashPage: FC = () => {
                 </label>
                 <input
                   type="text"
-                  value={name}
+                  defaultValue={name}
                   disabled={isSubmitting}
                   className="w-full outline-none min-w-[400px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
                   {...register('name')}
@@ -213,13 +209,11 @@ const TeacherProfileDashPage: FC = () => {
                       <div className="flex items-center mt-2">
                         <img
                           src={previewImage}
-                          className="w-64 h-64 rounded-full block aspect-square"
+                          className="w-64 h-64 rounded-full"
                           height={200}
                         ></img>
                       </div>
-                      <button onClick={() => setpreviewImage('')}>
-                        Change
-                      </button>
+                      <button onClick={updateAvatar}>Change</button>
                     </div>
                   </>
                 )}
@@ -253,7 +247,7 @@ const TeacherProfileDashPage: FC = () => {
 
             <div className="flex items-center">
               <button
-                disabled={isSubmitting || isLoading}
+                disabled={isSubmitting}
                 type="submit"
                 className={[
                   isSubmitting

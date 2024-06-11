@@ -15,11 +15,13 @@ const UploadVideo = ({
   chapterID,
   toggleEdit,
   setChapterVideo,
+  courseData,
 }: {
   courseID: string;
   chapterID: string;
   toggleEdit: () => void;
   setChapterVideo: (objectVideoURL: string) => void;
+  courseData: any;
 }) => {
   const token = useSelector((state: RootState) => state.user.token);
   const user = useSelector((state: RootState) => state.user.user);
@@ -104,7 +106,7 @@ const UploadVideo = ({
     });
 
     updateDuration({
-      userID: user.userID,
+      userID: courseData.userID,
       courseID,
       chapterID,
       duration: Math.round(videoDuration as number),

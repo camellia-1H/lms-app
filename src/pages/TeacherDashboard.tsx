@@ -21,7 +21,7 @@ import { Column } from 'primereact/column';
 import { Tag } from 'primereact/tag';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 
-import { COURSE_STATUS } from '../constants/common';
+import { COURSE_STATUS, PACKAGE_TYPE } from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 
 const TeacherDashboard: React.FC = () => {
@@ -258,38 +258,55 @@ const TeacherDashboard: React.FC = () => {
             <div className="mt-3 flex justify-between flex-col">
               <h1 className="text-2xl font-bold mb-5">Package</h1>
               <Accordion>
-                <AccordionTab
-                  header={
-                    <div className="flex gap-x-3 items-center">
-                      <span>Package Basic</span>
-                      <FontAwesomeIcon
-                        icon={faCircleCheck}
-                        className="text-xl text-green-500"
-                      />
+                {(userInfo?.role as string).includes(PACKAGE_TYPE.BASIC) ? (
+                  <AccordionTab
+                    header={
+                      <div className="flex gap-x-3 items-center">
+                        <span>Package Basic</span>
+                        <FontAwesomeIcon
+                          icon={faCircleCheck}
+                          className="text-xl text-green-500"
+                        />
+                      </div>
+                    }
+                  >
+                    <div>
+                      <div className="flex gap-x-3 items-center">
+                        <FontAwesomeIcon
+                          icon={faCheck}
+                          className="text-xl text-green-500"
+                        />
+                        <span>
+                          Limit Course : <strong>10</strong>
+                        </span>
+                      </div>
                     </div>
-                  }
-                >
-                  <div>
-                    <div className="flex gap-x-3 items-center">
-                      <FontAwesomeIcon
-                        icon={faCheck}
-                        className="text-xl text-green-500"
-                      />
-                      <span>
-                        Limit Course : <strong>2</strong>
-                      </span>
+                  </AccordionTab>
+                ) : (
+                  <AccordionTab
+                    header={
+                      <div className="flex gap-x-3 items-center">
+                        <span>Package Pro</span>
+                        <FontAwesomeIcon
+                          icon={faCircleCheck}
+                          className="text-xl text-green-500"
+                        />
+                      </div>
+                    }
+                  >
+                    <div>
+                      <div className="flex gap-x-3 items-center">
+                        <FontAwesomeIcon
+                          icon={faCheck}
+                          className="text-xl text-green-500"
+                        />
+                        <span>
+                          Limit Course : <strong>No Limit</strong>
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex gap-x-3 items-center">
-                      <FontAwesomeIcon
-                        icon={faCheck}
-                        className="text-xl text-green-500"
-                      />
-                      <span>
-                        Display order : <strong>Medium</strong>
-                      </span>
-                    </div>
-                  </div>
-                </AccordionTab>
+                  </AccordionTab>
+                )}
               </Accordion>
             </div>
           </div>

@@ -18,6 +18,7 @@ import { ChapterDescriptionForm } from '../components/CourseChapterCreate/Chapte
 import {
   useDeleteCourseChapterMutation,
   useGetCourseChapterDetailQuery,
+  useGetCourseDetailPublicQuery,
 } from '../redux/coursesApi';
 import Loader from '../components/Loader';
 import { ChapterAccessForm } from '../components/CourseChapterCreate/ChapterAccessForm';
@@ -50,6 +51,16 @@ const CourseChapterDraft: FC = () => {
   });
   console.log(chapter);
 
+  /// do get author id to update, delete chapter
+  const {
+    data: courseData,
+    isSuccess: isSuccessGetAuthor,
+    isLoading: isLoadingGetAuthor,
+    // refetch,
+  } = useGetCourseDetailPublicQuery({
+    courseID: courseIDParam ?? courseID,
+  });
+
   const [deleteCourseChapter, { isLoading: isDeleteChapterLoading }] =
     useDeleteCourseChapterMutation();
 
@@ -80,7 +91,7 @@ const CourseChapterDraft: FC = () => {
       await deleteCourseChapter({
         courseID: courseIDParam ?? courseID,
         chapterID: chapterIDParam ?? chapterID,
-        userID: user.userID,
+        userID: courseData.course.userID,
       }).unwrap();
       toast.success('Chapter deleted');
       navigate(-1);
@@ -90,7 +101,9 @@ const CourseChapterDraft: FC = () => {
   };
   return (
     <div>
-      {(isLoading || isDeleteChapterLoading) && <Loader />}
+      {(isLoading || isDeleteChapterLoading || isLoadingGetAuthor) && (
+        <Loader />
+      )}
       <div className="bg-[#111827] h-32">
         <div className="flex items-center h-full lg:px-32 md:px-20 sm:px-6">
           <h1 className="text-white font-bold text-4xl hover:underline hover:cursor-pointer">
@@ -177,23 +190,26 @@ const CourseChapterDraft: FC = () => {
                 />
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-x-2">
-                <FontAwesomeIcon
-                  icon={faVideo}
-                  className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
-                />
-                <h2 className="text-xl font-bold">Add a video</h2>
-              </div>
+            {isSuccessGetAuthor && (
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <FontAwesomeIcon
+                    icon={faVideo}
+                    className="bg-gray-100 text-blue-500 text-xl px-2 py-2 rounded-full"
+                  />
+                  <h2 className="text-xl font-bold">Add a video</h2>
+                </div>
 
-              <ChapterUploadVideoForm
-                initialData={{
-                  chapterVideoURL: chapter?.chapterVideoUrl as string,
-                }}
-                courseID={courseIDParam ?? courseID}
-                chapterID={chapterIDParam ?? chapterID}
-              />
-            </div>
+                <ChapterUploadVideoForm
+                  initialData={{
+                    chapterVideoURL: chapter?.chapterVideoUrl as string,
+                  }}
+                  courseID={courseIDParam ?? courseID}
+                  chapterID={chapterIDParam ?? chapterID}
+                  courseData={courseData.course}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}

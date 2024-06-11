@@ -66,7 +66,7 @@ export const CategoryForm = ({
         toast.error('Must least one Category');
       }
       await updateCourse({
-        userID: user.userID,
+        userID: courseData.userID,
         courseID,
         category: checkedList.map((item) => `${item.categoryID}`),
         updatedAt: generateTime(),
@@ -102,7 +102,7 @@ export const CategoryForm = ({
               key={category.categoryID}
               className="text-sm mr-2 font-bold text-red-600"
             >
-              {category.categoryID.split('#')[1]}
+              {category.categoryID.split('#')[1].replaceAll('_', ' ')}
             </span>
           ))}
         </div>

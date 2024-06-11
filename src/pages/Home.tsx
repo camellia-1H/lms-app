@@ -137,7 +137,7 @@ const Home: FC = () => {
                   </p>
                   <div className="min-w-fit mt-6">
                     <Link
-                      to={'/register-member'}
+                      to={'/user/register'}
                       className="text-white font-bold px-4 py-3 bg-blue-700 rounded-lg hover:bg-black"
                     >
                       Start teaching today

@@ -31,6 +31,7 @@ import ReviewCourse from '../components/CourseDetail/ReviewCourse';
 import CartCourseList from '../components/CartCourseList';
 import { useGetUserInfoMutation } from '../redux/userApi';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import { parseSecondToTime } from '../utils/common';
 
 // logic call progress :
 // nếu user đã đăng nhập và lưu ở store thì mới gọi.
@@ -420,7 +421,10 @@ const CourseDetailPage: FC = () => {
                     .
                   </span>
                   <span className="font-thin">
-                    <strong>30m</strong> total length
+                    <strong>
+                      {parseSecondToTime(courseData.course.totalTime)}
+                    </strong>{' '}
+                    total length
                   </span>
                 </div>
 

@@ -138,7 +138,11 @@ const CourseChapterDetailPage: FC = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
     }
-    if (currentTime > totalTime * 0.75 && !isNext) {
+    if (
+      currentTime > totalTime * 0.75 &&
+      currentTime > totalTime * 0.75 + 0.5 &&
+      !isNext
+    ) {
       setNext(true);
       handleUpdateProgress();
     }
@@ -212,18 +216,6 @@ const CourseChapterDetailPage: FC = () => {
                   <h1 className="text-3xl font-bold">
                     {chapterDetail?.chapterTitle}
                   </h1>
-                  <button
-                    disabled={!isNext}
-                    className={[
-                      'font-medium rounded-md px-3 py-2 flex items-center ml-4 ',
-                      isNext
-                        ? 'bg-blue-500 hover:bg-blue-950/90 text-white transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200'
-                        : 'bg-gray-500/70 ',
-                    ].join('')}
-                    onClick={handleUpdateProgress}
-                  >
-                    Mark done chapter
-                  </button>
                 </div>
                 <h2 className="text-sm">
                   Updated at <span>{chapterDetail?.updatedAt}</span>
@@ -276,7 +268,7 @@ const CourseChapterDetailPage: FC = () => {
                       icon={faVideo}
                       className="text-sm text-sky-500 mr-2"
                     />
-                    <span className="text-sm">10:30</span>
+                    <span className="text-sm">{chapter?.duration ?? 10}</span>
                   </div>
                   <div className="absolute right-6 top-8">
                     {listChaptersCompleted.includes(chapter.chapterID) ? (
@@ -312,9 +304,13 @@ const CourseChapterDetailPage: FC = () => {
           <div>
             <p>Course Progress</p>
             <ProgressBar
-              completed={Math.ceil(
-                (listChaptersCompleted.length / listChapters.length) * 100
-              )}
+              completed={
+                listChaptersCompleted.length
+                  ? Math.ceil(
+                      (listChaptersCompleted.length / listChapters.length) * 100
+                    )
+                  : 0
+              }
               height="10px"
               labelSize="10px"
             />
