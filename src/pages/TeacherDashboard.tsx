@@ -21,7 +21,11 @@ import { Column } from 'primereact/column';
 import { Tag } from 'primereact/tag';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 
-import { COURSE_STATUS, PACKAGE_TYPE } from '../constants/common';
+import {
+  COURSE_STATUS,
+  LIMIT_COURSE_BASIC,
+  PACKAGE_TYPE,
+} from '../constants/common';
 import { numberWithCommas } from '../utils/common';
 
 const TeacherDashboard: React.FC = () => {
@@ -133,7 +137,7 @@ const TeacherDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      {successGetAuth && (
+      {successGetAuth && userInfo && (
         <>
           <div className="flex justify-between items-center mt-3">
             <div className="rounded-lg bg-white w-1/4 mr-5 p-3">
@@ -144,19 +148,7 @@ const TeacherDashboard: React.FC = () => {
                 />
                 <div>
                   <p className="text-slate-400">Total Course</p>
-                  <p className="font-bold">13</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-white w-1/4 mr-5 p-3">
-              <div className="flex items-center content-center">
-                <FontAwesomeIcon
-                  icon={faVideo}
-                  className="text-xl mr-5 rounder p-3 bg-gray-100 rounded-full text-sky-500"
-                />
-                <div>
-                  <p className="text-slate-400">Chapters</p>
-                  <p className="font-bold">276</p>
+                  <p className="font-bold">{userInfo.totalCourses}</p>
                 </div>
               </div>
             </div>
@@ -169,7 +161,7 @@ const TeacherDashboard: React.FC = () => {
                   />
                   <div>
                     <p className="text-slate-400">Students</p>
-                    <p className="font-bold">321</p>
+                    <p className="font-bold">{userInfo.totalStudents}</p>
                   </div>
                 </div>
                 {/* <FontAwesomeIcon icon={faArrowRight} className='text-3xl mr-5 rounder'/> */}
@@ -183,7 +175,9 @@ const TeacherDashboard: React.FC = () => {
                 />
                 <div>
                   <p>Earning</p>
-                  <p className="font-bold">{numberWithCommas(21)}</p>
+                  <p className="font-bold">
+                    {numberWithCommas(userInfo.totalRevenue)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -277,7 +271,7 @@ const TeacherDashboard: React.FC = () => {
                           className="text-xl text-green-500"
                         />
                         <span>
-                          Limit Course : <strong>10</strong>
+                          Limit Course : <strong>{LIMIT_COURSE_BASIC}</strong>
                         </span>
                       </div>
                     </div>

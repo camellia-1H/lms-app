@@ -89,7 +89,7 @@ const StudentStatsDashPage: FC = () => {
   const header = renderHeader();
 
   const getSeverity = (paymentInfo: any) => {
-    switch (paymentInfo.paymentStatus) {
+    switch (paymentInfo.payment_flg) {
       case PAYMENT_STATUS.CANCEL:
         return 'danger';
       case PAYMENT_STATUS.SUCCESS:
@@ -99,9 +99,9 @@ const StudentStatsDashPage: FC = () => {
         return null;
     }
   };
-  const paymentBodyTemplate = (course: any) => {
+  const paymentBodyTemplate = (payment: any) => {
     let value;
-    switch (course.courseStatus) {
+    switch (payment.payment_flg) {
       case PAYMENT_STATUS.SUCCESS: {
         value = 'Success';
         break;
@@ -109,7 +109,7 @@ const StudentStatsDashPage: FC = () => {
       default:
         value = 'Cancel';
     }
-    return <Tag value={value} severity={getSeverity(course)}></Tag>;
+    return <Tag value={value} severity={getSeverity(payment)}></Tag>;
   };
 
   return (

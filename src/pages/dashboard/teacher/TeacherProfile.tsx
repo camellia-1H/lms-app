@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 // import { useScanAllCoursesMutation } from '../redux/coursesApi';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
+
 import {
   useGetUserInfoMutation,
   useUpdateUserInfoMutation,
@@ -18,12 +19,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import ListPackage from '../../../components/Dashboard/ListPackage';
 
-const FormSchema = z.object({
+const formSchema = z.object({
   email: z.string().email().min(1, 'Bắt buộc'),
   name: z.string().min(1, 'Name must be least 1 characters'),
-  description: z.string().min(1, 'Description must be least 1 characters'),
+  description: z
+    .string()
+    .min(1, 'Description must be least 1 characters')
+    .max(255, 'Description must be max 255 characters'),
 });
-type FormInput = z.infer<typeof FormSchema>;
 
 const TeacherProfileDashPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -36,7 +39,8 @@ const TeacherProfileDashPage: FC = () => {
   const [previewImage, setpreviewImage] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>();
 
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const [
     getAuthorInfo,
@@ -46,32 +50,38 @@ const TeacherProfileDashPage: FC = () => {
   const [updateUserInfo, { isLoading: loadingUpdateUserInfo }] =
     useUpdateUserInfoMutation();
 
-  const [uploadImageS3] = useUploadS3ImageMutation();
+  const [uploadImageS3, { isLoading: loadingUpImg }] =
+    useUploadS3ImageMutation();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const { isSubmitting, errors } = form.formState;
+
   const fetchAuthorInfo = async () => {
     const data = await getAuthorInfo({
       userID: user.userID,
     }).unwrap();
     setUserInfo(data.userInfo);
     setImageUrl(data.userInfo?.avatar);
-    setName(data.userInfo.name);
+    setName(data.userInfo?.name);
+    setDescription(data.userInfo?.description);
+    form.setValue('name', data.userInfo?.name);
+    form.setValue('description', data.userInfo?.description);
   };
   useEffect(() => {
     fetchAuthorInfo();
   }, []);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting, errors },
-  } = useForm<FormInput>({
-    resolver: zodResolver(FormSchema),
-  });
-
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setName(values.name);
+    setDescription(values.description);
     try {
       await updateUserInfo({
         userID: user.userID,
         name: values.name,
+        description: values.description,
       }).unwrap();
       toast.success('Profile updated');
       fetchAuthorInfo();
@@ -119,7 +129,7 @@ const TeacherProfileDashPage: FC = () => {
 
   return (
     <>
-      {(loadingGetAuth || loadingUpdateUserInfo) && <Loader />}
+      {(loadingGetAuth || loadingUpdateUserInfo || loadingUpImg) && <Loader />}
 
       {successGetAuth && (
         <div className="flex flex-col gap-y-3">
@@ -140,7 +150,7 @@ const TeacherProfileDashPage: FC = () => {
             </div>
           </div>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4 flex flex-col"
           >
             <div className="flex gap-x-20">
@@ -151,12 +161,15 @@ const TeacherProfileDashPage: FC = () => {
                 >
                   Name
                 </label>
+                {errors?.name?.message && (
+                  <p className="text-sm text-red-600">{errors?.name.message}</p>
+                )}
                 <input
                   type="text"
-                  defaultValue={name}
+                  // defaultValue={name}
                   disabled={isSubmitting}
                   className="w-full outline-none min-w-[400px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...register('name')}
+                  {...form.register('name')}
                 />
 
                 <label
@@ -170,7 +183,7 @@ const TeacherProfileDashPage: FC = () => {
                   value={userInfo?.email}
                   disabled={true}
                   className="w-full outline-none bg-gray-300 min-w-[400px]  focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...register('email')}
+                  {...form.register('email')}
                 />
 
                 <label
@@ -179,11 +192,17 @@ const TeacherProfileDashPage: FC = () => {
                 >
                   Description
                 </label>
+                {errors?.description?.message && (
+                  <p className="text-sm text-red-600">
+                    {errors.description.message}
+                  </p>
+                )}
                 <textarea
-                  content={userInfo?.description}
+                  defaultValue={description}
+                  // content={userInfo?.description}
                   // value={}
                   className="w-full outline-none min-w-[400px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
-                  {...register('description')}
+                  {...form.register('description')}
                 />
               </div>
               <div className="flex items-center">
@@ -213,7 +232,12 @@ const TeacherProfileDashPage: FC = () => {
                           height={200}
                         ></img>
                       </div>
-                      <button onClick={updateAvatar}>Change</button>
+                      <button
+                        className="px-3 py-2 rounded-lg text-white font-bold  cursor-pointer hover:bg-black bg-blue-500 "
+                        onClick={updateAvatar}
+                      >
+                        Change
+                      </button>
                     </div>
                   </>
                 )}

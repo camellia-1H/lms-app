@@ -140,6 +140,8 @@ const CoursesPage: FC = () => {
     setLoadingFilter(false);
   };
 
+  console.log('listCourseQuery', listCourseQuery);
+
   return (
     <div>
       {/* <button onClick={() => navigate(`/user/?&userId=1`)}>

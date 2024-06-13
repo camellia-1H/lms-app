@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { Course } from '../../models/Course';
-import { PAYMENT_STATUS } from '../../constants/common';
+import { PAYMENT_STATUS, ROLE_USER } from '../../constants/common';
 import { numberWithCommas, parseSecondToTime } from '../../utils/common';
 
 const CartBuyCourse = ({
@@ -155,6 +155,7 @@ const CartBuyCourse = ({
                             Add to cart
                           </button>
                           <button
+                            disabled={user.role === ROLE_USER.ROP}
                             onClick={
                               courseData.price
                                 ? handleNavigateToOrder
@@ -193,8 +194,8 @@ const CartBuyCourse = ({
                 )}
               </>
             ) : (
-              user.userID &&
-              user.userID === courseData.userID && (
+              ((user.userID && user.userID === courseData.userID) ||
+                user.role === ROLE_USER.ROP) && (
                 <button
                   onClick={() => navigate(`/courses/${courseID}/draft`)}
                   className="mt-3 mb-6 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
@@ -202,6 +203,19 @@ const CartBuyCourse = ({
                   Draft
                 </button>
               )
+            )}
+
+            {user.role === ROLE_USER.ROP && (
+              <div className="flex flex-col lg:gap-y-6 sm:gap-y-8">
+                <div className="flex flex-col gap-y-4">
+                  <button
+                    onClick={() => navigate(`/courses/${courseID}/draft`)}
+                    className="mt-3 mb-6 w-full justify-center rounded-md text-white font-bold text-md bg-sky-400 px-3 py-3 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-white hover:text-sky-400 hover:ring-sky-400 sm:mt-0 sm:w-auto transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
+                  >
+                    Draft
+                  </button>
+                </div>
+              </div>
             )}
 
             {!user.userID && (

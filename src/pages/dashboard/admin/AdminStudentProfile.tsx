@@ -16,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FLAG_REQUEST, REQUEST_TEACHER } from '../../../constants/common';
 import { useManageRequestTeacherAdminMutation } from '../../../redux/adminApi';
+import { parseSecondToTime } from '../../../utils/common';
 
 const AdminStudentProfile: FC = () => {
   const { userID } = useParams();
@@ -133,7 +134,9 @@ const AdminStudentProfile: FC = () => {
                     />
                     <div>
                       <p className="text-slate-400">Learning Times</p>
-                      <p className="font-bold">{state.totalTimeLearn ?? 0}s</p>
+                      <p className="font-bold">
+                        {parseSecondToTime(state.totalTimeLearn ?? 0)}
+                      </p>
                     </div>
                   </div>
                 </div>

@@ -10,6 +10,7 @@ import Loader from '../Loader';
 import { RootState } from '../../redux/store';
 import { useGetListTeacherQuery } from '../../redux/adminApi';
 import { useNavigate } from 'react-router-dom';
+import { numberWithCommas } from '../../utils/common';
 
 const AdminListTeacher: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -103,9 +104,9 @@ const AdminListTeacher: FC = () => {
   //   return <Tag value={value} severity={getSeverity(payment)}></Tag>;
   // };
 
-  // const amountBodyTemplate = (payment: any) => {
-  //   return payment.amount ? numberWithCommas(payment.amount) : 'Free';
-  // };
+  const amountBodyTemplate = (payment: any) => {
+    return numberWithCommas(payment.totalRevenue);
+  };
 
   return (
     <div className="">
@@ -198,7 +199,7 @@ const AdminListTeacher: FC = () => {
                 overflow: 'hidden',
               }}
               className="text-lg"
-              // body={paymentBodyTemplate}
+              body={amountBodyTemplate}
             />
             <Column
               field="totalCourses"

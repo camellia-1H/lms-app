@@ -1,6 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 // import { useScanAllCoursesMutation } from '../redux/coursesApi';
 import { useSelector } from 'react-redux';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { RootState } from '../../../redux/store';
 import {
   useGetUserInfoMutation,
@@ -15,6 +18,12 @@ import { useUploadS3ImageMutation } from '../../../redux/utilsApi';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+
+const formSchema = z.object({
+  name: z.string().min(1, {
+    message: 'name is required',
+  }),
+});
 
 const ProfileDashboardPage: FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -36,7 +45,14 @@ const ProfileDashboardPage: FC = () => {
     { isLoading: loadingGetAuth, isSuccess: successGetAuth },
   ] = useGetUserInfoMutation();
 
-  const [uploadImageS3] = useUploadS3ImageMutation();
+  const [uploadImageS3, { isLoading: loadingUpImg }] =
+    useUploadS3ImageMutation();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const { isSubmitting, isValid, errors } = form.formState;
   const fetchAuthorInfo = async () => {
     const data = await getAuthorInfo({
       userID: user.userID,
@@ -44,6 +60,7 @@ const ProfileDashboardPage: FC = () => {
     setUserInfo(data.userInfo);
     setImageUrl(data.userInfo?.avatar);
     setName(data.userInfo.name);
+    form.setValue('name', data.userInfo.name);
   };
   useEffect(() => {
     fetchAuthorInfo();
@@ -60,11 +77,8 @@ const ProfileDashboardPage: FC = () => {
     fetchAuthorInfo();
   };
 
-  const form = useForm();
-
-  const { isSubmitting, isValid } = form.formState;
-
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setName(values.name);
     try {
       await updateUserInfo({
         userID: user.userID,
@@ -116,7 +130,10 @@ const ProfileDashboardPage: FC = () => {
 
   return (
     <>
-      {(isLoading || loadingGetAuth || loadingUpdateUserInfo) && <Loader />}
+      {(isLoading ||
+        loadingGetAuth ||
+        loadingUpdateUserInfo ||
+        loadingUpImg) && <Loader />}
 
       {successGetAuth && (
         <div className="flex flex-col gap-y-3">
@@ -149,9 +166,15 @@ const ProfileDashboardPage: FC = () => {
                   >
                     Name
                   </label>
+                  {errors?.name?.message && (
+                    <p className="text-sm text-red-600">
+                      {errors.name?.message}
+                    </p>
+                  )}
                   <input
                     type="text"
-                    defaultValue={name}
+                    // defaultValue={name}
+                    // value={userInfo?.name}
                     disabled={isSubmitting}
                     className="w-full outline-none min-w-[300px] outline-gray-950/60 focus:outline-blue-300 rounded-md p-2 text-black"
                     {...form.register('name')}
@@ -216,7 +239,13 @@ const ProfileDashboardPage: FC = () => {
                         height={200}
                       ></img>
                     </div>
-                    <button onClick={updateAvatar}>Change</button>
+                    <button
+                      disabled={loadingUpImg}
+                      className=" mt-2 cursor-pointer hover:bg-black bg-blue-500 px-3 py-2 rounded-lg text-white font-bold"
+                      onClick={updateAvatar}
+                    >
+                      Change
+                    </button>
                   </div>
                 </>
               )}

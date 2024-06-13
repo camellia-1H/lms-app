@@ -120,16 +120,7 @@ const SearchFilter = ({
               <h1 className="text-xl font-bold">
                 Sorry, we couldn't find any results for cxhtch
               </h1>
-              <h2 className="text-lg">
-                Try adjusting your search. Here are some ideas:
-              </h2>
-              <ul className="flex flex-col gap-y-4">
-                <li className="text-lg">
-                  Make sure all words are spelled correctly
-                </li>
-                <li className="text-lg">Try different search terms</li>
-                <li className="text-lg">Try more general search terms</li>
-              </ul>
+              <h2 className="text-lg">Try adjusting your search.</h2>
             </div>
           )}
         </div>

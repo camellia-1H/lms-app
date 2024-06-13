@@ -167,32 +167,6 @@ const StudentCoursesDashPage: FC = () => {
             style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
             className="text-lg"
           />
-
-          <Column
-            field="custom"
-            style={{ fontSize: '16px', minWidth: '12rem', overflow: 'hidden' }}
-            className="text-lg"
-            body={(rowData) => {
-              return (
-                <div>
-                  <button
-                    className="px-3 py-2 text-lg font-semibold text-sky-400 hover:text-blue-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                    // onClick={() => handleEdit(rowData)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-3 py-2 text-lg font-semibold text-red-400 hover:text-red-500 transition ease-in-out hover:-translate-y-0.5 hover:scale-105 duration-200"
-
-                    // onClick={() => handleDelete(rowData)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              );
-            }}
-          />
         </DataTable>
       )}
     </div>

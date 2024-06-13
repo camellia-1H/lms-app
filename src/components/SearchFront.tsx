@@ -56,16 +56,20 @@ const SearchFront: React.FC = () => {
 
   const itemTemplate = (data: any) => {
     return (
-      <div className="w-full text-black list-none ">
+      <div className="w-full text-black list-none">
         <Link
           to={`/courses/${data.courseID}`}
           className="flex gap-x-4 hover:bg-gray-200 rounded-sm px-3 py-2"
         >
           <img src={data.imageUrl} alt="" className="w-14 h-14" />
-          <div className="flex flex-col items-start">
-            <h3 className="text-lg font-bold">{data.title}</h3>
+          <div className="flex flex-col">
+            <h3 className="text-lg font-bold line-clamp-1 flex-1">
+              {data.title.trim()}
+            </h3>
             <div>
-              <h3 className="text-sm text-gray-400">{data.authorName}</h3>
+              <h3 className="text-sm text-gray-400">
+                {data.authorName.trim()}
+              </h3>
             </div>
           </div>
         </Link>
@@ -103,26 +107,17 @@ const SearchFront: React.FC = () => {
             <DataScroller
               value={listSearch}
               itemTemplate={itemTemplate}
-              rows={5}
+              rows={2}
               style={{ background: '#111827!' }}
               className="list-none rounded-md mt-1 shadow-md bg-gray-500/80"
             />
           )}
           {!listSearch.length && searchValue.length > 0 && (
-            <div className="flex flex-col gap-y-6">
+            <div className="flex flex-col gap-y-6 mb-5">
               <h1 className="text-xl font-bold">
                 Sorry, we couldn't find any results for cxhtch
               </h1>
-              <h2 className="text-lg">
-                Try adjusting your search. Here are some ideas:
-              </h2>
-              <ul className="flex flex-col gap-y-4">
-                <li className="text-lg">
-                  Make sure all words are spelled correctly
-                </li>
-                <li className="text-lg">Try different search terms</li>
-                <li className="text-lg">Try more general search terms</li>
-              </ul>
+              <h2 className="text-lg">Try adjusting your search.</h2>
             </div>
           )}
         </div>

@@ -140,10 +140,11 @@ const CourseChapterDetailPage: FC = () => {
     }
     if (
       currentTime > totalTime * 0.75 &&
-      currentTime > totalTime * 0.75 + 0.5 &&
+      currentTime < totalTime * 0.75 + 0.5 &&
       !isNext
     ) {
       setNext(true);
+      setCurrentTime(0);
       handleUpdateProgress();
     }
   };
@@ -156,12 +157,17 @@ const CourseChapterDetailPage: FC = () => {
       duration: Math.round(totalTime),
     }).unwrap();
     refetch();
+    setNext(false);
   };
 
   const handlePreChapter = () => {
+    videoRef.current.pause();
+    setCurrentTime(0);
     navigate(`/courses/${courseID}/chapter/${preChapter}`);
   };
   const handleNextChapter = () => {
+    videoRef.current.pause();
+    setCurrentTime(0);
     navigate(`/courses/${courseID}/chapter/${nextChapter}`);
   };
   return (
@@ -221,7 +227,7 @@ const CourseChapterDetailPage: FC = () => {
                   Updated at <span>{chapterDetail?.updatedAt}</span>
                 </h2>
                 <div>
-                  <h1 className="text-xl font-bold">Kiến thức cần nắm : </h1>
+                  <h1 className="text-xl font-bold">Knowledge needed : </h1>
                   <div>{chapterDetail?.chapterDescription}</div>
                 </div>
               </div>

@@ -72,6 +72,12 @@ export const adminApi = createApi({
         method: 'GET',
       }),
     }),
+    getListPayment: build.query({
+      query: () => ({
+        url: `/admin/get-list-payment`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 

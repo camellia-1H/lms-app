@@ -216,6 +216,7 @@ const TeacherCoursesDashPage: FC = () => {
 
     return category;
   };
+
   const header = renderHeader();
   //// rev
   useEffect(() => {

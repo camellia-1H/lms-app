@@ -17,6 +17,7 @@ import Loader from '../components/Loader';
 import { Link, useNavigate } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { parseSecondToTime } from '../utils/common';
 
 const StudentDashboardPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -75,7 +76,9 @@ const StudentDashboardPage: React.FC = () => {
                   />
                   <div>
                     <p className="text-slate-400">Learning Times</p>
-                    <p className="font-bold">2h 37m</p>
+                    <p className="font-bold">
+                      {parseSecondToTime(userInfo?.totalTimeLearn)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -87,7 +90,9 @@ const StudentDashboardPage: React.FC = () => {
                   />
                   <div>
                     <p className="text-slate-400">Learning Course</p>
-                    <p className="font-bold">2 Course</p>
+                    <p className="font-bold">
+                      {listCoursesProgress?.courses?.length} Course
+                    </p>
                   </div>
                 </div>
               </div>

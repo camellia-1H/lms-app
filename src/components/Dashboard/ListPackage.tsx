@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useUpdatePackageMutation } from '../../redux/userApi';
 import {
+  LIMIT_COURSE_BASIC,
   PACKAGE_PRO_PRICE,
   PACKAGE_TYPE,
   PAYMENT_STATUS,
@@ -14,6 +15,7 @@ import { createPaymentLink } from '../../utils/payosApi';
 import { numberWithCommas } from '../../utils/common';
 import { useState } from 'react';
 import useScript from 'react-script-hook';
+import Loader from '../Loader';
 
 const ListPackage = ({
   userInfo,
@@ -115,6 +117,7 @@ const ListPackage = ({
   };
   return (
     <div className="flex gap-x-16">
+      {(isLoading || openDialogLoading) && <Loader />}
       <div className="max-w-[350px] rounded-[30px] border-2 border-gray-400 shadow-md px-10 py-4">
         <div className="flex flex-col gap-y-6">
           <h1 className="font-bold text-xl">Package Basic</h1>
@@ -136,7 +139,7 @@ const ListPackage = ({
                 className="text-xl text-green-500"
               />
               <span>
-                Limit Course : <strong>10</strong>
+                Limit Course : <strong>{LIMIT_COURSE_BASIC}</strong>
               </span>
             </div>
             {/* <div className="flex gap-x-3 items-center">

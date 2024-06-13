@@ -33,7 +33,7 @@ const TeacherCoursesDashPage: FC = () => {
     // refetch,
   } = useGetListCourseOfTeacherQuery(user.userID);
 
-  const [createCourse, { isSuccess, isLoading: createCourseLoading }] =
+  const [createCourse, { isSuccess, isLoading: createCourseLoading, isError }] =
     useCreateCourseMutation();
 
   const [deleteCourse, { isLoading: deleteCourseLoading }] =
@@ -59,6 +59,11 @@ const TeacherCoursesDashPage: FC = () => {
   useEffect(() => {
     if (isSuccess) {
       navigate('/courses/create');
+    }
+    if (isError) {
+      toast.error('Error Create Course, Limit Course of Package Basic', {
+        duration: 4000,
+      });
     }
   }, [createCourseLoading]);
 
